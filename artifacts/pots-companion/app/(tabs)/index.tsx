@@ -39,6 +39,12 @@ export default function HomeScreen() {
   const [showMeasureModal, setShowMeasureModal] = useState(false);
 
   function handleSaveVitals() {
+    const hasAnyValue = systolic || diastolic || heartRate;
+    if (!hasAnyValue) {
+      setVitalsOpen(false);
+      return;
+    }
+
     addVitalReading({
       systolic: systolic ? parseInt(systolic, 10) : null,
       diastolic: diastolic ? parseInt(diastolic, 10) : null,
@@ -46,6 +52,7 @@ export default function HomeScreen() {
       context: vitalCtx,
       timestamp: Date.now(),
     });
+
     setVitalsSaved(true);
     setTimeout(() => {
       setVitalsSaved(false);
