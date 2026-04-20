@@ -139,6 +139,7 @@ export default function TrackScreen() {
         },
       ]}
     >
+      <Text style={styles.companion}>Norovia — how are you feeling right now?</Text>
       <Text style={styles.heading}>Track</Text>
 
       {sleepLoggedToday && !checkInCompletedToday && (
@@ -217,6 +218,7 @@ export default function TrackScreen() {
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: "#f7f6f3" },
   container: { paddingHorizontal: 20, gap: 16 },
+  companion: { fontSize: 12, color: "#aaa", marginBottom: -6 },
   heading: { fontSize: 28, fontWeight: "700", color: "#111", marginBottom: 4 },
   promptBanner: {
     backgroundColor: "#f0f3f5",

@@ -154,6 +154,7 @@ export default function SleepScreen() {
       ]}
       keyboardShouldPersistTaps="handled"
     >
+      <Text style={styles.companion}>Norovia — let's log last night</Text>
       <Text style={styles.heading}>Sleep</Text>
 
       {!sleepLoggedToday && (
@@ -235,6 +236,7 @@ export default function SleepScreen() {
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: "#f7f6f3" },
   container: { paddingHorizontal: 20, gap: 16 },
+  companion: { fontSize: 12, color: "#aaa", marginBottom: -6 },
   heading: { fontSize: 28, fontWeight: "700", color: "#111", marginBottom: 4 },
   promptBanner: {
     backgroundColor: "#f0f3f5",

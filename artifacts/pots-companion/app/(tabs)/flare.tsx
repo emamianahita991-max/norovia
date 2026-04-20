@@ -31,6 +31,7 @@ export default function FlareScreen() {
         },
       ]}
     >
+      <Text style={styles.companion}>Norovia — stay with your body</Text>
       <Text style={styles.heading}>Flare</Text>
 
       <TouchableOpacity
@@ -81,6 +82,7 @@ export default function FlareScreen() {
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: "#f7f6f3" },
   container: { paddingHorizontal: 20, gap: 16 },
+  companion: { fontSize: 12, color: "#aaa", marginBottom: -6 },
   heading: { fontSize: 28, fontWeight: "700", color: "#111", marginBottom: 4 },
 
   mainBtn: {
