@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   TextInput,
   Platform,
+  Modal,
+  Pressable,
 } from "react-native";
 import { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -34,6 +36,7 @@ export default function HomeScreen() {
   const [heartRate, setHeartRate] = useState("");
   const [vitalCtx, setVitalCtx] = useState<VitalContext>("seated");
   const [vitalsSaved, setVitalsSaved] = useState(false);
+  const [showMeasureModal, setShowMeasureModal] = useState(false);
 
   function handleSaveVitals() {
     setVitalsSaved(true);
@@ -178,6 +181,10 @@ export default function HomeScreen() {
               ))}
             </View>
 
+            <TouchableOpacity onPress={() => setShowMeasureModal(true)} activeOpacity={0.6}>
+              <Text style={styles.measureLink}>How to measure</Text>
+            </TouchableOpacity>
+
             {vitalsSaved ? (
               <View style={styles.savedMsg}>
                 <Text style={styles.savedMsgText}>Saved.</Text>
@@ -204,6 +211,34 @@ export default function HomeScreen() {
       <View style={styles.insight}>
         <Text style={styles.insightText}>{INSIGHT}</Text>
       </View>
+
+      <Modal
+        visible={showMeasureModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowMeasureModal(false)}
+      >
+        <Pressable style={styles.modalOverlay} onPress={() => setShowMeasureModal(false)}>
+          <Pressable style={styles.modalBox} onPress={() => {}}>
+            <Text style={styles.modalTitle}>How to measure</Text>
+            {[
+              "Sit quietly for 2–3 minutes",
+              "Keep your arm supported at heart level",
+              "Avoid talking during the reading",
+              "Take a second reading if unsure",
+            ].map((tip, i) => (
+              <View key={i} style={styles.modalRow}>
+                <Text style={styles.modalDot}>·</Text>
+                <Text style={styles.modalTip}>{tip}</Text>
+              </View>
+            ))}
+            <Text style={styles.modalFooter}>Consistency matters more than perfection.</Text>
+            <TouchableOpacity onPress={() => setShowMeasureModal(false)} activeOpacity={0.7} style={styles.modalClose}>
+              <Text style={styles.modalCloseText}>Done</Text>
+            </TouchableOpacity>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </ScrollView>
   );
 }
@@ -395,6 +430,70 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
     color: "#fff",
+  },
+  measureLink: {
+    fontSize: 13,
+    color: "#9AA6A2",
+    textDecorationLine: "underline",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.3)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 32,
+  },
+  modalBox: {
+    backgroundColor: "#fff",
+    borderRadius: 18,
+    padding: 24,
+    width: "100%",
+    gap: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  modalTitle: {
+    fontSize: 17,
+    fontWeight: "600",
+    color: "#111",
+    marginBottom: 2,
+  },
+  modalRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 8,
+  },
+  modalDot: {
+    fontSize: 18,
+    color: "#9AA6A2",
+    lineHeight: 22,
+  },
+  modalTip: {
+    fontSize: 14,
+    color: "#444",
+    lineHeight: 22,
+    flex: 1,
+  },
+  modalFooter: {
+    fontSize: 13,
+    color: "#aaa",
+    fontStyle: "italic",
+    marginTop: 4,
+  },
+  modalClose: {
+    marginTop: 4,
+    backgroundColor: "#f7f6f3",
+    borderRadius: 10,
+    paddingVertical: 12,
+    alignItems: "center",
+  },
+  modalCloseText: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#4a7c7e",
   },
   savedMsg: {
     alignItems: "center",
