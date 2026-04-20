@@ -33,8 +33,11 @@ export default function TrendsScreen() {
         },
       ]}
     >
-      <Text style={styles.companion}>Norovia — learning your patterns</Text>
-      <Text style={styles.heading}>Trends</Text>
+      <View style={styles.pageHeader}>
+        <Text style={styles.appName}>Norovia</Text>
+        <Text style={styles.companion}>Your patterns are starting to take shape.</Text>
+        <Text style={styles.heading}>Trends</Text>
+      </View>
 
       <Text style={styles.subtitle}>Based on your last few days:</Text>
 
@@ -70,8 +73,10 @@ export default function TrendsScreen() {
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: "#f7f6f3" },
   container: { paddingHorizontal: 20, gap: 16 },
-  companion: { fontSize: 12, color: "#aaa", marginBottom: -6 },
-  heading: { fontSize: 28, fontWeight: "700", color: "#111", marginBottom: 4 },
+  pageHeader: { marginBottom: 0 },
+  appName: { fontSize: 12, fontWeight: "600", color: "#4a7c7e", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 4 },
+  companion: { fontSize: 13, color: "#9AA6A2", lineHeight: 20, marginBottom: 10 },
+  heading: { fontSize: 28, fontWeight: "700", color: "#111", marginBottom: 0 },
 
   subtitle: {
     fontSize: 15,

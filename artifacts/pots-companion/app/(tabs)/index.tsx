@@ -63,9 +63,11 @@ export default function HomeScreen() {
         { paddingBottom: insets.bottom + 24, paddingTop: Platform.OS === "web" ? 67 : 16 },
       ]}
     >
-      <Text style={styles.appName}>Norovia</Text>
-      <Text style={styles.tagline}>You don't have to figure this out all at once.</Text>
-      <Text style={styles.heading}>Today</Text>
+      <View style={styles.pageHeader}>
+        <Text style={styles.appName}>Norovia</Text>
+        <Text style={styles.companion}>You don't have to figure this out all at once.</Text>
+        <Text style={styles.heading}>Today</Text>
+      </View>
 
       {renderCTA()}
 
@@ -105,25 +107,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     gap: 16,
   },
+  pageHeader: {
+    marginBottom: 0,
+  },
   appName: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "600",
     color: "#4a7c7e",
     letterSpacing: 1.5,
     textTransform: "uppercase",
-    marginBottom: -8,
+    marginBottom: 4,
   },
-  tagline: {
-    fontSize: 14,
-    color: "#888",
-    fontStyle: "italic",
-    marginBottom: -4,
+  companion: {
+    fontSize: 13,
+    color: "#9AA6A2",
+    lineHeight: 20,
+    marginBottom: 10,
   },
   heading: {
     fontSize: 28,
     fontWeight: "700",
     color: "#111",
-    marginBottom: 4,
+    marginBottom: 0,
   },
   ctaWrap: {
     gap: 8,

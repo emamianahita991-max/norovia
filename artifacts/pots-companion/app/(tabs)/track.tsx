@@ -139,8 +139,11 @@ export default function TrackScreen() {
         },
       ]}
     >
-      <Text style={styles.companion}>Norovia — how are you feeling right now?</Text>
-      <Text style={styles.heading}>Track</Text>
+      <View style={styles.pageHeader}>
+        <Text style={styles.appName}>Norovia</Text>
+        <Text style={styles.companion}>Stay close to how your body feels.</Text>
+        <Text style={styles.heading}>Track</Text>
+      </View>
 
       {sleepLoggedToday && !checkInCompletedToday && (
         <View style={styles.promptBanner}>
@@ -218,8 +221,10 @@ export default function TrackScreen() {
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: "#f7f6f3" },
   container: { paddingHorizontal: 20, gap: 16 },
-  companion: { fontSize: 12, color: "#aaa", marginBottom: -6 },
-  heading: { fontSize: 28, fontWeight: "700", color: "#111", marginBottom: 4 },
+  pageHeader: { marginBottom: 0 },
+  appName: { fontSize: 12, fontWeight: "600", color: "#4a7c7e", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 4 },
+  companion: { fontSize: 13, color: "#9AA6A2", lineHeight: 20, marginBottom: 10 },
+  heading: { fontSize: 28, fontWeight: "700", color: "#111", marginBottom: 0 },
   promptBanner: {
     backgroundColor: "#f0f3f5",
     borderRadius: 12,

@@ -1,0 +1,122 @@
+Lock final Norovia identity and companion system across all screens.
+
+GOAL:
+Create a calm, cohesive, premium experience that feels like one consistent presence.
+No further design changes should be needed after this.
+
+-----------------------------------
+1. KEEP NOROVIA COLOR EXACTLY AS IS
+-----------------------------------
+
+- Do NOT change the current Norovia color on Home screen
+- Apply that EXACT same color to "NOROVIA" on ALL screens
+
+This is now the locked brand color.
+
+-----------------------------------
+2. HEADER SYSTEM (ALL SCREENS)
+-----------------------------------
+
+At the very top of EVERY screen:
+
+[NOROVIA]
+[companion line]
+[screen title]
+
+Spacing:
+- NOROVIA → marginBottom: 4
+- Companion line → marginBottom: 10–12
+- Then screen title
+
+-----------------------------------
+3. NOROVIA STYLE (LOCKED)
+-----------------------------------
+
+- fontSize: 11–12
+- letterSpacing: 1.5–2
+- fontWeight: 600
+- color: SAME as current Home screen Norovia
+- subtle, never bold or dominant
+
+-----------------------------------
+4. COMPANION LINE STYLE (LOCKED)
+-----------------------------------
+
+- fontSize: 13–14
+- color: soft grey (#9AA6A2 or current equivalent)
+- lineHeight: slightly relaxed
+- NEVER bold
+- NEVER green
+- NEVER too dark
+
+Tone rules:
+- calm
+- grounded
+- non-instructional
+- not “coaching”
+- not “clinical”
+
+-----------------------------------
+5. FINAL COMPANION LINES (DO NOT CHANGE AGAIN)
+-----------------------------------
+
+HOME:
+"You don’t have to figure this out all at once."
+
+SLEEP:
+"Last night shapes how today feels."
+
+TRACK:
+"Stay close to how your body feels."
+
+FLARE:
+"Stay with your body."
+
+TRENDS:
+"Your patterns are starting to take shape."
+
+-----------------------------------
+6. CONSISTENCY RULES
+-----------------------------------
+
+- Same spacing across all screens
+- Same typography hierarchy
+- No emojis anywhere
+- No exclamation marks
+- No instructional language ("log", "track", "do this")
+
+-----------------------------------
+7. DESIGN INTENT (DO NOT BREAK)
+-----------------------------------
+
+The app should feel like:
+- a quiet space
+- a regulated system
+- something that understands the user
+
+NOT:
+- a productivity tool
+- a medical dashboard
+- a loud wellness app
+
+-----------------------------------
+8. DO NOT ADD ANY NEW DESIGN ELEMENTS
+-----------------------------------
+
+- No new colors
+- No gradients
+- No icons in header
+- No animations for now
+
+Keep everything minimal and stable.
+
+-----------------------------------
+
+Apply this to:
+- Home
+- Sleep
+- Track
+- Flare
+- Trends
+
+This is the final locked design system for V1.
