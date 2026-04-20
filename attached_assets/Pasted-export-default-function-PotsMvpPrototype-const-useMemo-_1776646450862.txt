@@ -1,0 +1,401 @@
+export default function PotsMvpPrototype() {
+  const { useMemo, useState } = React;
+
+  const [screen, setScreen] = useState("home");
+  const [checkIn, setCheckIn] = useState({
+    dizziness: 4,
+    palpitations: 3,
+    fatigue: 6,
+    brainFog: 5,
+    nausea: 2,
+    headache: 3,
+    functionScore: 5,
+  });
+
+  const [habits, setHabits] = useState({
+    water: 1.8,
+    salt: true,
+    compression: false,
+    movement: true,
+  });
+
+  const [sleep, setSleep] = useState({
+    isSleeping: false,
+    start: "22:45",
+    end: "06:40",
+    interruptions: 2,
+    useWearable: false,
+    wearableHours: 7.2,
+  });
+
+  const [flareMode, setFlareMode] = useState(false);
+
+  const avgSymptoms = useMemo(() => {
+    const values = [
+      checkIn.dizziness,
+      checkIn.palpitations,
+      checkIn.fatigue,
+      checkIn.brainFog,
+      checkIn.nausea,
+      checkIn.headache,
+    ];
+    return (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1);
+  }, [checkIn]);
+
+  const sleepHours = useMemo(() => {
+    if (sleep.useWearable) return sleep.wearableHours;
+    const [sh, sm] = sleep.start.split(":").map(Number);
+    const [eh, em] = sleep.end.split(":").map(Number);
+    let startMinutes = sh * 60 + sm;
+    let endMinutes = eh * 60 + em;
+    if (endMinutes < startMinutes) endMinutes += 24 * 60;
+    return ((endMinutes - startMinutes) / 60).toFixed(1);
+  }, [sleep]);
+
+  const sleepScore = useMemo(() => {
+    let score = 100;
+    const hours = Number(sleepHours);
+    if (hours < 6) score -= 30;
+    else if (hours < 7) score -= 15;
+    if (sleep.interruptions >= 3) score -= 20;
+    else if (sleep.interruptions >= 1) score -= 10;
+    return Math.max(25, score);
+  }, [sleepHours, sleep.interruptions]);
+
+  const todayPlan = useMemo(() => {
+    const hours = Number(sleepHours);
+    const items = [];
+
+    items.push("Aim for steady fluids today.");
+    items.push("Use salt support if that is part of your usual plan.");
+
+    if (!habits.compression) {
+      items.push("Try compression today if upright symptoms are active.");
+    }
+
+    if (hours < 6.5) {
+      items.push("Because sleep was short, keep today lower demand.");
+      items.push("Avoid long standing blocks when possible.");
+    } else {
+      items.push("You may be able to tolerate a little more activity today.");
+    }
+
+    if (checkIn.fatigue >= 7 || checkIn.brainFog >= 7) {
+      items.push("Use pacing today: smaller blocks, more seated recovery.");
+    }
+
+    if (!habits.movement) {
+      items.push("Try a short gentle movement session, preferably seated or recumbent.");
+    }
+
+    return items.slice(0, 5);
+  }, [sleepHours, habits.compression, habits.movement, checkIn.fatigue, checkIn.brainFog]);
+
+  const insight = useMemo(() => {
+    const hours = Number(sleepHours);
+    if (hours < 6 && checkIn.fatigue >= 6) {
+      return "Your symptoms may be worse today because your sleep was short and broken.";
+    }
+    if (habits.water >= 2.5 && Number(avgSymptoms) <= 4) {
+      return "You seem to do better on days when fluids are stronger.";
+    }
+    if (!habits.compression && checkIn.dizziness >= 6) {
+      return "Dizziness is high today. Compression may be worth trying if you tolerate it.";
+    }
+    return "You are building useful data. Keep logging so the app can learn your pattern.";
+  }, [sleepHours, checkIn.fatigue, habits.water, avgSymptoms, habits.compression, checkIn.dizziness]);
+
+  const NavButton = ({ id, label }) => (
+    <button
+      onClick={() => setScreen(id)}
+      className={`px-4 py-2 rounded-2xl text-sm shadow ${screen === id ? "bg-black text-white" : "bg-white"}`}
+    >
+      {label}
+    </button>
+  );
+
+  const Card = ({ title, children }) => (
+    <div className="bg-white rounded-3xl shadow p-5 space-y-4">
+      <h2 className="text-lg font-semibold">{title}</h2>
+      {children}
+    </div>
+  );
+
+  const SliderRow = ({ label, value, onChange }) => (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between text-sm">
+        <span>{label}</span>
+        <span className="font-medium">{value}/10</span>
+      </div>
+      <input
+        type="range"
+        min="0"
+        max="10"
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="w-full"
+      />
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-neutral-100 text-neutral-900 p-4 md:p-8">
+      <div className="max-w-6xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-semibold">POTS MVP Prototype</h1>
+            <p className="text-sm text-neutral-600 mt-1">
+              A simple symptom, sleep, and lifestyle management app for people who identify with POTS.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <NavButton id="home" label="Home" />
+            <NavButton id="track" label="Track" />
+            <NavButton id="sleep" label="Sleep" />
+            <NavButton id="flare" label="Flare" />
+            <NavButton id="trends" label="Trends" />
+          </div>
+        </div>
+
+        {screen === "home" && (
+          <div className="grid md:grid-cols-3 gap-5">
+            <Card title="Today at a glance">
+              <div className="text-sm space-y-2">
+                <div className="flex justify-between"><span>Average symptoms</span><span className="font-medium">{avgSymptoms}/10</span></div>
+                <div className="flex justify-between"><span>Sleep</span><span className="font-medium">{sleepHours} h</span></div>
+                <div className="flex justify-between"><span>Sleep score</span><span className="font-medium">{sleepScore}/100</span></div>
+                <div className="flex justify-between"><span>Function today</span><span className="font-medium">{checkIn.functionScore}/10</span></div>
+              </div>
+            </Card>
+
+            <Card title="Today plan">
+              <div className="space-y-2 text-sm">
+                {todayPlan.map((item, index) => (
+                  <div key={index} className="p-3 rounded-2xl bg-neutral-50">{item}</div>
+                ))}
+              </div>
+            </Card>
+
+            <Card title="AI insight">
+              <p className="text-sm leading-6">{insight}</p>
+              <button
+                onClick={() => setScreen("track")}
+                className="mt-2 w-full rounded-2xl bg-black text-white py-3 text-sm"
+              >
+                Do today’s check-in
+              </button>
+            </Card>
+          </div>
+        )}
+
+        {screen === "track" && (
+          <div className="grid lg:grid-cols-2 gap-5">
+            <Card title="Daily symptoms">
+              <div className="space-y-4">
+                <SliderRow label="Dizziness / lightheadedness" value={checkIn.dizziness} onChange={(v) => setCheckIn({ ...checkIn, dizziness: v })} />
+                <SliderRow label="Palpitations" value={checkIn.palpitations} onChange={(v) => setCheckIn({ ...checkIn, palpitations: v })} />
+                <SliderRow label="Fatigue" value={checkIn.fatigue} onChange={(v) => setCheckIn({ ...checkIn, fatigue: v })} />
+                <SliderRow label="Brain fog" value={checkIn.brainFog} onChange={(v) => setCheckIn({ ...checkIn, brainFog: v })} />
+                <SliderRow label="Nausea" value={checkIn.nausea} onChange={(v) => setCheckIn({ ...checkIn, nausea: v })} />
+                <SliderRow label="Headache" value={checkIn.headache} onChange={(v) => setCheckIn({ ...checkIn, headache: v })} />
+                <SliderRow label="How functional do you feel today?" value={checkIn.functionScore} onChange={(v) => setCheckIn({ ...checkIn, functionScore: v })} />
+              </div>
+            </Card>
+
+            <Card title="Lifestyle habits">
+              <div className="space-y-4 text-sm">
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span>Water</span>
+                    <span className="font-medium">{habits.water} L</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="4"
+                    step="0.1"
+                    value={habits.water}
+                    onChange={(e) => setHabits({ ...habits, water: Number(e.target.value) })}
+                    className="w-full"
+                  />
+                </div>
+
+                <label className="flex items-center justify-between p-3 rounded-2xl bg-neutral-50">
+                  <span>Salt support today</span>
+                  <input type="checkbox" checked={habits.salt} onChange={(e) => setHabits({ ...habits, salt: e.target.checked })} />
+                </label>
+
+                <label className="flex items-center justify-between p-3 rounded-2xl bg-neutral-50">
+                  <span>Compression used today</span>
+                  <input type="checkbox" checked={habits.compression} onChange={(e) => setHabits({ ...habits, compression: e.target.checked })} />
+                </label>
+
+                <label className="flex items-center justify-between p-3 rounded-2xl bg-neutral-50">
+                  <span>Movement or exercise completed</span>
+                  <input type="checkbox" checked={habits.movement} onChange={(e) => setHabits({ ...habits, movement: e.target.checked })} />
+                </label>
+
+                <div className="p-4 rounded-2xl bg-amber-50 text-amber-900 text-xs leading-5">
+                  This is a lifestyle support prototype. It should not diagnose POTS or replace urgent medical care.
+                </div>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {screen === "sleep" && (
+          <div className="grid lg:grid-cols-2 gap-5">
+            <Card title="Sleep tracking">
+              <div className="space-y-4 text-sm">
+                <label className="flex items-center justify-between p-3 rounded-2xl bg-neutral-50">
+                  <span>Use Apple Watch / wearable data</span>
+                  <input
+                    type="checkbox"
+                    checked={sleep.useWearable}
+                    onChange={(e) => setSleep({ ...sleep, useWearable: e.target.checked })}
+                  />
+                </label>
+
+                {sleep.useWearable ? (
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span>Total sleep from wearable</span>
+                      <span className="font-medium">{sleep.wearableHours} h</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="12"
+                      step="0.1"
+                      value={sleep.wearableHours}
+                      onChange={(e) => setSleep({ ...sleep, wearableHours: Number(e.target.value) })}
+                      className="w-full"
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-2 gap-3">
+                      <label className="space-y-1">
+                        <span className="text-xs text-neutral-500">Sleep start</span>
+                        <input
+                          type="time"
+                          value={sleep.start}
+                          onChange={(e) => setSleep({ ...sleep, start: e.target.value })}
+                          className="w-full rounded-2xl border p-3"
+                        />
+                      </label>
+                      <label className="space-y-1">
+                        <span className="text-xs text-neutral-500">Wake time</span>
+                        <input
+                          type="time"
+                          value={sleep.end}
+                          onChange={(e) => setSleep({ ...sleep, end: e.target.value })}
+                          className="w-full rounded-2xl border p-3"
+                        />
+                      </label>
+                    </div>
+                    <button
+                      onClick={() => setSleep({ ...sleep, isSleeping: !sleep.isSleeping })}
+                      className="w-full rounded-2xl bg-black text-white py-3"
+                    >
+                      {sleep.isSleeping ? "Wake up" : "Start sleep"}
+                    </button>
+                  </>
+                )}
+
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span>Interruptions</span>
+                    <span className="font-medium">{sleep.interruptions}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="8"
+                    step="1"
+                    value={sleep.interruptions}
+                    onChange={(e) => setSleep({ ...sleep, interruptions: Number(e.target.value) })}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+            </Card>
+
+            <Card title="Sleep summary">
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between"><span>Total sleep</span><span className="font-medium">{sleepHours} h</span></div>
+                <div className="flex justify-between"><span>Interruptions</span><span className="font-medium">{sleep.interruptions}</span></div>
+                <div className="flex justify-between"><span>Sleep score</span><span className="font-medium">{sleepScore}/100</span></div>
+                <div className="p-4 rounded-2xl bg-neutral-50 leading-6">
+                  {Number(sleepHours) < 6.5
+                    ? "Sleep was shorter than ideal. Today the app should push hydration, pacing, and lower-demand movement."
+                    : "Sleep was more supportive. Today the app can suggest steadier activity if symptoms allow."}
+                </div>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {screen === "flare" && (
+          <div className="grid lg:grid-cols-2 gap-5">
+            <Card title="Flare mode">
+              <div className="space-y-4 text-sm">
+                <button
+                  onClick={() => setFlareMode(!flareMode)}
+                  className={`w-full rounded-2xl py-3 text-white ${flareMode ? "bg-red-600" : "bg-black"}`}
+                >
+                  {flareMode ? "Flare mode is on" : "I feel bad right now"}
+                </button>
+                <div className="space-y-2">
+                  <div className="p-3 rounded-2xl bg-neutral-50">1. Sit or lie down.</div>
+                  <div className="p-3 rounded-2xl bg-neutral-50">2. Get fluids if you can safely tolerate them.</div>
+                  <div className="p-3 rounded-2xl bg-neutral-50">3. Avoid standing, heat, and rushing.</div>
+                  <div className="p-3 rounded-2xl bg-neutral-50">4. Use compression if that helps you.</div>
+                </div>
+              </div>
+            </Card>
+
+            <Card title="Safety prompt">
+              <div className="text-sm leading-6 space-y-3">
+                <p>
+                  If symptoms include chest pain, severe shortness of breath, passing out with injury, or you cannot keep fluids down, the app should tell the user to seek urgent medical care.
+                </p>
+                <div className="p-4 rounded-2xl bg-red-50 text-red-700">
+                  This prototype includes a safety boundary. It is not emergency care.
+                </div>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {screen === "trends" && (
+          <div className="grid lg:grid-cols-3 gap-5">
+            <Card title="What seems to help">
+              <ul className="space-y-2 text-sm list-disc pl-5">
+                <li>Higher fluid days appear linked to better symptom scores.</li>
+                <li>Sleep interruptions appear linked to worse fatigue and brain fog.</li>
+                <li>Movement helps when it is gentle and paced.</li>
+              </ul>
+            </Card>
+
+            <Card title="What seems to worsen symptoms">
+              <ul className="space-y-2 text-sm list-disc pl-5">
+                <li>Short sleep.</li>
+                <li>Skipping compression on higher-dizziness days.</li>
+                <li>Trying to push through upright fatigue.</li>
+              </ul>
+            </Card>
+
+            <Card title="Next prototype ideas">
+              <ul className="space-y-2 text-sm list-disc pl-5">
+                <li>Add Apple Health connection.</li>
+                <li>Add a calmer bedtime screen.</li>
+                <li>Add weekly summaries the user can share or save.</li>
+              </ul>
+            </Card>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

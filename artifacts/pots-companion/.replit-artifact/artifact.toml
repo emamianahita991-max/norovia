@@ -1,0 +1,27 @@
+kind = "mobile"
+previewPath = "/"
+title = "Norovia"
+version = "1.0.0"
+id = "artifacts/pots-companion"
+router = "expo-domain"
+
+[[integratedSkills]]
+name = "expo"
+version = "1.0.0"
+
+[[services]]
+ensurePreviewReachable = "/status"
+name = "expo"
+paths = [ "/" ]
+localPort = 21605
+
+[services.development]
+run = "pnpm --filter @workspace/pots-companion run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/pots-companion", "run", "build" ]
+run = [ "pnpm", "--filter", "@workspace/pots-companion", "run", "serve" ]
+
+[services.env]
+PORT = "21605"
+BASE_PATH = "/"
