@@ -35,6 +35,8 @@ export default function TrendsScreen() {
     >
       <Text style={styles.heading}>Trends</Text>
 
+      <Text style={styles.subtitle}>Based on your last few days:</Text>
+
       <View style={styles.notice}>
         <Text style={styles.noticeText}>
           You're building useful data. Keep logging so the app can learn your pattern.
@@ -69,6 +71,11 @@ const styles = StyleSheet.create({
   container: { paddingHorizontal: 20, gap: 16 },
   heading: { fontSize: 28, fontWeight: "700", color: "#111", marginBottom: 4 },
 
+  subtitle: {
+    fontSize: 15,
+    color: "#777",
+    marginTop: -4,
+  },
   notice: {
     backgroundColor: "#eef4f4",
     borderRadius: 12,
