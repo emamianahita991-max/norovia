@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Switch,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -93,6 +94,8 @@ function ToggleRow({
 export default function TrackScreen() {
   const insets = useSafeAreaInsets();
 
+  const [saved, setSaved] = useState(false);
+
   const [checkIn, setCheckIn] = useState<CheckIn>({
     dizziness: 0,
     palpitations: 0,
@@ -178,6 +181,20 @@ export default function TrackScreen() {
           This is a lifestyle support tool. It does not diagnose POTS or replace medical care.
         </Text>
       </View>
+
+      <TouchableOpacity
+        style={styles.saveBtn}
+        onPress={() => setSaved(true)}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.saveBtnText}>Save today's entry</Text>
+      </TouchableOpacity>
+
+      {saved && (
+        <View style={styles.savedMsg}>
+          <Text style={styles.savedMsgText}>Saved. You're building your pattern.</Text>
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -205,6 +222,28 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   disclaimerText: { fontSize: 13, color: "#8a7340", lineHeight: 20 },
+  saveBtn: {
+    backgroundColor: "#2c2c2c",
+    borderRadius: 14,
+    paddingVertical: 18,
+    alignItems: "center",
+  },
+  saveBtnText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#fff",
+  },
+  savedMsg: {
+    backgroundColor: "#eef4f4",
+    borderRadius: 12,
+    padding: 16,
+    alignItems: "center",
+  },
+  savedMsgText: {
+    fontSize: 14,
+    color: "#3a6a6b",
+    fontStyle: "italic",
+  },
 });
 
 const row = StyleSheet.create({
