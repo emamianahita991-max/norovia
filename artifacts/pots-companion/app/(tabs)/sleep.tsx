@@ -122,7 +122,7 @@ function TimeInput({
 export default function SleepScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { sleepLoggedToday, setSleepLogged } = useDaily();
+  const { sleepLoggedToday, setSleepLogged, setPendingSleep } = useDaily();
 
   const [bedtime, setBedtime] = useState("22:30");
   const [wakeTime, setWakeTime] = useState("07:00");
@@ -138,6 +138,7 @@ export default function SleepScreen() {
   const score = hours !== null ? sleepScore(hours, interruptions) : null;
 
   function handleSave() {
+    setPendingSleep(score !== null && hours !== null ? { score, hours } : null);
     setSleepLogged(true);
     router.navigate("/");
   }

@@ -96,7 +96,7 @@ function ToggleRow({
 export default function TrackScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { sleepLoggedToday, checkInCompletedToday, setCheckInCompleted } = useDaily();
+  const { sleepLoggedToday, checkInCompletedToday, setCheckInCompleted, pendingSleep, addEntry } = useDaily();
 
   const [checkIn, setCheckIn] = useState<CheckIn>({
     dizziness: 0,
@@ -124,6 +124,23 @@ export default function TrackScreen() {
   }
 
   function handleFinish() {
+    const symptomKeys: (keyof typeof checkIn)[] = [
+      "dizziness", "palpitations", "fatigue", "brainFog", "nausea", "headache",
+    ];
+    const avgSymptom =
+      symptomKeys.reduce((sum, k) => sum + checkIn[k], 0) / symptomKeys.length;
+
+    addEntry({
+      functionScore: checkIn.functionScore,
+      avgSymptom: parseFloat(avgSymptom.toFixed(1)),
+      dizziness: checkIn.dizziness,
+      fatigue: checkIn.fatigue,
+      water: habits.water,
+      compression: habits.compression,
+      movement: habits.movement,
+      sleepScore: pendingSleep?.score ?? null,
+      sleepHours: pendingSleep?.hours ?? null,
+    });
     setCheckInCompleted(true);
     router.navigate("/");
   }
