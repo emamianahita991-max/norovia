@@ -60,6 +60,7 @@ export default function HomeScreen() {
       setSystolic("");
       setDiastolic("");
       setHeartRate("");
+      setVitalCtx("seated");
     }, 1800);
   }
 
