@@ -10,6 +10,8 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
+import { useDaily } from "@/context/DailyContext";
 
 const ACCENT = "#4a7c7e";
 
@@ -119,6 +121,8 @@ function TimeInput({
 
 export default function SleepScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const { sleepLoggedToday, setSleepLogged } = useDaily();
 
   const [bedtime, setBedtime] = useState("22:30");
   const [wakeTime, setWakeTime] = useState("07:00");
@@ -133,6 +137,11 @@ export default function SleepScreen() {
 
   const score = hours !== null ? sleepScore(hours, interruptions) : null;
 
+  function handleSave() {
+    setSleepLogged(true);
+    router.navigate("/");
+  }
+
   return (
     <ScrollView
       style={styles.scroll}
@@ -146,6 +155,12 @@ export default function SleepScreen() {
       keyboardShouldPersistTaps="handled"
     >
       <Text style={styles.heading}>Sleep</Text>
+
+      {!sleepLoggedToday && (
+        <View style={styles.promptBanner}>
+          <Text style={styles.promptText}>Let's log last night's sleep — takes 20 seconds.</Text>
+        </View>
+      )}
 
       <View style={styles.card}>
         <View style={styles.toggleRow}>
@@ -209,6 +224,10 @@ export default function SleepScreen() {
           );
         })()}
       </View>
+
+      <TouchableOpacity style={styles.saveBtn} onPress={handleSave} activeOpacity={0.8}>
+        <Text style={styles.saveBtnText}>Save sleep</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -217,6 +236,17 @@ const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: "#f7f6f3" },
   container: { paddingHorizontal: 20, gap: 16 },
   heading: { fontSize: 28, fontWeight: "700", color: "#111", marginBottom: 4 },
+  promptBanner: {
+    backgroundColor: "#f0f3f5",
+    borderRadius: 12,
+    padding: 14,
+  },
+  promptText: {
+    fontSize: 14,
+    color: "#4a5560",
+    fontStyle: "italic",
+    lineHeight: 20,
+  },
   card: {
     backgroundColor: "#fff",
     borderRadius: 14,
@@ -253,6 +283,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#3a6a6b",
     lineHeight: 22,
+  },
+  saveBtn: {
+    backgroundColor: "#2c2c2c",
+    borderRadius: 14,
+    paddingVertical: 18,
+    alignItems: "center",
+  },
+  saveBtnText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#fff",
   },
 });
 

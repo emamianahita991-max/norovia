@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from "react-nati
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Platform } from "react-native";
 import { useRouter } from "expo-router";
+import { useDaily } from "@/context/DailyContext";
 
 const PLAN = [
   "Aim for steady fluids throughout the day.",
@@ -14,6 +15,45 @@ const INSIGHT = "You seem to do better on days when fluids are stronger.";
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { sleepLoggedToday, checkInCompletedToday } = useDaily();
+
+  function renderCTA() {
+    if (!sleepLoggedToday) {
+      return (
+        <View style={styles.ctaWrap}>
+          <TouchableOpacity
+            style={styles.checkInBtn}
+            onPress={() => router.navigate("/sleep")}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.checkInBtnText}>Log last night's sleep</Text>
+          </TouchableOpacity>
+          <Text style={styles.ctaHint}>Takes 20 seconds</Text>
+        </View>
+      );
+    }
+
+    if (!checkInCompletedToday) {
+      return (
+        <TouchableOpacity
+          style={styles.checkInBtn}
+          onPress={() => router.navigate("/track")}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.checkInBtnText}>Complete today's check-in</Text>
+        </TouchableOpacity>
+      );
+    }
+
+    return (
+      <View style={styles.ctaWrap}>
+        <View style={styles.doneCard}>
+          <Text style={styles.doneBtnText}>Today's check-in complete ✓</Text>
+        </View>
+        <Text style={styles.ctaHint}>You can update it anytime.</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
@@ -26,13 +66,7 @@ export default function HomeScreen() {
       <Text style={styles.tagline}>You don't have to figure this out all at once.</Text>
       <Text style={styles.heading}>Today</Text>
 
-      <TouchableOpacity
-        style={styles.checkInBtn}
-        onPress={() => router.push("/track")}
-        activeOpacity={0.8}
-      >
-        <Text style={styles.checkInBtnText}>Complete today's check-in</Text>
-      </TouchableOpacity>
+      {renderCTA()}
 
       <View style={styles.card}>
         <Text style={styles.cardLabel}>Average symptom score</Text>
@@ -81,6 +115,39 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#111",
     marginBottom: 4,
+  },
+  ctaWrap: {
+    gap: 8,
+  },
+  checkInBtn: {
+    backgroundColor: "#2c2c2c",
+    borderRadius: 14,
+    paddingVertical: 16,
+    alignItems: "center",
+  },
+  checkInBtnText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#fff",
+  },
+  ctaHint: {
+    fontSize: 13,
+    color: "#999",
+    textAlign: "center",
+    fontStyle: "italic",
+  },
+  doneCard: {
+    backgroundColor: "#eef4f4",
+    borderRadius: 14,
+    paddingVertical: 16,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#d0e4e4",
+  },
+  doneBtnText: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#4a7c7e",
   },
   card: {
     backgroundColor: "#fff",
@@ -137,17 +204,6 @@ const styles = StyleSheet.create({
     color: "#444",
     lineHeight: 22,
     flex: 1,
-  },
-  checkInBtn: {
-    backgroundColor: "#2c2c2c",
-    borderRadius: 14,
-    paddingVertical: 16,
-    alignItems: "center",
-  },
-  checkInBtnText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#fff",
   },
   insight: {
     backgroundColor: "#eef4f4",

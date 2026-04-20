@@ -10,6 +10,8 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
+import { useDaily } from "@/context/DailyContext";
 
 type CheckIn = {
   dizziness: number;
@@ -93,8 +95,8 @@ function ToggleRow({
 
 export default function TrackScreen() {
   const insets = useSafeAreaInsets();
-
-  const [saved, setSaved] = useState(false);
+  const router = useRouter();
+  const { sleepLoggedToday, checkInCompletedToday, setCheckInCompleted } = useDaily();
 
   const [checkIn, setCheckIn] = useState<CheckIn>({
     dizziness: 0,
@@ -121,6 +123,11 @@ export default function TrackScreen() {
     return (v: boolean) => setHabits((prev) => ({ ...prev, [key]: v }));
   }
 
+  function handleFinish() {
+    setCheckInCompleted(true);
+    router.navigate("/");
+  }
+
   return (
     <ScrollView
       style={styles.scroll}
@@ -133,6 +140,12 @@ export default function TrackScreen() {
       ]}
     >
       <Text style={styles.heading}>Track</Text>
+
+      {sleepLoggedToday && !checkInCompletedToday && (
+        <View style={styles.promptBanner}>
+          <Text style={styles.promptText}>Let's log how you feel — takes 30 seconds.</Text>
+        </View>
+      )}
 
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Symptoms</Text>
@@ -184,15 +197,17 @@ export default function TrackScreen() {
 
       <TouchableOpacity
         style={styles.saveBtn}
-        onPress={() => setSaved(true)}
+        onPress={handleFinish}
         activeOpacity={0.8}
       >
-        <Text style={styles.saveBtnText}>Save today's entry</Text>
+        <Text style={styles.saveBtnText}>
+          {checkInCompletedToday ? "Update check-in" : "Finish check-in"}
+        </Text>
       </TouchableOpacity>
 
-      {saved && (
+      {checkInCompletedToday && (
         <View style={styles.savedMsg}>
-          <Text style={styles.savedMsgText}>Saved. You're building your pattern.</Text>
+          <Text style={styles.savedMsgText}>Done. You're learning your pattern.</Text>
         </View>
       )}
     </ScrollView>
@@ -203,6 +218,17 @@ const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: "#f7f6f3" },
   container: { paddingHorizontal: 20, gap: 16 },
   heading: { fontSize: 28, fontWeight: "700", color: "#111", marginBottom: 4 },
+  promptBanner: {
+    backgroundColor: "#f0f3f5",
+    borderRadius: 12,
+    padding: 14,
+  },
+  promptText: {
+    fontSize: 14,
+    color: "#4a5560",
+    fontStyle: "italic",
+    lineHeight: 20,
+  },
   card: {
     backgroundColor: "#fff",
     borderRadius: 14,

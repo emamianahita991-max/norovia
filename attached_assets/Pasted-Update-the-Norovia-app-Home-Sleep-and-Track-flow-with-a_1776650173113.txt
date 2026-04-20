@@ -1,0 +1,63 @@
+Update the Norovia app Home, Sleep, and Track flow with a simple morning sequence.
+
+Goal:
+If the user opens the app and has not logged sleep yet for the current day, Home should first prompt them to log last night’s sleep.
+After sleep is logged, Home should prompt them to complete today’s check-in.
+After the check-in is completed, Home should show that today’s check-in is complete, but the user can still update it anytime.
+
+Please implement this with simple local state only. No backend.
+
+Detailed behavior:
+
+1. Home screen logic
+- Add a daily state for:
+  - sleepLoggedToday: true/false
+  - checkInCompletedToday: true/false
+- On the Home screen:
+  - If sleepLoggedToday is false:
+    - show a primary button: “Log last night’s sleep”
+    - show small text underneath: “Takes 20 seconds”
+  - If sleepLoggedToday is true and checkInCompletedToday is false:
+    - show a primary button: “Complete today’s check-in”
+  - If sleepLoggedToday is true and checkInCompletedToday is true:
+    - replace the button with a softer muted card or button that says:
+      “Today’s check-in complete ✓”
+    - show small text underneath:
+      “You can update it anytime.”
+
+2. Sleep flow
+- When the user taps “Log last night’s sleep” on Home:
+  - navigate to the Sleep screen
+  - scroll to the top automatically
+  - show a subtle message at the top:
+    “Let’s log last night’s sleep — takes 20 seconds.”
+- On the Sleep screen, add a button at the bottom:
+  - “Save sleep”
+- When the user taps “Save sleep”:
+  - mark sleepLoggedToday = true
+  - navigate back to Home
+
+3. Track flow
+- When the user taps “Complete today’s check-in” on Home:
+  - navigate to the Track screen
+  - scroll to the top automatically
+  - show a subtle message at the top:
+    “Let’s log how you feel — takes 30 seconds.”
+- At the bottom of the Track screen, add a button:
+  - “Finish check-in”
+- When the user taps “Finish check-in”:
+  - mark checkInCompletedToday = true
+  - navigate back to Home
+  - show a small confirmation message:
+    “Done. You’re learning your pattern.”
+
+4. Flexibility
+- Do not lock the user out of editing anything later.
+- They should still be able to revisit Sleep and Track screens anytime and update data.
+- This is only a suggested morning flow, not a forced flow.
+
+5. Keep it simple
+- Use the app’s existing design style.
+- Use simple local state.
+- Do not add backend, notifications, or complex date systems.
+- Just make it work clearly for the current prototype.
