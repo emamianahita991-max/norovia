@@ -35,10 +35,9 @@ function sleepScore(hours: number, interruptions: number): number {
   return Math.max(25, score);
 }
 
-function scoreSummary(score: number): string {
-  if (score >= 85) return "Good — sleep looks supportive today.";
-  if (score >= 65) return "Moderate — symptoms may be slightly higher today.";
-  return "Short or broken sleep. Keep today lower demand where you can.";
+function sleepMessage(hours: number): string {
+  if (hours < 6) return "Short sleep may make symptoms harder today.";
+  return "Your sleep looks supportive today.";
 }
 
 function StepperRow({
@@ -188,9 +187,11 @@ export default function SleepScreen() {
             {score !== null ? `${score} / 100` : "—"}
           </Text>
         </View>
-        {score !== null && (
-          <View style={styles.summaryBox}>
-            <Text style={styles.summaryText}>{scoreSummary(score)}</Text>
+        {hours !== null && (
+          <View style={[styles.summaryBox, hours < 6 && styles.summaryBoxWarn]}>
+            <Text style={[styles.summaryText, hours < 6 && styles.summaryTextWarn]}>
+              {sleepMessage(hours)}
+            </Text>
           </View>
         )}
       </View>
@@ -238,6 +239,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#3a6a6b",
     lineHeight: 22,
+  },
+  summaryBoxWarn: {
+    backgroundColor: "#fff5f0",
+  },
+  summaryTextWarn: {
+    color: "#a04a20",
   },
 });
 
