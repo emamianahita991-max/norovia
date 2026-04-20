@@ -12,6 +12,14 @@ export type Entry = {
   sleepHours: number | null;
 };
 
+export type VitalReading = {
+  systolic: number | null;
+  diastolic: number | null;
+  heartRate: number | null;
+  context: "seated" | "standing" | "other";
+  timestamp: number;
+};
+
 type PendingSleep = {
   score: number;
   hours: number;
@@ -21,32 +29,41 @@ type DailyState = {
   sleepLoggedToday: boolean;
   checkInCompletedToday: boolean;
   entries: Entry[];
+  vitalsReadings: VitalReading[];
   pendingSleep: PendingSleep;
   setSleepLogged: (v: boolean) => void;
   setCheckInCompleted: (v: boolean) => void;
   setPendingSleep: (data: PendingSleep) => void;
   addEntry: (entry: Entry) => void;
+  addVitalReading: (reading: VitalReading) => void;
 };
 
 const DailyContext = createContext<DailyState>({
   sleepLoggedToday: false,
   checkInCompletedToday: false,
   entries: [],
+  vitalsReadings: [],
   pendingSleep: null,
   setSleepLogged: () => {},
   setCheckInCompleted: () => {},
   setPendingSleep: () => {},
   addEntry: () => {},
+  addVitalReading: () => {},
 });
 
 export function DailyProvider({ children }: { children: React.ReactNode }) {
   const [sleepLoggedToday, setSleepLogged] = useState(false);
   const [checkInCompletedToday, setCheckInCompleted] = useState(false);
   const [entries, setEntries] = useState<Entry[]>([]);
+  const [vitalsReadings, setVitalsReadings] = useState<VitalReading[]>([]);
   const [pendingSleep, setPendingSleep] = useState<PendingSleep>(null);
 
   function addEntry(entry: Entry) {
     setEntries((prev) => [...prev, entry]);
+  }
+
+  function addVitalReading(reading: VitalReading) {
+    setVitalsReadings((prev) => [...prev, reading]);
   }
 
   return (
@@ -55,11 +72,13 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
         sleepLoggedToday,
         checkInCompletedToday,
         entries,
+        vitalsReadings,
         pendingSleep,
         setSleepLogged,
         setCheckInCompleted,
         setPendingSleep,
         addEntry,
+        addVitalReading,
       }}
     >
       {children}

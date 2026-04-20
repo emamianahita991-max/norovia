@@ -1,0 +1,109 @@
+Refine the PDF export to be physician-focused using objective numeric data and minimal language.
+
+GOAL:
+Create a clean, clinically useful report focused on vitals, orthostatic patterns, hydration, and frequency-based summaries.
+Avoid non-validated scoring systems and avoid interpretation.
+
+-----------------------------------
+1. HEADER
+-----------------------------------
+
+Include:
+- Norovia
+- Export date
+- Date range
+
+-----------------------------------
+2. LOGGING SUMMARY
+-----------------------------------
+
+Show:
+- Days logged
+- Symptom check-ins
+- Vitals entries
+
+-----------------------------------
+3. VITALS SUMMARY
+-----------------------------------
+
+Blood pressure:
+- Mean systolic BP
+- Mean diastolic BP
+
+Heart rate:
+- Mean HR
+- Min HR
+- Max HR
+
+-----------------------------------
+4. ORTHOSTATIC SUMMARY (if data available)
+-----------------------------------
+
+If both seated and standing readings exist:
+
+Show:
+- Mean HR (seated)
+- Mean HR (standing)
+- Mean ΔHR (standing – seated)
+
+Do not interpret values.
+
+-----------------------------------
+5. HR DISTRIBUTION
+-----------------------------------
+
+Show:
+- Percentage of HR readings ≥ 100 bpm
+
+-----------------------------------
+6. HYDRATION AND SALT
+-----------------------------------
+
+Hydration:
+- Mean daily fluid intake (L)
+- Days with ≥ 2L intake
+
+Salt:
+- Days with added salt
+- Days without added salt
+- Days with salt supplements (if tracked)
+
+-----------------------------------
+7. VITALS TABLE
+-----------------------------------
+
+Columns:
+- Date
+- Time (if available)
+- Systolic BP
+- Diastolic BP
+- Heart rate
+- Context (seated / standing / other)
+
+-----------------------------------
+8. GRAPHS (optional)
+-----------------------------------
+
+If simple to implement:
+- Add a basic line graph for HR over time
+- Add a basic line graph for BP over time
+
+Keep design minimal and neutral.
+
+-----------------------------------
+9. FOOTER
+-----------------------------------
+
+Add:
+“This is self-reported tracking data from Norovia and is not a medical diagnosis.”
+
+-----------------------------------
+10. RULES
+-----------------------------------
+
+- No interpretation
+- No diagnostic language
+- No symptom scores
+- No sleep score
+- No recommendations
+- Keep everything numeric, neutral, and clean

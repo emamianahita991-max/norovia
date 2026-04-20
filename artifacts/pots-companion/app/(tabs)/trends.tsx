@@ -3,10 +3,13 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
+import { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useDaily, Entry } from "@/context/DailyContext";
+import { useDaily, Entry, VitalReading } from "@/context/DailyContext";
+import * as Print from "expo-print";
 
 type Analysis = {
   helps: string[];
@@ -100,6 +103,136 @@ function analyze(entries: Entry[]): Analysis | null {
   };
 }
 
+function n(val: number | null, decimals = 0): string {
+  if (val === null) return "—";
+  return val.toFixed(decimals);
+}
+
+function buildReportHtml(entries: Entry[], vitals: VitalReading[]): string {
+  const now = new Date();
+  const exportDate = now.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+
+  const hrs = vitals.map((v) => v.heartRate).filter((h): h is number => h !== null);
+  const sys = vitals.map((v) => v.systolic).filter((s): s is number => s !== null);
+  const dia = vitals.map((v) => v.diastolic).filter((d): d is number => d !== null);
+
+  const meanHR = avg(hrs);
+  const minHR = hrs.length ? Math.min(...hrs) : null;
+  const maxHR = hrs.length ? Math.max(...hrs) : null;
+  const meanSys = avg(sys);
+  const meanDia = avg(dia);
+
+  const seatedReadings = vitals.filter((v) => v.context === "seated" && v.heartRate !== null);
+  const standingReadings = vitals.filter((v) => v.context === "standing" && v.heartRate !== null);
+  const meanHRSeated = avg(seatedReadings.map((v) => v.heartRate!));
+  const meanHRStanding = avg(standingReadings.map((v) => v.heartRate!));
+  const deltaHR = meanHRSeated !== null && meanHRStanding !== null
+    ? meanHRStanding - meanHRSeated : null;
+
+  const pctHighHR = hrs.length ? ((hrs.filter((h) => h >= 100).length / hrs.length) * 100) : null;
+
+  const daysHydrated = entries.filter((e) => e.water).length;
+  const daysSalt = entries.filter((e) => e.compression).length;
+
+  const tableRows = vitals.map((v) => {
+    const d = new Date(v.timestamp);
+    const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const timeStr = d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+    return `
+      <tr>
+        <td>${dateStr}</td>
+        <td>${timeStr}</td>
+        <td>${v.systolic ?? "—"}</td>
+        <td>${v.diastolic ?? "—"}</td>
+        <td>${v.heartRate ?? "—"}</td>
+        <td>${v.context}</td>
+      </tr>`;
+  }).join("");
+
+  const row = (label: string, value: string) =>
+    `<tr><td class="label">${label}</td><td class="value">${value}</td></tr>`;
+
+  return `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, Helvetica, Arial, sans-serif; font-size: 13px; color: #222; padding: 36px; line-height: 1.5; }
+  h1 { font-size: 20px; font-weight: 700; color: #4a7c7e; letter-spacing: 1px; margin-bottom: 2px; }
+  .meta { font-size: 12px; color: #888; margin-bottom: 28px; }
+  h2 { font-size: 13px; font-weight: 600; color: #333; text-transform: uppercase; letter-spacing: 0.6px; border-bottom: 1px solid #e0e0e0; padding-bottom: 5px; margin: 22px 0 10px; }
+  table.data { width: 100%; border-collapse: collapse; }
+  table.data td { padding: 5px 8px; vertical-align: top; }
+  table.data td.label { color: #666; width: 50%; }
+  table.data td.value { font-weight: 600; color: #111; }
+  table.vitals { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 12px; }
+  table.vitals th { text-align: left; padding: 6px 8px; background: #f5f5f5; color: #555; font-weight: 600; border-bottom: 1px solid #ddd; }
+  table.vitals td { padding: 5px 8px; border-bottom: 1px solid #f0f0f0; color: #333; }
+  .empty { color: #aaa; font-style: italic; font-size: 12px; margin-top: 4px; }
+  .footer { margin-top: 36px; padding-top: 14px; border-top: 1px solid #e0e0e0; font-size: 11px; color: #aaa; }
+</style>
+</head>
+<body>
+
+<h1>Norovia</h1>
+<div class="meta">Export date: ${exportDate}</div>
+
+<h2>Logging Summary</h2>
+<table class="data">
+  ${row("Check-ins logged", String(entries.length))}
+  ${row("Vitals entries", String(vitals.length))}
+</table>
+
+<h2>Vitals Summary</h2>
+${vitals.length === 0 ? '<p class="empty">No vitals logged yet.</p>' : `
+<table class="data">
+  ${row("Mean systolic BP", sys.length ? `${n(meanSys, 0)} mmHg` : "—")}
+  ${row("Mean diastolic BP", dia.length ? `${n(meanDia, 0)} mmHg` : "—")}
+  ${row("Mean heart rate", hrs.length ? `${n(meanHR, 0)} bpm` : "—")}
+  ${row("Min heart rate", minHR !== null ? `${minHR} bpm` : "—")}
+  ${row("Max heart rate", maxHR !== null ? `${maxHR} bpm` : "—")}
+</table>`}
+
+${seatedReadings.length >= 1 && standingReadings.length >= 1 ? `
+<h2>Orthostatic Summary</h2>
+<table class="data">
+  ${row("Mean HR seated", `${n(meanHRSeated, 0)} bpm`)}
+  ${row("Mean HR standing", `${n(meanHRStanding, 0)} bpm`)}
+  ${row("Mean ΔHR (standing − seated)", `${deltaHR !== null && deltaHR >= 0 ? "+" : ""}${n(deltaHR, 0)} bpm`)}
+</table>` : ""}
+
+${hrs.length > 0 ? `
+<h2>HR Distribution</h2>
+<table class="data">
+  ${row("Readings ≥ 100 bpm", `${n(pctHighHR, 0)}% (${hrs.filter((h) => h >= 100).length} of ${hrs.length})`)}
+</table>` : ""}
+
+<h2>Hydration and Habits</h2>
+<table class="data">
+  ${row("Days with adequate hydration", entries.length ? `${daysHydrated} of ${entries.length}` : "—")}
+  ${row("Days with compression worn", entries.length ? `${daysSalt} of ${entries.length}` : "—")}
+</table>
+
+${vitals.length > 0 ? `
+<h2>Vitals Log</h2>
+<table class="vitals">
+  <thead>
+    <tr>
+      <th>Date</th><th>Time</th><th>Systolic</th><th>Diastolic</th><th>HR</th><th>Context</th>
+    </tr>
+  </thead>
+  <tbody>${tableRows}</tbody>
+</table>` : ""}
+
+<div class="footer">
+  This is self-reported tracking data from Norovia and is not a medical diagnosis.
+</div>
+
+</body>
+</html>`;
+}
+
 function InsightRow({ text, dotStyle }: { text: string; dotStyle: object }) {
   return (
     <View style={styles.row}>
@@ -111,8 +244,25 @@ function InsightRow({ text, dotStyle }: { text: string; dotStyle: object }) {
 
 export default function TrendsScreen() {
   const insets = useSafeAreaInsets();
-  const { entries } = useDaily();
+  const { entries, vitalsReadings } = useDaily();
   const result = analyze(entries);
+  const [exportDone, setExportDone] = useState(false);
+  const [exporting, setExporting] = useState(false);
+
+  async function handleExport() {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      const html = buildReportHtml(entries, vitalsReadings);
+      await Print.printAsync({ html });
+      setExportDone(true);
+      setTimeout(() => setExportDone(false), 3000);
+    } catch {
+      // user cancelled or error — no-op
+    } finally {
+      setExporting(false);
+    }
+  }
 
   return (
     <ScrollView
@@ -128,7 +278,22 @@ export default function TrendsScreen() {
       <View style={styles.pageHeader}>
         <Text style={styles.appName}>Norovia</Text>
         <Text style={styles.companion}>Your patterns are starting to take shape.</Text>
-        <Text style={styles.heading}>Trends</Text>
+        <View style={styles.headingRow}>
+          <Text style={styles.heading}>Trends</Text>
+          <TouchableOpacity
+            style={[styles.exportBtn, exporting && styles.exportBtnDisabled]}
+            onPress={handleExport}
+            activeOpacity={0.7}
+            disabled={exporting}
+          >
+            <Text style={styles.exportBtnText}>
+              {exporting ? "Preparing…" : "Export summary"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+        {exportDone && (
+          <Text style={styles.exportConfirm}>Summary ready to share.</Text>
+        )}
       </View>
 
       {!result ? (
@@ -200,7 +365,34 @@ const styles = StyleSheet.create({
   pageHeader: { marginBottom: 0 },
   appName: { fontSize: 12, fontWeight: "600", color: "#4a7c7e", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 4 },
   companion: { fontSize: 13, color: "#9AA6A2", lineHeight: 20, marginBottom: 10 },
-  heading: { fontSize: 28, fontWeight: "700", color: "#111", marginBottom: 0 },
+  headingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  heading: { fontSize: 28, fontWeight: "700", color: "#111" },
+  exportBtn: {
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#d0e4e4",
+    backgroundColor: "#eef4f4",
+  },
+  exportBtnDisabled: {
+    opacity: 0.5,
+  },
+  exportBtnText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#4a7c7e",
+  },
+  exportConfirm: {
+    fontSize: 12,
+    color: "#9AA6A2",
+    fontStyle: "italic",
+    marginTop: 6,
+  },
 
   emptyCard: {
     backgroundColor: "#fff",

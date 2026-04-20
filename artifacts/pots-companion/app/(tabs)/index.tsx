@@ -28,7 +28,7 @@ type VitalContext = (typeof CONTEXTS)[number];
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { sleepLoggedToday, checkInCompletedToday } = useDaily();
+  const { sleepLoggedToday, checkInCompletedToday, addVitalReading } = useDaily();
 
   const [vitalsOpen, setVitalsOpen] = useState(false);
   const [systolic, setSystolic] = useState("");
@@ -39,10 +39,20 @@ export default function HomeScreen() {
   const [showMeasureModal, setShowMeasureModal] = useState(false);
 
   function handleSaveVitals() {
+    addVitalReading({
+      systolic: systolic ? parseInt(systolic, 10) : null,
+      diastolic: diastolic ? parseInt(diastolic, 10) : null,
+      heartRate: heartRate ? parseInt(heartRate, 10) : null,
+      context: vitalCtx,
+      timestamp: Date.now(),
+    });
     setVitalsSaved(true);
     setTimeout(() => {
       setVitalsSaved(false);
       setVitalsOpen(false);
+      setSystolic("");
+      setDiastolic("");
+      setHeartRate("");
     }, 1800);
   }
 
