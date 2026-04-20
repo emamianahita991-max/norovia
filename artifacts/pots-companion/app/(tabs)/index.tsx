@@ -23,6 +23,7 @@ export default function HomeScreen() {
         { paddingBottom: insets.bottom + 24, paddingTop: Platform.OS === "web" ? 67 : 16 },
       ]}
     >
+      <Text style={styles.tagline}>You don't have to figure this out all at once.</Text>
       <Text style={styles.heading}>Today</Text>
 
       <TouchableOpacity
@@ -68,6 +69,12 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
     gap: 16,
+  },
+  tagline: {
+    fontSize: 14,
+    color: "#888",
+    fontStyle: "italic",
+    marginBottom: -4,
   },
   heading: {
     fontSize: 28,
