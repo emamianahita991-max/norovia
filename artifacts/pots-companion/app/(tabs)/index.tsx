@@ -63,6 +63,7 @@ export default function HomeScreen() {
         { paddingBottom: insets.bottom + 24, paddingTop: Platform.OS === "web" ? 67 : 16 },
       ]}
     >
+      <Text style={styles.appName}>Norovia</Text>
       <Text style={styles.tagline}>You don't have to figure this out all at once.</Text>
       <Text style={styles.heading}>Today</Text>
 
@@ -103,6 +104,14 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
     gap: 16,
+  },
+  appName: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#4a7c7e",
+    letterSpacing: 1.5,
+    textTransform: "uppercase",
+    marginBottom: -8,
   },
   tagline: {
     fontSize: 14,
