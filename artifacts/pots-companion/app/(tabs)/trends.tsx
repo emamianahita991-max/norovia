@@ -132,11 +132,32 @@ export default function TrendsScreen() {
       </View>
 
       {!result ? (
-        <View style={styles.emptyCard}>
-          <Text style={styles.emptyText}>
-            You're still building your pattern. Keep logging.
+        <>
+          <View style={styles.emptyCard}>
+            <Text style={styles.emptyTitle}>You're building your pattern</Text>
+            <Text style={styles.emptyBody}>
+              A few days of check-ins will help you start to see your patterns.
+            </Text>
+          </View>
+
+          <View style={styles.focusCard}>
+            <Text style={styles.focusLabel}>What to focus on for now:</Text>
+            {[
+              "Logging how you feel each day",
+              "Noticing sleep and hydration",
+              "Keeping things simple",
+            ].map((item, i) => (
+              <View key={i} style={styles.focusRow}>
+                <Text style={styles.focusDot}>·</Text>
+                <Text style={styles.focusItem}>{item}</Text>
+              </View>
+            ))}
+          </View>
+
+          <Text style={styles.emptyFooter}>
+            You don't need perfect data — just a few consistent days.
           </Text>
-        </View>
+        </>
       ) : (
         <>
           <View style={styles.card}>
@@ -182,15 +203,66 @@ const styles = StyleSheet.create({
   heading: { fontSize: 28, fontWeight: "700", color: "#111", marginBottom: 0 },
 
   emptyCard: {
-    backgroundColor: "#eef4f4",
+    backgroundColor: "#fff",
     borderRadius: 14,
     padding: 20,
+    gap: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.04,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    elevation: 1,
   },
-  emptyText: {
+  emptyTitle: {
+    fontSize: 17,
+    fontWeight: "600",
+    color: "#111",
+  },
+  emptyBody: {
     fontSize: 14,
-    color: "#4a7c7e",
+    color: "#666",
     lineHeight: 22,
+  },
+  focusCard: {
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    padding: 20,
+    gap: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.04,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    elevation: 1,
+  },
+  focusLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#444",
+    marginBottom: 2,
+  },
+  focusRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 8,
+  },
+  focusDot: {
+    fontSize: 18,
+    color: "#9AA6A2",
+    lineHeight: 22,
+  },
+  focusItem: {
+    fontSize: 14,
+    color: "#555",
+    lineHeight: 22,
+    flex: 1,
+  },
+  emptyFooter: {
+    fontSize: 13,
+    color: "#aaa",
+    lineHeight: 20,
     fontStyle: "italic",
+    textAlign: "center",
+    paddingHorizontal: 8,
   },
   emptySection: {
     fontSize: 13,
