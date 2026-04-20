@@ -1,6 +1,14 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  Platform,
+} from "react-native";
+import { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { useDaily } from "@/context/DailyContext";
 
@@ -12,10 +20,28 @@ const PLAN = [
 
 const INSIGHT = "You seem to do better on days when fluids are stronger.";
 
+const CONTEXTS = ["seated", "standing", "other"] as const;
+type VitalContext = (typeof CONTEXTS)[number];
+
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { sleepLoggedToday, checkInCompletedToday } = useDaily();
+
+  const [vitalsOpen, setVitalsOpen] = useState(false);
+  const [systolic, setSystolic] = useState("");
+  const [diastolic, setDiastolic] = useState("");
+  const [heartRate, setHeartRate] = useState("");
+  const [vitalCtx, setVitalCtx] = useState<VitalContext>("seated");
+  const [vitalsSaved, setVitalsSaved] = useState(false);
+
+  function handleSaveVitals() {
+    setVitalsSaved(true);
+    setTimeout(() => {
+      setVitalsSaved(false);
+      setVitalsOpen(false);
+    }, 1800);
+  }
 
   function renderCTA() {
     if (!sleepLoggedToday) {
@@ -62,6 +88,7 @@ export default function HomeScreen() {
         styles.container,
         { paddingBottom: insets.bottom + 24, paddingTop: Platform.OS === "web" ? 67 : 16 },
       ]}
+      keyboardShouldPersistTaps="handled"
     >
       <View style={styles.pageHeader}>
         <Text style={styles.appName}>Norovia</Text>
@@ -79,6 +106,89 @@ export default function HomeScreen() {
       <View style={styles.card}>
         <Text style={styles.cardLabel}>Sleep last night</Text>
         <Text style={styles.cardValue}>— h</Text>
+      </View>
+
+      {/* Vitals card */}
+      <View style={styles.vitalsCard}>
+        <TouchableOpacity
+          style={styles.vitalsHeader}
+          onPress={() => setVitalsOpen((v) => !v)}
+          activeOpacity={0.7}
+        >
+          <View>
+            <Text style={styles.vitalsTitle}>Vitals</Text>
+            <Text style={styles.vitalsHint}>Log a reading anytime.</Text>
+          </View>
+          <Text style={styles.vitalsToggle}>{vitalsOpen ? "−" : "+"}</Text>
+        </TouchableOpacity>
+
+        {vitalsOpen && (
+          <View style={styles.vitalsBody}>
+            <View style={styles.inputRow}>
+              <View style={styles.inputWrap}>
+                <Text style={styles.inputLabel}>Systolic</Text>
+                <TextInput
+                  style={styles.input}
+                  value={systolic}
+                  onChangeText={setSystolic}
+                  placeholder="120"
+                  placeholderTextColor="#ccc"
+                  keyboardType="number-pad"
+                  maxLength={3}
+                />
+              </View>
+              <View style={styles.inputWrap}>
+                <Text style={styles.inputLabel}>Diastolic</Text>
+                <TextInput
+                  style={styles.input}
+                  value={diastolic}
+                  onChangeText={setDiastolic}
+                  placeholder="80"
+                  placeholderTextColor="#ccc"
+                  keyboardType="number-pad"
+                  maxLength={3}
+                />
+              </View>
+              <View style={styles.inputWrap}>
+                <Text style={styles.inputLabel}>Heart rate</Text>
+                <TextInput
+                  style={styles.input}
+                  value={heartRate}
+                  onChangeText={setHeartRate}
+                  placeholder="72"
+                  placeholderTextColor="#ccc"
+                  keyboardType="number-pad"
+                  maxLength={3}
+                />
+              </View>
+            </View>
+
+            <View style={styles.ctxRow}>
+              {CONTEXTS.map((c) => (
+                <TouchableOpacity
+                  key={c}
+                  style={[styles.ctxPill, vitalCtx === c && styles.ctxPillActive]}
+                  onPress={() => setVitalCtx(c)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={[styles.ctxText, vitalCtx === c && styles.ctxTextActive]}>
+                    {c}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {vitalsSaved ? (
+              <View style={styles.savedMsg}>
+                <Text style={styles.savedMsgText}>Saved.</Text>
+              </View>
+            ) : (
+              <TouchableOpacity style={styles.saveVitalsBtn} onPress={handleSaveVitals} activeOpacity={0.8}>
+                <Text style={styles.saveVitalsBtnText}>Save vitals</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
       </View>
 
       <View style={styles.section}>
@@ -186,6 +296,116 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#111",
   },
+
+  vitalsCard: {
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    shadowColor: "#000",
+    shadowOpacity: 0.04,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    elevation: 1,
+    overflow: "hidden",
+  },
+  vitalsHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+  },
+  vitalsTitle: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#111",
+  },
+  vitalsHint: {
+    fontSize: 13,
+    color: "#999",
+    marginTop: 2,
+  },
+  vitalsToggle: {
+    fontSize: 22,
+    color: "#9AA6A2",
+    fontWeight: "300",
+    lineHeight: 26,
+  },
+  vitalsBody: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    gap: 14,
+    borderTopWidth: 1,
+    borderTopColor: "#f0f0f0",
+  },
+  inputRow: {
+    flexDirection: "row",
+    gap: 10,
+    paddingTop: 14,
+  },
+  inputWrap: {
+    flex: 1,
+    gap: 6,
+  },
+  inputLabel: {
+    fontSize: 12,
+    color: "#888",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#e4e4e4",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    fontSize: 17,
+    fontWeight: "600",
+    color: "#111",
+    textAlign: "center",
+  },
+  ctxRow: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  ctxPill: {
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    backgroundColor: "#f7f6f3",
+  },
+  ctxPillActive: {
+    backgroundColor: "#eef4f4",
+    borderColor: "#4a7c7e",
+  },
+  ctxText: {
+    fontSize: 13,
+    color: "#888",
+  },
+  ctxTextActive: {
+    color: "#4a7c7e",
+    fontWeight: "600",
+  },
+  saveVitalsBtn: {
+    backgroundColor: "#2c2c2c",
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: "center",
+  },
+  saveVitalsBtnText: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#fff",
+  },
+  savedMsg: {
+    alignItems: "center",
+    paddingVertical: 10,
+  },
+  savedMsgText: {
+    fontSize: 14,
+    color: "#4a7c7e",
+    fontStyle: "italic",
+  },
+
   section: {
     backgroundColor: "#fff",
     borderRadius: 14,
