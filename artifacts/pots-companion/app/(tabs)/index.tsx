@@ -1,6 +1,7 @@
-import { StyleSheet, Text, View, ScrollView } from "react-native";
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Platform } from "react-native";
+import { useRouter } from "expo-router";
 
 const PLAN = [
   "Aim for steady fluids throughout the day.",
@@ -12,6 +13,7 @@ const INSIGHT = "You seem to do better on days when fluids are stronger.";
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   return (
     <ScrollView
@@ -22,6 +24,14 @@ export default function HomeScreen() {
       ]}
     >
       <Text style={styles.heading}>Today</Text>
+
+      <TouchableOpacity
+        style={styles.checkInBtn}
+        onPress={() => router.push("/track")}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.checkInBtnText}>Complete today's check-in</Text>
+      </TouchableOpacity>
 
       <View style={styles.card}>
         <Text style={styles.cardLabel}>Average symptom score</Text>
@@ -120,6 +130,17 @@ const styles = StyleSheet.create({
     color: "#444",
     lineHeight: 22,
     flex: 1,
+  },
+  checkInBtn: {
+    backgroundColor: "#2c2c2c",
+    borderRadius: 14,
+    paddingVertical: 16,
+    alignItems: "center",
+  },
+  checkInBtnText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#fff",
   },
   insight: {
     backgroundColor: "#eef4f4",
