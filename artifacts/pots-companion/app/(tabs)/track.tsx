@@ -29,7 +29,7 @@ type Habits = {
   movement: boolean;
 };
 
-const WATER_RANGES = ["<0.5 L", "0.5–1 L", "1–2 L", "2 L+"] as const;
+const WATER_RANGES = ["<1 L", "1–2 L", "2–3 L", "3 L+"] as const;
 type WaterRange = (typeof WATER_RANGES)[number];
 
 const SYMPTOMS: { key: keyof CheckIn; label: string }[] = [
