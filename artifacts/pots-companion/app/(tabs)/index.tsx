@@ -27,6 +27,7 @@ export default function HomeScreen() {
   const avgSymptom: number | null = latestEntry ? latestEntry.avgSymptom : null;
   const sleepHours: number | null = latestEntry ? latestEntry.sleepHours : null;
   const sleepScore: number | null = latestEntry ? latestEntry.sleepScore : null;
+  const waterLiters: number | null = latestEntry ? latestEntry.waterLiters : null;
 
   type TodayState = "take-it-easy" | "mindful" | "steady";
   const todayState: TodayState | null = (() => {
@@ -45,32 +46,41 @@ export default function HomeScreen() {
     return "steady";
   })();
 
-  const PLANS: Record<TodayState, string[]> = {
+  const BASE_BULLETS: Record<TodayState, string[]> = {
     "take-it-easy": [
-      "Prioritize fluids and salt earlier in the day.",
       "Reduce standing time where you can.",
       "Keep demands lighter and pace yourself.",
     ],
     mindful: [
-      "Stay on top of hydration.",
       "Avoid long standing blocks if symptoms build.",
       "Keep movement gentle and paced.",
     ],
     steady: [
       "Keep your routine steady today.",
-      "Hydrate consistently through the day.",
       "Use gentle movement if it feels supportive.",
     ],
   };
 
-  const plan: string[] =
-    todayState !== null
-      ? PLANS[todayState]
-      : [
-          "Aim for steady fluids throughout the day.",
-          "Use compression if upright symptoms are active.",
-          "Keep movement gentle and paced today.",
-        ];
+  const hydrationBullet: string | null = (() => {
+    if (waterLiters === null || waterLiters < 1)
+      return "Prioritize fluids early in the day.";
+    if (waterLiters < 2)
+      return "Keep fluids steady through the rest of the day.";
+    return null;
+  })();
+
+  const plan: string[] = (() => {
+    const base =
+      todayState !== null
+        ? BASE_BULLETS[todayState]
+        : [
+            "Use compression if upright symptoms are active.",
+            "Keep movement gentle and paced today.",
+          ];
+    return hydrationBullet
+      ? [hydrationBullet, ...base].slice(0, 3)
+      : base.slice(0, 3);
+  })();
 
   const insight: string = (() => {
     if (sleepScore !== null && sleepScore < 60)
