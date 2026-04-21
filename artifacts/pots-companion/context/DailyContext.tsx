@@ -5,7 +5,7 @@ export type Entry = {
   avgSymptom: number;
   dizziness: number;
   fatigue: number;
-  water: boolean;
+  waterRange: string | null;
   compression: boolean;
   movement: boolean;
   sleepScore: number | null;

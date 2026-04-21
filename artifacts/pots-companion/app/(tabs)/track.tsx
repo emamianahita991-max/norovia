@@ -24,11 +24,13 @@ type CheckIn = {
 };
 
 type Habits = {
-  water: boolean;
   salt: boolean;
   compression: boolean;
   movement: boolean;
 };
+
+const WATER_RANGES = ["0–500 mL", "500 mL–1 L", "1–2 L", "2 L+"] as const;
+type WaterRange = (typeof WATER_RANGES)[number];
 
 const SYMPTOMS: { key: keyof CheckIn; label: string }[] = [
   { key: "dizziness", label: "Dizziness / lightheadedness" },
@@ -109,11 +111,12 @@ export default function TrackScreen() {
   });
 
   const [habits, setHabits] = useState<Habits>({
-    water: false,
     salt: false,
     compression: false,
     movement: false,
   });
+
+  const [waterRange, setWaterRange] = useState<WaterRange | null>(null);
 
   function setSymptom(key: keyof CheckIn) {
     return (v: number) => setCheckIn((prev) => ({ ...prev, [key]: v }));
@@ -135,7 +138,7 @@ export default function TrackScreen() {
       avgSymptom: parseFloat(avgSymptom.toFixed(1)),
       dizziness: checkIn.dizziness,
       fatigue: checkIn.fatigue,
-      water: habits.water,
+      waterRange,
       compression: habits.compression,
       movement: habits.movement,
       sleepScore: pendingSleep?.score ?? null,
@@ -188,11 +191,33 @@ export default function TrackScreen() {
 
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Habits today</Text>
-        <ToggleRow
-          label="Drank enough water"
-          value={habits.water}
-          onChange={setHabit("water")}
-        />
+
+        <View style={waterStyles.wrap}>
+          <Text style={waterStyles.label}>Water today</Text>
+          <View style={waterStyles.pills}>
+            {WATER_RANGES.map((option) => (
+              <TouchableOpacity
+                key={option}
+                style={[
+                  waterStyles.pill,
+                  waterRange === option && waterStyles.pillActive,
+                ]}
+                onPress={() => setWaterRange(option)}
+                activeOpacity={0.7}
+              >
+                <Text
+                  style={[
+                    waterStyles.pillText,
+                    waterRange === option && waterStyles.pillTextActive,
+                  ]}
+                >
+                  {option}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
         <ToggleRow
           label="Salt support used"
           value={habits.salt}
@@ -312,4 +337,34 @@ const toggle = StyleSheet.create({
     paddingVertical: 4,
   },
   label: { fontSize: 14, color: "#444", flex: 1 },
+});
+
+const waterStyles = StyleSheet.create({
+  wrap: { gap: 8 },
+  label: { fontSize: 14, color: "#444" },
+  pills: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  pill: {
+    paddingVertical: 7,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    backgroundColor: "#f7f6f3",
+  },
+  pillActive: {
+    borderColor: "#4a7c7e",
+    backgroundColor: "#eef4f4",
+  },
+  pillText: {
+    fontSize: 13,
+    color: "#666",
+  },
+  pillTextActive: {
+    color: "#4a7c7e",
+    fontWeight: "600",
+  },
 });

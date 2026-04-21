@@ -36,8 +36,9 @@ function analyze(entries: Entry[]): Analysis | null {
   const tryNext: string[] = [];
 
   if (goodDays.length >= 1 && badDays.length >= 1) {
-    const waterGood = pct(goodDays, (e) => e.water);
-    const waterBad = pct(badDays, (e) => e.water);
+    const wellHydrated = (e: Entry) => e.waterRange === "1–2 L" || e.waterRange === "2 L+";
+    const waterGood = pct(goodDays, wellHydrated);
+    const waterBad = pct(badDays, wellHydrated);
     if (waterGood >= 0.6 && waterBad < 0.4) {
       helps.push("You seem to feel better on days with stronger hydration.");
     }
@@ -85,7 +86,9 @@ function analyze(entries: Entry[]): Analysis | null {
 
   const recent = entries.slice(-3);
   const lowSleepRecent = recent.filter((e) => e.sleepScore !== null && e.sleepScore < 60).length >= 1;
-  const lowWaterRecent = recent.filter((e) => !e.water).length >= 2;
+  const lowWaterRecent = recent.filter(
+    (e) => e.waterRange === null || e.waterRange === "0–500 mL" || e.waterRange === "500 mL–1 L",
+  ).length >= 2;
   const lowComprRecent = recent.filter((e) => !e.compression).length >= 2;
 
   if (lowSleepRecent) {
@@ -131,7 +134,9 @@ function buildReportHtml(entries: Entry[], vitals: VitalReading[]): string {
 
   const pctHighHR = hrs.length ? ((hrs.filter((h) => h >= 100).length / hrs.length) * 100) : null;
 
-  const daysHydrated = entries.filter((e) => e.water).length;
+  const daysHydrated = entries.filter(
+    (e) => e.waterRange === "1–2 L" || e.waterRange === "2 L+",
+  ).length;
   const daysSalt = entries.filter((e) => e.compression).length;
 
   const tableRows = vitals.map((v) => {
