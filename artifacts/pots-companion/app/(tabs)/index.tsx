@@ -28,7 +28,11 @@ type VitalContext = (typeof CONTEXTS)[number];
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { sleepLoggedToday, checkInCompletedToday, addVitalReading } = useDaily();
+  const { sleepLoggedToday, checkInCompletedToday, addVitalReading, entries } = useDaily();
+
+  const latestEntry = entries.length > 0 ? entries[entries.length - 1] : null;
+  const avgSymptom: number | null = latestEntry ? latestEntry.avgSymptom : null;
+  const sleepHours: number | null = latestEntry ? latestEntry.sleepHours : null;
 
   const [vitalsOpen, setVitalsOpen] = useState(false);
   const [systolic, setSystolic] = useState("");
