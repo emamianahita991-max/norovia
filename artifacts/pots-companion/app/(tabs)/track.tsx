@@ -29,8 +29,8 @@ type Habits = {
   movement: boolean;
 };
 
-const WATER_RANGES = ["<1 L", "1–2 L", "2–3 L", "3 L+"] as const;
-type WaterRange = (typeof WATER_RANGES)[number];
+const WATER_GOAL = 3.0;
+const WATER_INCREMENTS = [0.25, 0.5, 1.0];
 
 const SYMPTOMS: { key: keyof CheckIn; label: string }[] = [
   { key: "dizziness", label: "Dizziness / lightheadedness" },
@@ -116,7 +116,7 @@ export default function TrackScreen() {
     movement: false,
   });
 
-  const [waterRange, setWaterRange] = useState<WaterRange | null>(null);
+  const [waterLiters, setWaterLiters] = useState(0);
 
   function setSymptom(key: keyof CheckIn) {
     return (v: number) => setCheckIn((prev) => ({ ...prev, [key]: v }));
@@ -138,7 +138,7 @@ export default function TrackScreen() {
       avgSymptom: parseFloat(avgSymptom.toFixed(1)),
       dizziness: checkIn.dizziness,
       fatigue: checkIn.fatigue,
-      waterRange,
+      waterLiters,
       compression: habits.compression,
       movement: habits.movement,
       sleepScore: pendingSleep?.score ?? null,
@@ -193,25 +193,33 @@ export default function TrackScreen() {
         <Text style={styles.sectionTitle}>Habits today</Text>
 
         <View style={waterStyles.wrap}>
-          <Text style={waterStyles.label}>Water today</Text>
-          <View style={waterStyles.pills}>
-            {WATER_RANGES.map((option) => (
+          <View style={waterStyles.headerRow}>
+            <Text style={waterStyles.label}>Water today</Text>
+            <Text style={waterStyles.total}>
+              {waterLiters.toFixed(2).replace(/\.?0+$/, "")} L
+              <Text style={waterStyles.goal}> / {WATER_GOAL} L</Text>
+            </Text>
+          </View>
+
+          <View style={waterStyles.barTrack}>
+            <View
+              style={[
+                waterStyles.barFill,
+                { width: `${Math.min(waterLiters / WATER_GOAL, 1) * 100}%` },
+              ]}
+            />
+          </View>
+
+          <View style={waterStyles.buttons}>
+            {WATER_INCREMENTS.map((inc) => (
               <TouchableOpacity
-                key={option}
-                style={[
-                  waterStyles.pill,
-                  waterRange === option && waterStyles.pillActive,
-                ]}
-                onPress={() => setWaterRange(option)}
+                key={inc}
+                style={waterStyles.addBtn}
+                onPress={() => setWaterLiters((prev) => parseFloat((prev + inc).toFixed(2)))}
                 activeOpacity={0.7}
               >
-                <Text
-                  style={[
-                    waterStyles.pillText,
-                    waterRange === option && waterStyles.pillTextActive,
-                  ]}
-                >
-                  {option}
+                <Text style={waterStyles.addBtnText}>
+                  +{inc < 1 ? `${inc * 1000} mL` : `${inc} L`}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -340,32 +348,42 @@ const toggle = StyleSheet.create({
 });
 
 const waterStyles = StyleSheet.create({
-  wrap: { gap: 8 },
+  wrap: { gap: 10 },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "baseline",
+  },
   label: { fontSize: 14, color: "#444" },
-  pills: {
+  total: { fontSize: 15, fontWeight: "600", color: "#2c2c2c" },
+  goal: { fontSize: 13, fontWeight: "400", color: "#9AA6A2" },
+  barTrack: {
+    height: 6,
+    borderRadius: 4,
+    backgroundColor: "#e8edec",
+    overflow: "hidden",
+  },
+  barFill: {
+    height: 6,
+    borderRadius: 4,
+    backgroundColor: "#4a7c7e",
+  },
+  buttons: {
     flexDirection: "row",
     gap: 8,
   },
-  pill: {
+  addBtn: {
     flex: 1,
-    paddingVertical: 7,
-    paddingHorizontal: 6,
+    paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#ddd",
-    backgroundColor: "#f7f6f3",
+    borderColor: "#c8dada",
+    backgroundColor: "#eef4f4",
     alignItems: "center",
   },
-  pillActive: {
-    borderColor: "#4a7c7e",
-    backgroundColor: "#eef4f4",
-  },
-  pillText: {
+  addBtnText: {
     fontSize: 13,
-    color: "#666",
-  },
-  pillTextActive: {
-    color: "#4a7c7e",
     fontWeight: "600",
+    color: "#4a7c7e",
   },
 });
