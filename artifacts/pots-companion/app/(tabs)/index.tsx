@@ -123,15 +123,19 @@ export default function HomeScreen() {
 
       {renderCTA()}
 
-      <View style={styles.card}>
-        <Text style={styles.cardLabel}>Average symptom score</Text>
-        <Text style={styles.cardValue}>—</Text>
-      </View>
+      {avgSymptom !== null && (
+        <View style={styles.card}>
+          <Text style={styles.cardLabel}>Average symptom score</Text>
+          <Text style={styles.cardValue}>{avgSymptom.toFixed(1)}</Text>
+        </View>
+      )}
 
-      <View style={styles.card}>
-        <Text style={styles.cardLabel}>Sleep last night</Text>
-        <Text style={styles.cardValue}>— h</Text>
-      </View>
+      {sleepHours !== null && (
+        <View style={styles.card}>
+          <Text style={styles.cardLabel}>Sleep last night</Text>
+          <Text style={styles.cardValue}>{sleepHours} h</Text>
+        </View>
+      )}
 
       {/* Vitals card */}
       <View style={styles.vitalsCard}>
