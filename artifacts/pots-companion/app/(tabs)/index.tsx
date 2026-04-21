@@ -49,10 +49,10 @@ export default function HomeScreen() {
   const BASE_BULLETS: Record<TodayState, string[]> = {
     "take-it-easy": [
       "Reduce standing time where you can.",
-      "Keep demands lighter and pace yourself.",
+      "If standing feels harder, compression may help.",
     ],
     mindful: [
-      "Avoid long standing blocks if symptoms build.",
+      "If standing feels harder, compression may help.",
       "Keep movement gentle and paced.",
     ],
     steady: [
@@ -74,8 +74,8 @@ export default function HomeScreen() {
       todayState !== null
         ? BASE_BULLETS[todayState]
         : [
-            "Use compression if upright symptoms are active.",
             "Keep movement gentle and paced today.",
+            "Listen to what your body needs today.",
           ];
     return hydrationBullet
       ? [hydrationBullet, ...base].slice(0, 3)
