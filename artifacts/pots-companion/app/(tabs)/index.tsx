@@ -34,6 +34,16 @@ export default function HomeScreen() {
   const avgSymptom: number | null = latestEntry ? latestEntry.avgSymptom : null;
   const sleepHours: number | null = latestEntry ? latestEntry.sleepHours : null;
 
+  type TodayState = "take-it-easy" | "mindful" | "steady";
+  const todayState: TodayState | null =
+    avgSymptom === null && sleepHours === null
+      ? null
+      : (avgSymptom ?? 0) >= 6 || (sleepHours ?? 99) < 6
+      ? "take-it-easy"
+      : (avgSymptom ?? 0) >= 4 || (sleepHours ?? 99) < 7
+      ? "mindful"
+      : "steady";
+
   const [vitalsOpen, setVitalsOpen] = useState(false);
   const [systolic, setSystolic] = useState("");
   const [diastolic, setDiastolic] = useState("");
