@@ -166,6 +166,15 @@ export default function HomeScreen() {
         <Text style={styles.appName}>Norovia</Text>
         <Text style={styles.companion}>You don't have to figure this out all at once.</Text>
         <Text style={styles.heading}>Today</Text>
+        {todayState !== null && (
+          <Text style={styles.todayStateLabel}>
+            {todayState === "take-it-easy"
+              ? "Take it easy today"
+              : todayState === "mindful"
+              ? "Be mindful today"
+              : "Steady day"}
+          </Text>
+        )}
       </View>
 
       {renderCTA()}
@@ -347,6 +356,12 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#111",
     marginBottom: 0,
+  },
+  todayStateLabel: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: "#9AA6A2",
+    marginTop: 3,
   },
   ctaWrap: {
     gap: 8,
