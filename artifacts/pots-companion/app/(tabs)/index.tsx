@@ -14,13 +14,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useDaily } from "@/context/DailyContext";
 
-const PLAN = [
-  "Aim for steady fluids throughout the day.",
-  "Use compression if upright symptoms are active.",
-  "Keep movement gentle and paced today.",
-];
-
-const INSIGHT = "You seem to do better on days when fluids are stronger.";
 
 const CONTEXTS = ["seated", "standing", "other"] as const;
 type VitalContext = (typeof CONTEXTS)[number];
@@ -33,16 +26,60 @@ export default function HomeScreen() {
   const latestEntry = entries.length > 0 ? entries[entries.length - 1] : null;
   const avgSymptom: number | null = latestEntry ? latestEntry.avgSymptom : null;
   const sleepHours: number | null = latestEntry ? latestEntry.sleepHours : null;
+  const sleepScore: number | null = latestEntry ? latestEntry.sleepScore : null;
 
   type TodayState = "take-it-easy" | "mindful" | "steady";
-  const todayState: TodayState | null =
-    avgSymptom === null && sleepHours === null
-      ? null
-      : (avgSymptom ?? 0) >= 6 || (sleepHours ?? 99) < 6
-      ? "take-it-easy"
-      : (avgSymptom ?? 0) >= 4 || (sleepHours ?? 99) < 7
-      ? "mindful"
-      : "steady";
+  const todayState: TodayState | null = (() => {
+    if (avgSymptom === null && sleepScore === null && sleepHours === null) return null;
+    const sym = avgSymptom ?? 0;
+    const badSleep =
+      sleepScore !== null ? sleepScore < 60 : sleepHours !== null ? sleepHours < 6 : false;
+    const moderateSleep =
+      sleepScore !== null
+        ? sleepScore >= 60 && sleepScore < 80
+        : sleepHours !== null
+        ? sleepHours < 7
+        : false;
+    if (sym >= 6 || badSleep) return "take-it-easy";
+    if (sym >= 4 || moderateSleep) return "mindful";
+    return "steady";
+  })();
+
+  const PLANS: Record<TodayState, string[]> = {
+    "take-it-easy": [
+      "Prioritize fluids and salt earlier in the day.",
+      "Reduce standing time where you can.",
+      "Keep demands lighter and pace yourself.",
+    ],
+    mindful: [
+      "Stay on top of hydration.",
+      "Avoid long standing blocks if symptoms build.",
+      "Keep movement gentle and paced.",
+    ],
+    steady: [
+      "Keep your routine steady today.",
+      "Hydrate consistently through the day.",
+      "Use gentle movement if it feels supportive.",
+    ],
+  };
+
+  const plan: string[] =
+    todayState !== null
+      ? PLANS[todayState]
+      : [
+          "Aim for steady fluids throughout the day.",
+          "Use compression if upright symptoms are active.",
+          "Keep movement gentle and paced today.",
+        ];
+
+  const insight: string = (() => {
+    if (sleepScore !== null && sleepScore < 60)
+      return "Short or disrupted sleep may make symptoms harder today.";
+    if (todayState === "take-it-easy") return "Your body may need a bit more support today.";
+    if (todayState === "mindful") return "A steadier pace may help today feel more manageable.";
+    if (todayState === "steady") return "Today looks steadier so far — keep it simple.";
+    return "You seem to do better on days when fluids are stronger.";
+  })();
 
   const [vitalsOpen, setVitalsOpen] = useState(false);
   const [systolic, setSystolic] = useState("");
@@ -236,7 +273,7 @@ export default function HomeScreen() {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Daily plan</Text>
-        {PLAN.map((item, i) => (
+        {plan.map((item, i) => (
           <View key={i} style={styles.bullet}>
             <Text style={styles.bulletDot}>·</Text>
             <Text style={styles.bulletText}>{item}</Text>
@@ -245,7 +282,7 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.insight}>
-        <Text style={styles.insightText}>{INSIGHT}</Text>
+        <Text style={styles.insightText}>{insight}</Text>
       </View>
 
       <Modal
