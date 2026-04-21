@@ -116,7 +116,16 @@ export default function TrackScreen() {
     movement: false,
   });
 
-  const [waterLiters, setWaterLiters] = useState(0);
+  const [waterHistory, setWaterHistory] = useState<number[]>([]);
+  const waterLiters = parseFloat(waterHistory.reduce((a, b) => a + b, 0).toFixed(2));
+
+  function addWater(inc: number) {
+    setWaterHistory((prev) => [...prev, inc]);
+  }
+
+  function undoWater() {
+    setWaterHistory((prev) => (prev.length > 0 ? prev.slice(0, -1) : prev));
+  }
 
   function setSymptom(key: keyof CheckIn) {
     return (v: number) => setCheckIn((prev) => ({ ...prev, [key]: v }));
@@ -215,7 +224,7 @@ export default function TrackScreen() {
               <TouchableOpacity
                 key={inc}
                 style={waterStyles.addBtn}
-                onPress={() => setWaterLiters((prev) => parseFloat((prev + inc).toFixed(2)))}
+                onPress={() => addWater(inc)}
                 activeOpacity={0.7}
               >
                 <Text style={waterStyles.addBtnText}>
@@ -224,6 +233,12 @@ export default function TrackScreen() {
               </TouchableOpacity>
             ))}
           </View>
+
+          {waterHistory.length > 0 && (
+            <TouchableOpacity onPress={undoWater} activeOpacity={0.6}>
+              <Text style={waterStyles.undo}>Undo last add</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         <ToggleRow
@@ -385,5 +400,11 @@ const waterStyles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "600",
     color: "#4a7c7e",
+  },
+  undo: {
+    fontSize: 12,
+    color: "#9AA6A2",
+    textDecorationLine: "underline",
+    textAlign: "right",
   },
 });
