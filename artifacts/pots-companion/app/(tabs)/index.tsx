@@ -82,6 +82,14 @@ export default function HomeScreen() {
       : base.slice(0, 3);
   })();
 
+  const microNudge: string = (() => {
+    if (waterLiters === null || waterLiters < 1)
+      return "A small glass of water now could help.";
+    if (waterLiters < 2)
+      return "You're building well—keep fluids steady.";
+    return "You're on track—keep the pace gentle.";
+  })();
+
   const insight: string = (() => {
     if (sleepScore !== null && sleepScore < 60)
       return "Short or disrupted sleep may make symptoms harder today.";
@@ -298,6 +306,7 @@ export default function HomeScreen() {
             <Text style={styles.bulletText}>{item}</Text>
           </View>
         ))}
+        <Text style={styles.microNudge}>{microNudge}</Text>
       </View>
 
       <View style={styles.insight}>
@@ -646,5 +655,12 @@ const styles = StyleSheet.create({
     color: "#3a6a6b",
     lineHeight: 22,
     fontStyle: "italic",
+  },
+  microNudge: {
+    fontSize: 13,
+    color: "#9AA6A2",
+    lineHeight: 20,
+    fontStyle: "italic",
+    marginTop: 6,
   },
 });
