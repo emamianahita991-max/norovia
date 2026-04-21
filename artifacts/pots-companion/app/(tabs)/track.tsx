@@ -344,16 +344,17 @@ const waterStyles = StyleSheet.create({
   label: { fontSize: 14, color: "#444" },
   pills: {
     flexDirection: "row",
-    flexWrap: "wrap",
     gap: 8,
   },
   pill: {
+    flex: 1,
     paddingVertical: 7,
-    paddingHorizontal: 14,
+    paddingHorizontal: 6,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "#ddd",
     backgroundColor: "#f7f6f3",
+    alignItems: "center",
   },
   pillActive: {
     borderColor: "#4a7c7e",
