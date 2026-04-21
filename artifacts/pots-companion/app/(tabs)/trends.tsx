@@ -37,6 +37,7 @@ function analyze(entries: Entry[]): Analysis | null {
 
   if (goodDays.length >= 1 && badDays.length >= 1) {
     const wellHydrated = (e: Entry) => e.waterRange === "1–2 L" || e.waterRange === "2 L+";
+
     const waterGood = pct(goodDays, wellHydrated);
     const waterBad = pct(badDays, wellHydrated);
     if (waterGood >= 0.6 && waterBad < 0.4) {
@@ -87,7 +88,7 @@ function analyze(entries: Entry[]): Analysis | null {
   const recent = entries.slice(-3);
   const lowSleepRecent = recent.filter((e) => e.sleepScore !== null && e.sleepScore < 60).length >= 1;
   const lowWaterRecent = recent.filter(
-    (e) => e.waterRange === null || e.waterRange === "0–500 mL" || e.waterRange === "500 mL–1 L",
+    (e) => e.waterRange === null || e.waterRange === "<0.5 L" || e.waterRange === "0.5–1 L",
   ).length >= 2;
   const lowComprRecent = recent.filter((e) => !e.compression).length >= 2;
 
