@@ -49,11 +49,11 @@ export default function HomeScreen() {
   const BASE_BULLETS: Record<TodayState, string[]> = {
     "take-it-easy": [
       "Reduce standing time where you can.",
-      "If standing feels harder, compression may help.",
+      "Keep movement gentle—recumbent or seated if needed.",
     ],
     mindful: [
       "If standing feels harder, compression may help.",
-      "Keep movement gentle and paced.",
+      "Keep movement gentle—recumbent or seated if needed.",
     ],
     steady: [
       "Keep your routine steady today.",
