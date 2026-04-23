@@ -28,6 +28,17 @@ export default function HomeScreen() {
   const sleepHours: number | null = latestEntry ? latestEntry.sleepHours : null;
   const sleepScore: number | null = latestEntry ? latestEntry.sleepScore : null;
   const waterLiters: number | null = latestEntry ? latestEntry.waterLiters : null;
+  const dizziness: number = latestEntry ? latestEntry.dizziness : 0;
+
+  function getMovementGuidance(state: string, diz: number) {
+    const movementText =
+      state === "steady"
+        ? "Keep your routine steady today."
+        : "Keep movement gentle—recumbent or seated if needed.";
+    const standingCaution =
+      diz >= 5 ? "Pause before standing—make a fist or rise slowly." : "";
+    return { movementText, standingCaution };
+  }
 
   type TodayState = "take-it-easy" | "mindful" | "steady";
   const todayState: TodayState | null = (() => {
@@ -46,17 +57,19 @@ export default function HomeScreen() {
     return "steady";
   })();
 
+  const { movementText, standingCaution } = getMovementGuidance(todayState ?? "steady", dizziness);
+
   const BASE_BULLETS: Record<TodayState, string[]> = {
     "take-it-easy": [
       "Reduce standing time where you can.",
-      "Keep movement gentle—recumbent or seated if needed.",
+      movementText,
     ],
     mindful: [
       "If standing feels harder, compression may help.",
-      "Keep movement gentle—recumbent or seated if needed.",
+      movementText,
     ],
     steady: [
-      "Keep your routine steady today.",
+      movementText,
       "Use gentle movement if it feels supportive.",
     ],
   };
@@ -307,6 +320,9 @@ export default function HomeScreen() {
           </View>
         ))}
         <Text style={styles.microNudge}>{microNudge}</Text>
+        {standingCaution !== "" && (
+          <Text style={styles.standingCaution}>{standingCaution}</Text>
+        )}
       </View>
 
       <View style={styles.insight}>
@@ -662,5 +678,12 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontStyle: "italic",
     marginTop: 6,
+  },
+  standingCaution: {
+    fontSize: 13,
+    color: "#6a9496",
+    lineHeight: 20,
+    fontStyle: "italic",
+    marginTop: 4,
   },
 });
