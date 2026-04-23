@@ -5,7 +5,6 @@ import {
   StyleSheet,
   Switch,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -14,18 +13,32 @@ import { useRouter } from "expo-router";
 import { useDaily } from "@/context/DailyContext";
 
 const ACCENT = "#4a7c7e";
+const MINUTES = [0, 15, 30, 45];
 
-function parseSleepHours(start: string, end: string): number | null {
-  const [sh, sm] = start.split(":").map(Number);
-  const [eh, em] = end.split(":").map(Number);
-  if (
-    isNaN(sh) || isNaN(sm) || isNaN(eh) || isNaN(em) ||
-    sh > 23 || sm > 59 || eh > 23 || em > 59
-  ) return null;
-  let startMins = sh * 60 + sm;
-  let endMins = eh * 60 + em;
-  if (endMins <= startMins) endMins += 24 * 60;
-  return parseFloat(((endMins - startMins) / 60).toFixed(1));
+function formatHour(h: number): string {
+  const period = h < 12 ? "AM" : "PM";
+  const display = h % 12 === 0 ? 12 : h % 12;
+  return `${display} ${period}`;
+}
+
+function formatMinute(m: number): string {
+  return m.toString().padStart(2, "0");
+}
+
+function formatTime(hour: number, minute: number): string {
+  const period = hour < 12 ? "AM" : "PM";
+  const h = hour % 12 === 0 ? 12 : hour % 12;
+  return `${h}:${formatMinute(minute)} ${period}`;
+}
+
+function calcHours(
+  bedHour: number, bedMin: number,
+  wakeHour: number, wakeMin: number
+): number {
+  let start = bedHour * 60 + bedMin;
+  let end = wakeHour * 60 + wakeMin;
+  if (end <= start) end += 24 * 60;
+  return parseFloat(((end - start) / 60).toFixed(1));
 }
 
 function sleepScore(hours: number, interruptions: number): number {
@@ -55,6 +68,67 @@ function scoreFeedback(score: number): { message: string; bg: string; textColor:
   };
 }
 
+function TimePicker({
+  label,
+  hour,
+  minute,
+  onHourChange,
+  onMinuteChange,
+}: {
+  label: string;
+  hour: number;
+  minute: number;
+  onHourChange: (h: number) => void;
+  onMinuteChange: (m: number) => void;
+}) {
+  const minIdx = MINUTES.indexOf(minute);
+
+  function stepHour(dir: 1 | -1) {
+    onHourChange((hour + dir + 24) % 24);
+  }
+
+  function stepMinute(dir: 1 | -1) {
+    const next = (minIdx + dir + MINUTES.length) % MINUTES.length;
+    onMinuteChange(MINUTES[next]);
+  }
+
+  return (
+    <View style={tp.wrap}>
+      <Text style={tp.label}>{label}</Text>
+      <Text style={tp.timeDisplay}>{formatTime(hour, minute)}</Text>
+      <View style={tp.row}>
+        <View style={tp.col}>
+          <Text style={tp.unit}>Hour</Text>
+          <View style={tp.controls}>
+            <TouchableOpacity style={tp.btn} onPress={() => stepHour(-1)} activeOpacity={0.7}>
+              <Text style={tp.btnText}>−</Text>
+            </TouchableOpacity>
+            <Text style={tp.value}>{formatHour(hour)}</Text>
+            <TouchableOpacity style={tp.btn} onPress={() => stepHour(1)} activeOpacity={0.7}>
+              <Text style={tp.btnText}>+</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={tp.separator} />
+
+        <View style={tp.col}>
+          <Text style={tp.unit}>Minute</Text>
+          <View style={tp.controls}>
+            <TouchableOpacity style={tp.btn} onPress={() => stepMinute(-1)} activeOpacity={0.7}>
+              <Text style={tp.btnText}>−</Text>
+            </TouchableOpacity>
+            <Text style={tp.value}>:{formatMinute(minute)}</Text>
+            <TouchableOpacity style={tp.btn} onPress={() => stepMinute(1)} activeOpacity={0.7}>
+              <Text style={tp.btnText}>+</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+}
+
 function StepperRow({
   label,
   value,
@@ -62,6 +136,7 @@ function StepperRow({
   onIncrement,
   min = 0,
   max = 10,
+  displayValue,
 }: {
   label: string;
   value: number;
@@ -69,6 +144,7 @@ function StepperRow({
   onIncrement: () => void;
   min?: number;
   max?: number;
+  displayValue?: string;
 }) {
   return (
     <View style={step.wrap}>
@@ -81,7 +157,7 @@ function StepperRow({
         >
           <Text style={step.btnText}>−</Text>
         </TouchableOpacity>
-        <Text style={step.count}>{value}</Text>
+        <Text style={step.count}>{displayValue ?? value}</Text>
         <TouchableOpacity
           onPress={onIncrement}
           disabled={value >= max}
@@ -94,51 +170,28 @@ function StepperRow({
   );
 }
 
-function TimeInput({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <View style={time.wrap}>
-      <Text style={time.label}>{label}</Text>
-      <TextInput
-        style={time.input}
-        value={value}
-        onChangeText={onChange}
-        placeholder="HH:MM"
-        placeholderTextColor="#bbb"
-        keyboardType="numbers-and-punctuation"
-        maxLength={5}
-      />
-    </View>
-  );
-}
-
 export default function SleepScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { sleepLoggedToday, setSleepLogged, setPendingSleep } = useDaily();
 
-  const [bedtime, setBedtime] = useState("22:30");
-  const [wakeTime, setWakeTime] = useState("07:00");
+  const [bedHour, setBedHour] = useState(22);
+  const [bedMinute, setBedMinute] = useState(30);
+  const [wakeHour, setWakeHour] = useState(7);
+  const [wakeMinute, setWakeMinute] = useState(0);
   const [interruptions, setInterruptions] = useState(0);
   const [useWearable, setUseWearable] = useState(false);
   const [wearableHours, setWearableHours] = useState(7);
 
-  const hours = useMemo<number | null>(() => {
+  const hours = useMemo<number>(() => {
     if (useWearable) return wearableHours;
-    return parseSleepHours(bedtime, wakeTime);
-  }, [useWearable, wearableHours, bedtime, wakeTime]);
+    return calcHours(bedHour, bedMinute, wakeHour, wakeMinute);
+  }, [useWearable, wearableHours, bedHour, bedMinute, wakeHour, wakeMinute]);
 
-  const score = hours !== null ? sleepScore(hours, interruptions) : null;
+  const score = sleepScore(hours, interruptions);
 
   function handleSave() {
-    setPendingSleep(score !== null && hours !== null ? { score, hours } : null);
+    setPendingSleep({ score, hours });
     setSleepLogged(true);
     router.navigate("/");
   }
@@ -153,7 +206,6 @@ export default function SleepScreen() {
           paddingTop: Platform.OS === "web" ? 67 : 16,
         },
       ]}
-      keyboardShouldPersistTaps="handled"
     >
       <View style={styles.pageHeader}>
         <Text style={styles.appName}>Norovia</Text>
@@ -186,11 +238,25 @@ export default function SleepScreen() {
             onIncrement={() => setWearableHours((h) => Math.min(14, h + 0.5))}
             min={0}
             max={14}
+            displayValue={`${wearableHours} h`}
           />
         ) : (
-          <View style={styles.timeRow}>
-            <TimeInput label="Bedtime" value={bedtime} onChange={setBedtime} />
-            <TimeInput label="Wake time" value={wakeTime} onChange={setWakeTime} />
+          <View style={styles.timePickers}>
+            <TimePicker
+              label="Bedtime"
+              hour={bedHour}
+              minute={bedMinute}
+              onHourChange={setBedHour}
+              onMinuteChange={setBedMinute}
+            />
+            <View style={styles.timePickerDivider} />
+            <TimePicker
+              label="Wake time"
+              hour={wakeHour}
+              minute={wakeMinute}
+              onHourChange={setWakeHour}
+              onMinuteChange={setWakeMinute}
+            />
           </View>
         )}
 
@@ -206,9 +272,7 @@ export default function SleepScreen() {
         <Text style={styles.sectionTitle}>Summary</Text>
         <View style={styles.statRow}>
           <Text style={styles.statLabel}>Total sleep</Text>
-          <Text style={styles.statValue}>
-            {hours !== null ? `${hours} h` : "—"}
-          </Text>
+          <Text style={styles.statValue}>{hours} h</Text>
         </View>
         <View style={styles.statRow}>
           <Text style={styles.statLabel}>Interruptions</Text>
@@ -216,11 +280,14 @@ export default function SleepScreen() {
         </View>
         <View style={styles.statRow}>
           <Text style={styles.statLabel}>Sleep score</Text>
-          <Text style={[styles.statValue, score !== null && score >= 85 ? styles.good : score !== null && score < 65 ? styles.low : null]}>
-            {score !== null ? `${score} / 100` : "—"}
+          <Text style={[
+            styles.statValue,
+            score >= 85 ? styles.good : score < 65 ? styles.low : null,
+          ]}>
+            {score} / 100
           </Text>
         </View>
-        {score !== null && (() => {
+        {(() => {
           const fb = scoreFeedback(score);
           return (
             <View style={[styles.summaryBox, { backgroundColor: fb.bg }]}>
@@ -272,7 +339,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  timeRow: { flexDirection: "row", gap: 12 },
+  timePickers: { gap: 20 },
+  timePickerDivider: { height: 1, backgroundColor: "#f0f0f0" },
   statRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -283,13 +351,11 @@ const styles = StyleSheet.create({
   good: { color: "#3a7a4a" },
   low: { color: "#b04a4a" },
   summaryBox: {
-    backgroundColor: "#eef4f4",
     borderRadius: 10,
     padding: 14,
   },
   summaryText: {
     fontSize: 14,
-    color: "#3a6a6b",
     lineHeight: 22,
   },
   saveBtn: {
@@ -323,21 +389,59 @@ const step = StyleSheet.create({
   },
   btnDisabled: { backgroundColor: "#ddd" },
   btnText: { fontSize: 20, color: "#fff", lineHeight: 24 },
-  count: { fontSize: 18, fontWeight: "600", color: "#111", minWidth: 28, textAlign: "center" },
+  count: { fontSize: 18, fontWeight: "600", color: "#111", minWidth: 40, textAlign: "center" },
 });
 
-const time = StyleSheet.create({
-  wrap: { flex: 1, gap: 6 },
-  label: { fontSize: 13, color: "#777" },
-  input: {
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 18,
+const tp = StyleSheet.create({
+  wrap: { gap: 8 },
+  label: { fontSize: 13, color: "#777", fontWeight: "500" },
+  timeDisplay: {
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#111",
+    letterSpacing: 0.5,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  col: {
+    flex: 1,
+    gap: 6,
+  },
+  separator: {
+    width: 1,
+    height: 48,
+    backgroundColor: "#eee",
+  },
+  unit: {
+    fontSize: 11,
+    color: "#aaa",
+    textAlign: "center",
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
+  },
+  controls: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+  },
+  btn: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: ACCENT,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  btnText: { fontSize: 20, color: "#fff", lineHeight: 24 },
+  value: {
+    fontSize: 16,
     fontWeight: "600",
     color: "#111",
+    minWidth: 52,
     textAlign: "center",
   },
 });
