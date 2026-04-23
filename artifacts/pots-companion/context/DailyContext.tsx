@@ -6,6 +6,7 @@ export type Entry = {
   dizziness: number;
   fatigue: number;
   waterLiters: number;
+  salt: boolean;
   compression: boolean;
   movement: boolean;
   sleepScore: number | null;

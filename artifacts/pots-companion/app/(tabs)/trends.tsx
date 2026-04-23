@@ -73,12 +73,13 @@ function analyze(entries: Entry[]): Analysis | null {
     worsens.push("Short sleep may be contributing to fatigue and brain fog.");
   }
 
-  const noComprHighDizz = entries.some((e) => !e.compression && e.dizziness >= 6);
+  const recentWindow = entries.slice(-7);
+  const noComprHighDizz = recentWindow.some((e) => !e.compression && e.dizziness >= 6);
   if (noComprHighDizz) {
     worsens.push("Skipping compression on high-symptom days may be making things harder.");
   }
 
-  const highFatigueLowSleep = entries.some(
+  const highFatigueLowSleep = recentWindow.some(
     (e) => e.fatigue >= 7 && e.sleepScore !== null && e.sleepScore < 60,
   );
   if (highFatigueLowSleep) {

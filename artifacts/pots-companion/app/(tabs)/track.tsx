@@ -148,6 +148,7 @@ export default function TrackScreen() {
       dizziness: checkIn.dizziness,
       fatigue: checkIn.fatigue,
       waterLiters,
+      salt: habits.salt,
       compression: habits.compression,
       movement: habits.movement,
       sleepScore: pendingSleep?.score ?? null,

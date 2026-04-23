@@ -319,7 +319,9 @@ export default function HomeScreen() {
             <Text style={styles.bulletText}>{item}</Text>
           </View>
         ))}
-        <Text style={styles.microNudge}>{microNudge}</Text>
+        {latestEntry !== null && (
+          <Text style={styles.microNudge}>{microNudge}</Text>
+        )}
         {standingCaution !== "" && (
           <Text style={styles.standingCaution}>{standingCaution}</Text>
         )}
