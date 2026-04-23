@@ -78,6 +78,10 @@ export default function FlareScreen() {
           Norovia is a lifestyle support tool. It is not emergency care and does not diagnose POTS or any other condition.
         </Text>
       </View>
+
+      <Text style={styles.safetyFootnote}>
+        If symptoms feel severe or different than usual, seek urgent care or call 911.
+      </Text>
     </ScrollView>
   );
 }
@@ -150,4 +154,11 @@ const styles = StyleSheet.create({
   safetyTitle: { fontSize: 14, fontWeight: "700", color: "#b03a3a" },
   safetyText: { fontSize: 14, color: "#7a3030", lineHeight: 22 },
   disclaimer: { fontSize: 12, color: "#aaa", lineHeight: 18, marginTop: 4 },
+  safetyFootnote: {
+    fontSize: 12,
+    color: "#bbb",
+    lineHeight: 18,
+    textAlign: "center",
+    paddingHorizontal: 10,
+  },
 });
