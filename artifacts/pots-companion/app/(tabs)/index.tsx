@@ -197,15 +197,33 @@ export default function HomeScreen() {
         <Text style={styles.appName}>Norovia</Text>
         <Text style={styles.companion}>You don't have to figure this out all at once.</Text>
         <Text style={styles.heading}>Today</Text>
-        {todayState !== null && (
-          <Text style={styles.todayStateLabel}>
-            {todayState === "take-it-easy"
-              ? "Take it easy today"
+        {todayState !== null && (() => {
+          const stateLabel =
+            todayState === "take-it-easy"
+              ? "Take It Easy (Very Low Reserve)"
               : todayState === "mindful"
-              ? "Be mindful today"
-              : "Steady day"}
-          </Text>
-        )}
+              ? "Mindful (Low Reserve)"
+              : "Steady";
+          const stateSignal =
+            todayState === "take-it-easy"
+              ? "Your system may need a lighter day today."
+              : todayState === "mindful"
+              ? "Your body may have less tolerance today."
+              : "Your body seems more stable today.";
+          const stateAction =
+            todayState === "take-it-easy"
+              ? "Prioritize essentials, reduce upright time, and pace everything."
+              : todayState === "mindful"
+              ? "Use shorter activity blocks with built-in breaks."
+              : "Keep your routine steady and avoid overdoing it.";
+          return (
+            <View>
+              <Text style={styles.todayStateLabel}>{stateLabel}</Text>
+              <Text style={styles.todayStateLabel}>{stateSignal}</Text>
+              <Text style={styles.todayStateLabel}>{stateAction}</Text>
+            </View>
+          );
+        })()}
       </View>
 
       {renderCTA()}
