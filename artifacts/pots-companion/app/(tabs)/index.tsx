@@ -82,18 +82,27 @@ export default function HomeScreen() {
     return null;
   })();
 
-  const plan: string[] = (() => {
-    const base =
-      todayState !== null
-        ? BASE_BULLETS[todayState]
-        : [
-            "Keep movement gentle and paced today.",
-            "Listen to what your body needs today.",
-          ];
-    return hydrationBullet
-      ? [hydrationBullet, ...base].slice(0, 3)
-      : base.slice(0, 3);
-  })();
+  const FLARE_PLAN = [
+    "Sit or lie down when possible.",
+    "Prioritize fluids and salt early.",
+    "Avoid prolonged standing and heat.",
+    "Delay non-essential tasks if you can.",
+  ];
+
+  const plan: string[] = isFlareActive
+    ? FLARE_PLAN
+    : (() => {
+        const base =
+          todayState !== null
+            ? BASE_BULLETS[todayState]
+            : [
+                "Keep movement gentle and paced today.",
+                "Listen to what your body needs today.",
+              ];
+        return hydrationBullet
+          ? [hydrationBullet, ...base].slice(0, 3)
+          : base.slice(0, 3);
+      })();
 
   const microNudge: string = (() => {
     if (waterLiters === null || waterLiters < 1)
@@ -201,7 +210,7 @@ export default function HomeScreen() {
           if (isFlareActive) {
             return (
               <View>
-                <Text style={styles.todayStateLabel}>Flare Mode</Text>
+                <Text style={styles.todayStateLabel}>Flare Mode Active</Text>
                 <Text style={styles.todayStateLabel}>Your system may need a stabilization-focused day.</Text>
                 <Text style={styles.todayStateLabel}>Reduce upright time, focus on hydration, and keep activity minimal.</Text>
               </View>
@@ -234,6 +243,16 @@ export default function HomeScreen() {
           );
         })()}
       </View>
+
+      {isFlareActive && (
+        <View style={styles.flareBanner}>
+          <Text style={styles.flareBannerTitle}>Flare Mode Active</Text>
+          <Text style={styles.flareBannerText}>Your system needs more support today.</Text>
+          <Text style={styles.flareReassurance}>
+            You're not doing anything wrong. Your system needs more support today.
+          </Text>
+        </View>
+      )}
 
       {renderCTA()}
 
@@ -346,17 +365,19 @@ export default function HomeScreen() {
             <Text style={styles.bulletText}>{item}</Text>
           </View>
         ))}
-        {latestEntry !== null && (
+        {!isFlareActive && latestEntry !== null && (
           <Text style={styles.microNudge}>{microNudge}</Text>
         )}
-        {standingCaution !== "" && (
+        {!isFlareActive && standingCaution !== "" && (
           <Text style={styles.standingCaution}>{standingCaution}</Text>
         )}
       </View>
 
-      <View style={styles.insight}>
-        <Text style={styles.insightText}>{insight}</Text>
-      </View>
+      {!isFlareActive && (
+        <View style={styles.insight}>
+          <Text style={styles.insightText}>{insight}</Text>
+        </View>
+      )}
 
       <Modal
         visible={showMeasureModal}
@@ -711,6 +732,32 @@ const styles = StyleSheet.create({
   standingCaution: {
     fontSize: 13,
     color: "#6a9496",
+    lineHeight: 20,
+    fontStyle: "italic",
+    marginTop: 4,
+  },
+  flareBanner: {
+    backgroundColor: "#fdf0f0",
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#e8c4c4",
+    padding: 18,
+    gap: 6,
+  },
+  flareBannerTitle: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#8a3a3a",
+    letterSpacing: 0.2,
+  },
+  flareBannerText: {
+    fontSize: 14,
+    color: "#7a4040",
+    lineHeight: 20,
+  },
+  flareReassurance: {
+    fontSize: 13,
+    color: "#9a5a5a",
     lineHeight: 20,
     fontStyle: "italic",
     marginTop: 4,
