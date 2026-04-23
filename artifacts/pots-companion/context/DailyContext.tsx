@@ -32,11 +32,13 @@ type DailyState = {
   entries: Entry[];
   vitalsReadings: VitalReading[];
   pendingSleep: PendingSleep;
+  isFlareActive: boolean;
   setSleepLogged: (v: boolean) => void;
   setCheckInCompleted: (v: boolean) => void;
   setPendingSleep: (data: PendingSleep) => void;
   addEntry: (entry: Entry) => void;
   addVitalReading: (reading: VitalReading) => void;
+  setFlareActive: (v: boolean) => void;
 };
 
 const DailyContext = createContext<DailyState>({
@@ -45,11 +47,13 @@ const DailyContext = createContext<DailyState>({
   entries: [],
   vitalsReadings: [],
   pendingSleep: null,
+  isFlareActive: false,
   setSleepLogged: () => {},
   setCheckInCompleted: () => {},
   setPendingSleep: () => {},
   addEntry: () => {},
   addVitalReading: () => {},
+  setFlareActive: () => {},
 });
 
 export function DailyProvider({ children }: { children: React.ReactNode }) {
@@ -58,6 +62,7 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [vitalsReadings, setVitalsReadings] = useState<VitalReading[]>([]);
   const [pendingSleep, setPendingSleep] = useState<PendingSleep>(null);
+  const [isFlareActive, setFlareActive] = useState(false);
 
   function addEntry(entry: Entry) {
     setEntries((prev) => [...prev, entry]);
@@ -80,6 +85,8 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
         setPendingSleep,
         addEntry,
         addVitalReading,
+        isFlareActive,
+        setFlareActive,
       }}
     >
       {children}

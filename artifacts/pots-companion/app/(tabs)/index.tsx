@@ -21,7 +21,7 @@ type VitalContext = (typeof CONTEXTS)[number];
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { sleepLoggedToday, checkInCompletedToday, addVitalReading, entries } = useDaily();
+  const { sleepLoggedToday, checkInCompletedToday, addVitalReading, entries, isFlareActive } = useDaily();
 
   const latestEntry = entries.length > 0 ? entries[entries.length - 1] : null;
   const avgSymptom: number | null = latestEntry ? latestEntry.avgSymptom : null;
@@ -197,7 +197,16 @@ export default function HomeScreen() {
         <Text style={styles.appName}>Norovia</Text>
         <Text style={styles.companion}>You don't have to figure this out all at once.</Text>
         <Text style={styles.heading}>Today</Text>
-        {todayState !== null && (() => {
+        {(isFlareActive || todayState !== null) && (() => {
+          if (isFlareActive) {
+            return (
+              <View>
+                <Text style={styles.todayStateLabel}>Flare Mode</Text>
+                <Text style={styles.todayStateLabel}>Your system may need a stabilization-focused day.</Text>
+                <Text style={styles.todayStateLabel}>Reduce upright time, focus on hydration, and keep activity minimal.</Text>
+              </View>
+            );
+          }
           const stateLabel =
             todayState === "take-it-easy"
               ? "Take It Easy (Very Low Reserve)"

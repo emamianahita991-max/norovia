@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Platform,
   ScrollView,
@@ -8,6 +7,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useDaily } from "@/context/DailyContext";
 
 const STEPS = [
   { number: "1", text: "Sit or lie down right away." },
@@ -18,7 +18,7 @@ const STEPS = [
 
 export default function FlareScreen() {
   const insets = useSafeAreaInsets();
-  const [active, setActive] = useState(false);
+  const { isFlareActive, setFlareActive } = useDaily();
 
   return (
     <ScrollView
@@ -38,16 +38,16 @@ export default function FlareScreen() {
       </View>
 
       <TouchableOpacity
-        style={[styles.mainBtn, active && styles.mainBtnActive]}
-        onPress={() => setActive((v) => !v)}
+        style={[styles.mainBtn, isFlareActive && styles.mainBtnActive]}
+        onPress={() => setFlareActive(!isFlareActive)}
         activeOpacity={0.8}
       >
         <Text style={styles.mainBtnText}>
-          {active ? "Flare mode is on" : "I feel bad right now"}
+          {isFlareActive ? "Flare mode is on" : "I feel bad right now"}
         </Text>
       </TouchableOpacity>
 
-      {active && (
+      {isFlareActive && (
         <>
           <View style={styles.card}>
             <Text style={styles.empathy}>
