@@ -1,6 +1,7 @@
 import { Tabs } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import React from "react";
+import { useDaily } from "@/context/DailyContext";
 
 export default function TabLayout() {
   return (
