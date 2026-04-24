@@ -6,7 +6,7 @@ import {
   useFonts,
 } from "@expo-google-fonts/inter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Stack } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -15,7 +15,7 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { DailyProvider } from "@/context/DailyContext";
+import { DailyProvider, useDaily } from "@/context/DailyContext";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -23,9 +23,23 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient();
 
 function RootLayoutNav() {
+  const { onboardingComplete } = useDaily();
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    const inOnboarding = segments[0] === "onboarding";
+    if (!onboardingComplete && !inOnboarding) {
+      router.replace("/onboarding");
+    } else if (onboardingComplete && inOnboarding) {
+      router.replace("/(tabs)");
+    }
+  }, [onboardingComplete, segments]);
+
   return (
-    <Stack screenOptions={{ headerBackTitle: "Back" }}>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="onboarding" />
     </Stack>
   );
 }

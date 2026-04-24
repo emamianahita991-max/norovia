@@ -33,12 +33,14 @@ type DailyState = {
   vitalsReadings: VitalReading[];
   pendingSleep: PendingSleep;
   isFlareActive: boolean;
+  onboardingComplete: boolean;
   setSleepLogged: (v: boolean) => void;
   setCheckInCompleted: (v: boolean) => void;
   setPendingSleep: (data: PendingSleep) => void;
   addEntry: (entry: Entry) => void;
   addVitalReading: (reading: VitalReading) => void;
   setFlareActive: (v: boolean) => void;
+  completeOnboarding: () => void;
 };
 
 const DailyContext = createContext<DailyState>({
@@ -48,12 +50,14 @@ const DailyContext = createContext<DailyState>({
   vitalsReadings: [],
   pendingSleep: null,
   isFlareActive: false,
+  onboardingComplete: false,
   setSleepLogged: () => {},
   setCheckInCompleted: () => {},
   setPendingSleep: () => {},
   addEntry: () => {},
   addVitalReading: () => {},
   setFlareActive: () => {},
+  completeOnboarding: () => {},
 });
 
 export function DailyProvider({ children }: { children: React.ReactNode }) {
@@ -63,6 +67,11 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
   const [vitalsReadings, setVitalsReadings] = useState<VitalReading[]>([]);
   const [pendingSleep, setPendingSleep] = useState<PendingSleep>(null);
   const [isFlareActive, setFlareActive] = useState(false);
+  const [onboardingComplete, setOnboardingComplete] = useState(false);
+
+  function completeOnboarding() {
+    setOnboardingComplete(true);
+  }
 
   function addEntry(entry: Entry) {
     setEntries((prev) => [...prev, entry]);
@@ -87,6 +96,8 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
         addVitalReading,
         isFlareActive,
         setFlareActive,
+        onboardingComplete,
+        completeOnboarding,
       }}
     >
       {children}
