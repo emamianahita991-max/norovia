@@ -4,6 +4,8 @@ import React from "react";
 import { useDaily } from "@/context/DailyContext";
 
 export default function TabLayout() {
+  const { isFlareActive } = useDaily();
+
   return (
     <Tabs
       screenOptions={{
@@ -49,8 +51,10 @@ export default function TabLayout() {
         options={{
           title: "Flare Mode",
           tabBarIcon: ({ color }) => (
-            <Feather name="activity" size={22} color={color} />
+            <Feather name="activity" size={22} color={isFlareActive ? "#b03a3a" : color} />
           ),
+          tabBarBadge: isFlareActive ? "ON" : undefined,
+          tabBarBadgeStyle: { backgroundColor: "#b03a3a", fontSize: 9 },
         }}
       />
       <Tabs.Screen

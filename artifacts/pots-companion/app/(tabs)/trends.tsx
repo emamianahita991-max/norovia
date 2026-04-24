@@ -144,7 +144,7 @@ function buildReportHtml(entries: Entry[], vitals: VitalReading[]): string {
   const pctHighHR = hrs.length ? ((hrs.filter((h) => h >= 100).length / hrs.length) * 100) : null;
 
   const daysHydrated = entries.filter((e) => e.waterLiters >= 2.0).length;
-  const daysSalt = entries.filter((e) => e.compression).length;
+  const daysCompression = entries.filter((e) => e.compression).length;
 
   const tableRows = vitals.map((v) => {
     const d = new Date(v.timestamp);
@@ -226,7 +226,7 @@ ${hrs.length > 0 ? `
   ${row("Average sleep score", sleepScores.length ? `${n(avg(sleepScores), 0)} / 100` : "—")}
   ${row("Average night awakenings", awakenings.length ? n(avg(awakenings), 1) : "—")}
   ${row("Days with adequate hydration", entries.length ? `${daysHydrated} of ${entries.length}` : "—")}
-  ${row("Days with compression worn", entries.length ? `${daysSalt} of ${entries.length}` : "—")}
+  ${row("Days with compression worn", entries.length ? `${daysCompression} of ${entries.length}` : "—")}
 </table>
 
 ${vitals.length > 0 ? `

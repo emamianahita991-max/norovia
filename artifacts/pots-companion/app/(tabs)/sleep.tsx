@@ -3,7 +3,6 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Switch,
   Text,
   TouchableOpacity,
   View,
@@ -49,6 +48,7 @@ function sleepScore(hours: number, awakenings: number): number {
 
   if (awakenings === 0) score += 5;
   else if (awakenings <= 2) {
+    // 1–2 awakenings: no score adjustment
   } else if (awakenings === 3) {
     score -= 5;
   } else if (awakenings >= 4) {

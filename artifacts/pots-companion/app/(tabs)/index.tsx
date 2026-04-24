@@ -79,9 +79,9 @@ export default function HomeScreen() {
   };
 
   const hydrationBullet: string | null = (() => {
-    if (waterLiters === null || waterLiters < 1)
+    if (waterLiters !== null && waterLiters < 1)
       return "Prioritize fluids early in the day.";
-    if (waterLiters < 2)
+    if (waterLiters !== null && waterLiters < 2)
       return "Keep fluids steady through the rest of the day.";
     return null;
   })();
