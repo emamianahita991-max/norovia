@@ -131,7 +131,6 @@ function TimePicker({
 
 function StepperRow({
   label,
-  hint,
   value,
   onDecrement,
   onIncrement,
@@ -140,7 +139,6 @@ function StepperRow({
   displayValue,
 }: {
   label: string;
-  hint?: string;
   value: number;
   onDecrement: () => void;
   onIncrement: () => void;
@@ -150,10 +148,7 @@ function StepperRow({
 }) {
   return (
     <View style={step.wrap}>
-      <View style={step.labelWrap}>
-        <Text style={step.label}>{label}</Text>
-        {hint && <Text style={step.hint}>{hint}</Text>}
-      </View>
+      <Text style={step.label}>{label}</Text>
       <View style={step.controls}>
         <TouchableOpacity
           onPress={onDecrement}
@@ -267,7 +262,6 @@ export default function SleepScreen() {
 
         <StepperRow
           label="Interruptions"
-          hint="Times you woke during the night"
           value={interruptions}
           onDecrement={() => setInterruptions((n) => Math.max(0, n - 1))}
           onIncrement={() => setInterruptions((n) => Math.min(10, n + 1))}
@@ -383,9 +377,7 @@ const step = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  labelWrap: { flex: 1, gap: 2 },
-  label: { fontSize: 14, fontWeight: "600", color: "#222" },
-  hint: { fontSize: 12, color: "#9AA6A2", lineHeight: 17 },
+  label: { fontSize: 14, color: "#444", flex: 1 },
   controls: { flexDirection: "row", alignItems: "center", gap: 16 },
   btn: {
     width: 34,
