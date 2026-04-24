@@ -1,0 +1,44 @@
+-  const { sleepLoggedToday, checkInCompletedToday, addVitalReading, entries, isFlareActive } = useDaily();
++  const { sleepLoggedToday, checkInCompletedToday, addVitalReading, entries, isFlareActive, pendingSleep } = useDaily();
+
+   const latestEntry = entries.length > 0 ? entries[entries.length - 1] : null;
+   const avgSymptom: number | null = latestEntry ? latestEntry.avgSymptom : null;
+-  const sleepHours: number | null = latestEntry ? latestEntry.sleepHours : null;
+-  const sleepScore: number | null = latestEntry ? latestEntry.sleepScore : null;
++  const sleepHours: number | null = pendingSleep?.hours ?? latestEntry?.sleepHours ?? null;
++  const sleepScore: number | null = pendingSleep?.score ?? latestEntry?.sleepScore ?? null;
++  const sleepAwakenings: number | null =
++    pendingSleep?.awakenings ?? latestEntry?.sleepAwakenings ?? null;
+   const waterLiters: number | null = latestEntry ? latestEntry.waterLiters : null;
+@@
+-      return "You're building well—keep fluids steady.";
+-    return "You're on track—keep the pace gentle.";
++      return "You're building well. Keep fluids steady.";
++    return "You're on track. Keep the pace gentle.";
+   })();
+@@
+-    if (todayState === "steady") return "Today looks steadier so far — keep it simple.";
++    if (todayState === "steady") return "Today looks steadier so far. Keep it simple.";
+     return "You seem to do better on days when fluids are stronger.";
+   })();
+@@
+       {sleepHours !== null && (
+         <View style={styles.card}>
+           <Text style={styles.cardLabel}>Sleep last night</Text>
+           <Text style={styles.cardValue}>{sleepHours} h</Text>
+         </View>
+       )}
++
++      {sleepScore !== null && (
++        <View style={styles.card}>
++          <Text style={styles.cardLabel}>Sleep score</Text>
++          <Text style={styles.cardValue}>{sleepScore} / 100</Text>
++        </View>
++      )}
++
++      {sleepAwakenings !== null && (
++        <View style={styles.card}>
++          <Text style={styles.cardLabel}>Night awakenings</Text>
++          <Text style={styles.cardValue}>{sleepAwakenings}</Text>
++        </View>
++      )}
