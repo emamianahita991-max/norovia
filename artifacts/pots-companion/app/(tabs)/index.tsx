@@ -119,8 +119,8 @@ export default function HomeScreen() {
   const insight: string = (() => {
     if (sleepScore !== null && sleepScore < 60)
       return "Short or disrupted sleep may make symptoms harder today.";
-    if (todayState === "take-it-easy") return "Your body may need a bit more support today.";
-    if (todayState === "mindful") return "A steadier pace may help today feel more manageable.";
+    if (todayState === "take-it-easy") return "Harder days happen. You're not doing anything wrong.";
+    if (todayState === "mindful") return "A gentler pace isn't giving up. It's working with what you have.";
     if (todayState === "steady") return "Today looks steadier so far. Keep it simple.";
     return "You seem to do better on days when fluids are stronger.";
   })();
@@ -220,15 +220,15 @@ export default function HomeScreen() {
               : "Steady";
           const stateSignal =
             todayState === "take-it-easy"
-              ? "Your system may need a lighter day today."
+              ? "Your body is working hard right now."
               : todayState === "mindful"
-              ? "Your body may have less tolerance today."
+              ? "Your body may have less in reserve today."
               : "Your body seems more stable today.";
           const stateAction =
             todayState === "take-it-easy"
-              ? "Prioritize essentials, reduce upright time, and pace everything."
+              ? "Rest is doing something. Reduce upright time and let the day come to you."
               : todayState === "mindful"
-              ? "Use shorter activity blocks with built-in breaks."
+              ? "Work in shorter blocks and give yourself permission to stop early."
               : "Keep your routine steady and avoid overdoing it.";
           return (
             <View>
@@ -243,9 +243,9 @@ export default function HomeScreen() {
       {isFlareActive && (
         <View style={styles.flareBanner}>
           <Text style={styles.flareBannerTitle}>Flare Mode Active</Text>
-          <Text style={styles.flareBannerText}>This is a stabilization day. Keep things simple.</Text>
+          <Text style={styles.flareBannerText}>This is a stabilization day. Rest counts as care.</Text>
           <Text style={styles.flareReassurance}>
-            You're not doing anything wrong. Your system needs more support today.
+            You're not doing anything wrong. Your body needs more support right now, and that's enough reason to slow down.
           </Text>
         </View>
       )}

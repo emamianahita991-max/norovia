@@ -178,7 +178,7 @@ export default function TrackScreen() {
 
       {sleepLoggedToday && !checkInCompletedToday && (
         <View style={styles.promptBanner}>
-          <Text style={styles.promptText}>Let's log how you feel — takes 30 seconds.</Text>
+          <Text style={styles.promptText}>Even a rough day is worth logging. Takes 30 seconds.</Text>
         </View>
       )}
 
@@ -278,7 +278,7 @@ export default function TrackScreen() {
 
       {checkInCompletedToday && (
         <View style={styles.savedMsg}>
-          <Text style={styles.savedMsgText}>Done. You're learning your pattern.</Text>
+          <Text style={styles.savedMsgText}>Logged. Tracking on hard days takes real effort. It matters.</Text>
         </View>
       )}
     </ScrollView>

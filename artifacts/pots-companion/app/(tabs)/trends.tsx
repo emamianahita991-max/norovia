@@ -316,7 +316,7 @@ export default function TrendsScreen() {
           <View style={styles.emptyCard}>
             <Text style={styles.emptyTitle}>You're building your pattern</Text>
             <Text style={styles.emptyBody}>
-              A few days of check-ins will help you start to see your patterns.
+              Life with these symptoms is unpredictable. A few days of check-ins will help you start to see what's behind that unpredictability.
             </Text>
           </View>
 

@@ -43,7 +43,7 @@ export default function FlareScreen() {
         <View style={styles.activeBanner}>
           <Text style={styles.activeBannerTitle}>Flare Mode Active</Text>
           <Text style={styles.activeBannerText}>
-            This is a stabilization day. Keep things simple.
+            This is a stabilization day. Rest counts as care.
           </Text>
         </View>
       )}

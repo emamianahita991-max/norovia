@@ -46,7 +46,7 @@ export default function OnboardingScreen() {
         {step === 0 && (
           <>
             <Text style={styles.bodyText}>
-              This app helps you understand how your body is doing today and how to pace it.
+              Living with these symptoms is genuinely hard. This app won't change that, but it can help you understand your patterns and feel a little less alone in them.
             </Text>
             <Text style={styles.bodyText}>
               You don't need to figure everything out at once.

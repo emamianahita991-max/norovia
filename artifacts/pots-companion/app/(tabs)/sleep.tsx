@@ -194,7 +194,7 @@ export default function SleepScreen() {
       {!sleepLoggedToday && (
         <View style={styles.promptBanner}>
           <Text style={styles.promptText}>
-            Let's log last night's sleep. This takes about 20 seconds.
+            Sleep with these symptoms is rarely simple. Let's note what you got.
           </Text>
         </View>
       )}
