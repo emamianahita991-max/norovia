@@ -118,6 +118,15 @@ function buildReportHtml(entries: Entry[], vitals: VitalReading[]): string {
   const hrs = vitals.map((v) => v.heartRate).filter((h): h is number => h !== null);
   const sys = vitals.map((v) => v.systolic).filter((s): s is number => s !== null);
   const dia = vitals.map((v) => v.diastolic).filter((d): d is number => d !== null);
+  const sleepHours = entries
+    .map((e) => e.sleepHours)
+    .filter((h): h is number => h !== null);
+  const sleepScores = entries
+    .map((e) => e.sleepScore)
+    .filter((s): s is number => s !== null);
+  const awakenings = entries
+    .map((e) => e.sleepAwakenings)
+    .filter((a): a is number => a !== null);
 
   const meanHR = avg(hrs);
   const minHR = hrs.length ? Math.min(...hrs) : null;
@@ -213,6 +222,9 @@ ${hrs.length > 0 ? `
 
 <h2>Hydration and Habits</h2>
 <table class="data">
+  ${row("Average sleep hours", sleepHours.length ? `${n(avg(sleepHours), 1)} h` : "—")}
+  ${row("Average sleep score", sleepScores.length ? `${n(avg(sleepScores), 0)} / 100` : "—")}
+  ${row("Average night awakenings", awakenings.length ? n(avg(awakenings), 1) : "—")}
   ${row("Days with adequate hydration", entries.length ? `${daysHydrated} of ${entries.length}` : "—")}
   ${row("Days with compression worn", entries.length ? `${daysSalt} of ${entries.length}` : "—")}
 </table>
