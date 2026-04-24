@@ -153,6 +153,7 @@ export default function TrackScreen() {
       movement: habits.movement,
       sleepScore: pendingSleep?.score ?? null,
       sleepHours: pendingSleep?.hours ?? null,
+      sleepAwakenings: pendingSleep?.awakenings ?? null,
     });
     setCheckInCompleted(true);
     router.navigate("/");
