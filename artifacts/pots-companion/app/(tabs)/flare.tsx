@@ -73,13 +73,13 @@ export default function FlareScreen() {
       <View style={styles.safety}>
         <Text style={styles.safetyTitle}>When to seek urgent care</Text>
         <Text style={styles.safetyText}>
-          If you have chest pain, severe shortness of breath, loss of consciousness with injury, or cannot keep fluids down, seek emergency medical care immediately.
+          If you have chest pain, severe shortness of breath, fainting with injury, or you cannot keep fluids down, contact emergency services or call 911 right away.
         </Text>
         <Text style={styles.safetyText}>
           If symptoms feel severe, unusual, or concerning, contact emergency services or call 911.
         </Text>
         <Text style={styles.disclaimer}>
-          Norovia is a lifestyle support tool. It is not emergency care and does not diagnose POTS or any other condition.
+          Norovia is a lifestyle support tool. It is not emergency care and does not diagnose POTS or replace medical care.
         </Text>
       </View>
     </ScrollView>
