@@ -34,9 +34,11 @@ export default function HomeScreen() {
     const movementText =
       state === "steady"
         ? "Keep your routine steady today."
-        : "Keep movement gentle—recumbent or seated if needed.";
+        : "Keep movement gentle. Use recumbent or seated movement if needed.";
+
     const standingCaution =
-      diz >= 5 ? "Pause before standing—make a fist or rise slowly." : "";
+      diz >= 5 ? "Pause before standing. Make a fist or rise slowly." : "";
+
     return { movementText, standingCaution };
   }
 
