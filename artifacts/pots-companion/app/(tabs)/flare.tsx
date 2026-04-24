@@ -9,11 +9,11 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDaily } from "@/context/DailyContext";
 
-const STEPS = [
-  { number: "1", text: "Sit or lie down right away." },
-  { number: "2", text: "Hydrate — sip fluids if you can safely tolerate them." },
-  { number: "3", text: "Avoid standing, heat, and rushing." },
-  { number: "4", text: "Use compression if that usually helps you." },
+const BULLETS = [
+  "Sit or lie down when possible.",
+  "Prioritize fluids and salt early.",
+  "Avoid prolonged standing and heat.",
+  "Delay non-essential tasks if you can.",
 ];
 
 export default function FlareScreen() {
@@ -33,9 +33,20 @@ export default function FlareScreen() {
     >
       <View style={styles.pageHeader}>
         <Text style={styles.appName}>Norovia</Text>
-        <Text style={styles.companion}>Stay with your body.</Text>
-        <Text style={styles.heading}>Flare</Text>
+        <Text style={styles.heading}>Flare Mode</Text>
+        <Text style={styles.subheading}>
+          {isFlareActive ? "Active" : "Inactive"}
+        </Text>
       </View>
+
+      {isFlareActive && (
+        <View style={styles.activeBanner}>
+          <Text style={styles.activeBannerTitle}>Flare Mode Active</Text>
+          <Text style={styles.activeBannerText}>
+            This is a stabilization day. Keep things simple.
+          </Text>
+        </View>
+      )}
 
       <TouchableOpacity
         style={[styles.mainBtn, isFlareActive && styles.mainBtnActive]}
@@ -43,45 +54,34 @@ export default function FlareScreen() {
         activeOpacity={0.8}
       >
         <Text style={styles.mainBtnText}>
-          {isFlareActive ? "Flare mode is on" : "I feel bad right now"}
+          {isFlareActive ? "Turn off Flare Mode" : "Turn on Flare Mode"}
         </Text>
       </TouchableOpacity>
 
       {isFlareActive && (
-        <>
-          <View style={styles.card}>
-            <Text style={styles.empathy}>
-              You're not doing anything wrong. Your system just needs support.
-            </Text>
-          </View>
-
-          <View style={styles.card}>
-            <Text style={styles.sectionTitle}>What to do now</Text>
-            {STEPS.map((s) => (
-              <View key={s.number} style={styles.step}>
-                <View style={styles.stepBadge}>
-                  <Text style={styles.stepNumber}>{s.number}</Text>
-                </View>
-                <Text style={styles.stepText}>{s.text}</Text>
-              </View>
-            ))}
-          </View>
-        </>
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>Focus on this today</Text>
+          {BULLETS.map((b) => (
+            <View key={b} style={styles.bullet}>
+              <Text style={styles.bulletDot}>·</Text>
+              <Text style={styles.bulletText}>{b}</Text>
+            </View>
+          ))}
+        </View>
       )}
 
       <View style={styles.safety}>
         <Text style={styles.safetyTitle}>When to seek urgent care</Text>
         <Text style={styles.safetyText}>
-          If you have chest pain, severe shortness of breath, loss of consciousness with injury, or cannot keep fluids down — seek emergency medical care immediately.
+          If you have chest pain, severe shortness of breath, loss of consciousness with injury, or cannot keep fluids down, seek emergency medical care immediately.
+        </Text>
+        <Text style={styles.safetyText}>
+          If symptoms feel severe, unusual, or concerning, contact emergency services or call 911.
         </Text>
         <Text style={styles.disclaimer}>
           Norovia is a lifestyle support tool. It is not emergency care and does not diagnose POTS or any other condition.
         </Text>
       </View>
-
-      <Text style={styles.safetyFootnote}>
-        If symptoms feel severe or different than usual, seek urgent care or call 911.
-      </Text>
     </ScrollView>
   );
 }
@@ -91,8 +91,19 @@ const styles = StyleSheet.create({
   container: { paddingHorizontal: 20, gap: 16 },
   pageHeader: { marginBottom: 0 },
   appName: { fontSize: 12, fontWeight: "600", color: "#4a7c7e", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 4 },
-  companion: { fontSize: 13, color: "#9AA6A2", lineHeight: 20, marginBottom: 10 },
   heading: { fontSize: 28, fontWeight: "700", color: "#111", marginBottom: 0 },
+  subheading: { fontSize: 14, color: "#9AA6A2", marginTop: 4 },
+
+  activeBanner: {
+    backgroundColor: "#fdf0f0",
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#e8c4c4",
+    padding: 18,
+    gap: 6,
+  },
+  activeBannerTitle: { fontSize: 15, fontWeight: "700", color: "#8a3a3a", letterSpacing: 0.2 },
+  activeBannerText: { fontSize: 14, color: "#7a4040", lineHeight: 22 },
 
   mainBtn: {
     backgroundColor: "#2c2c2c",
@@ -121,27 +132,10 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 1,
   },
-  empathy: {
-    fontSize: 16,
-    color: "#3a6a6b",
-    lineHeight: 26,
-    fontStyle: "italic",
-    textAlign: "center",
-  },
   sectionTitle: { fontSize: 15, fontWeight: "600", color: "#111" },
-
-  step: { flexDirection: "row", alignItems: "flex-start", gap: 14 },
-  stepBadge: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: "#eef4f4",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 1,
-  },
-  stepNumber: { fontSize: 14, fontWeight: "700", color: "#4a7c7e" },
-  stepText: { fontSize: 15, color: "#333", lineHeight: 24, flex: 1 },
+  bullet: { flexDirection: "row", alignItems: "flex-start", gap: 10 },
+  bulletDot: { fontSize: 18, color: "#4a7c7e", lineHeight: 24 },
+  bulletText: { fontSize: 15, color: "#333", lineHeight: 24, flex: 1 },
 
   safety: {
     backgroundColor: "#fff5f5",
@@ -154,11 +148,4 @@ const styles = StyleSheet.create({
   safetyTitle: { fontSize: 14, fontWeight: "700", color: "#b03a3a" },
   safetyText: { fontSize: 14, color: "#7a3030", lineHeight: 22 },
   disclaimer: { fontSize: 12, color: "#aaa", lineHeight: 18, marginTop: 4 },
-  safetyFootnote: {
-    fontSize: 12,
-    color: "#bbb",
-    lineHeight: 18,
-    textAlign: "center",
-    paddingHorizontal: 10,
-  },
 });

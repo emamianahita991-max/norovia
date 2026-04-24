@@ -208,16 +208,7 @@ export default function HomeScreen() {
         <Text style={styles.appName}>Norovia</Text>
         <Text style={styles.companion}>You don't have to figure this out all at once.</Text>
         <Text style={styles.heading}>Today</Text>
-        {(isFlareActive || todayState !== null) && (() => {
-          if (isFlareActive) {
-            return (
-              <View>
-                <Text style={styles.todayStateLabel}>Flare Mode Active</Text>
-                <Text style={styles.todayStateLabel}>Your system may need a stabilization-focused day.</Text>
-                <Text style={styles.todayStateLabel}>Reduce upright time, focus on hydration, and keep activity minimal.</Text>
-              </View>
-            );
-          }
+        {(!isFlareActive && todayState !== null) && (() => {
           const stateLabel =
             todayState === "take-it-easy"
               ? "Take It Easy (Very Low Reserve)"
@@ -249,7 +240,7 @@ export default function HomeScreen() {
       {isFlareActive && (
         <View style={styles.flareBanner}>
           <Text style={styles.flareBannerTitle}>Flare Mode Active</Text>
-          <Text style={styles.flareBannerText}>Your system needs more support today.</Text>
+          <Text style={styles.flareBannerText}>This is a stabilization day. Keep things simple.</Text>
           <Text style={styles.flareReassurance}>
             You're not doing anything wrong. Your system needs more support today.
           </Text>
