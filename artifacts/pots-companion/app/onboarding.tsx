@@ -25,7 +25,7 @@ export default function OnboardingScreen() {
 
   function handleFinish() {
     completeOnboarding();
-    router.replace("/(tabs)/sleep");
+    router.replace("/sleep");
   }
 
   return (
