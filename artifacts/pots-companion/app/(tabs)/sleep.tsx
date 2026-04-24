@@ -171,7 +171,7 @@ export default function SleepScreen() {
   const score = sleepScore(hours, awakenings);
 
   function handleSave() {
-    setPendingSleep({ score, hours });
+    setPendingSleep({ score, hours, awakenings });
     setSleepLogged(true);
     router.navigate("/");
   }
