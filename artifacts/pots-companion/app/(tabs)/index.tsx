@@ -243,6 +243,9 @@ export default function HomeScreen() {
         <View style={styles.flareBanner}>
           <Text style={styles.flareBannerTitle}>Flare Mode Active</Text>
           <Text style={styles.flareBannerText}>This is a stabilization day. Keep things simple.</Text>
+          <Text style={styles.flareReassurance}>
+            You're not doing anything wrong. Your system needs more support today.
+          </Text>
         </View>
       )}
 
@@ -760,5 +763,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#7a4040",
     lineHeight: 20,
+  },
+  flareReassurance: {
+    fontSize: 13,
+    color: "#9a5a5a",
+    lineHeight: 20,
+    fontStyle: "italic",
+    marginTop: 4,
   },
 });
