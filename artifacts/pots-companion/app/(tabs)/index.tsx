@@ -132,6 +132,7 @@ export default function HomeScreen() {
   const [vitalCtx, setVitalCtx] = useState<VitalContext>("seated");
   const [vitalsSaved, setVitalsSaved] = useState(false);
   const [showMeasureModal, setShowMeasureModal] = useState(false);
+  const [showAboutModal, setShowAboutModal] = useState(false);
 
   function handleSaveVitals() {
     const hasAnyValue = systolic || diastolic || heartRate;
@@ -387,6 +388,46 @@ export default function HomeScreen() {
           <Text style={styles.insightText}>{insight}</Text>
         </View>
       )}
+
+      <TouchableOpacity
+        style={styles.aboutLink}
+        onPress={() => setShowAboutModal(true)}
+        activeOpacity={0.6}
+      >
+        <Text style={styles.aboutLinkText}>About Norovia</Text>
+      </TouchableOpacity>
+
+      <Modal
+        visible={showAboutModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowAboutModal(false)}
+      >
+        <Pressable style={styles.modalOverlay} onPress={() => setShowAboutModal(false)}>
+          <Pressable style={styles.modalBox} onPress={() => {}}>
+            <Text style={styles.modalTitle}>About Norovia</Text>
+            <Text style={styles.aboutModalBody}>
+              Norovia is a lifestyle support tool created with clinical insight into POTS and dysautonomia.
+            </Text>
+            <Text style={styles.aboutModalBody}>
+              It does not diagnose, treat, or replace medical care.
+            </Text>
+            <Text style={styles.aboutModalBody}>
+              It helps you track patterns, understand your day, and make supportive lifestyle choices.
+            </Text>
+            <Text style={styles.aboutModalEmergency}>
+              If symptoms feel severe, unusual, or concerning, contact emergency services or call 911.
+            </Text>
+            <TouchableOpacity
+              onPress={() => setShowAboutModal(false)}
+              activeOpacity={0.7}
+              style={styles.modalClose}
+            >
+              <Text style={styles.modalCloseText}>Done</Text>
+            </TouchableOpacity>
+          </Pressable>
+        </Pressable>
+      </Modal>
 
       <Modal
         visible={showMeasureModal}
@@ -685,6 +726,27 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#4a7c7e",
     fontStyle: "italic",
+  },
+  aboutLink: {
+    alignItems: "center",
+    paddingVertical: 8,
+  },
+  aboutLinkText: {
+    fontSize: 12,
+    color: "#bbb",
+    textDecorationLine: "underline",
+  },
+  aboutModalBody: {
+    fontSize: 14,
+    color: "#444",
+    lineHeight: 22,
+  },
+  aboutModalEmergency: {
+    fontSize: 14,
+    color: "#8a3a3a",
+    lineHeight: 22,
+    fontWeight: "600",
+    marginTop: 4,
   },
 
   section: {

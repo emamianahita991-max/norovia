@@ -28,6 +28,8 @@ export default function OnboardingScreen() {
     router.replace("/sleep");
   }
 
+  const TOTAL_STEPS = 4;
+
   return (
     <View
       style={[
@@ -65,6 +67,24 @@ export default function OnboardingScreen() {
         )}
 
         {step === 2 && (
+          <>
+            <Text style={styles.sectionLabel}>Before you begin</Text>
+            <Text style={styles.bodyText}>
+              Norovia is a lifestyle support tool created with clinical insight into POTS and dysautonomia.
+            </Text>
+            <Text style={styles.bodyText}>
+              It does not diagnose, treat, or replace medical care.
+            </Text>
+            <Text style={styles.bodyText}>
+              It helps you track patterns, understand your day, and make supportive lifestyle choices.
+            </Text>
+            <Text style={styles.emergencyText}>
+              If symptoms feel severe, unusual, or concerning, contact emergency services or call 911.
+            </Text>
+          </>
+        )}
+
+        {step === 3 && (
           <Text style={styles.prompt}>
             So, how did you sleep last night?
           </Text>
@@ -73,14 +93,14 @@ export default function OnboardingScreen() {
 
       <View style={styles.footer}>
         <View style={styles.dots}>
-          {[0, 1, 2].map((i) => (
+          {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
             <View key={i} style={[styles.dot, i === step && styles.dotActive]} />
           ))}
         </View>
 
         <TouchableOpacity
           style={styles.btn}
-          onPress={step < 2 ? () => setStep((s) => s + 1) : handleFinish}
+          onPress={step < TOTAL_STEPS - 1 ? () => setStep((s) => s + 1) : handleFinish}
           activeOpacity={0.8}
         >
           <Text style={styles.btnText}>
@@ -88,6 +108,8 @@ export default function OnboardingScreen() {
               ? "Continue →"
               : step === 1
               ? "Got it →"
+              : step === 2
+              ? "Understood →"
               : "Log last night's sleep →"}
           </Text>
         </TouchableOpacity>
@@ -149,6 +171,13 @@ const styles = StyleSheet.create({
     color: "#111",
     lineHeight: 32,
     fontWeight: "400",
+  },
+  emergencyText: {
+    fontSize: 15,
+    color: "#8a3a3a",
+    lineHeight: 24,
+    fontWeight: "600",
+    marginTop: 4,
   },
   footer: {
     gap: 20,
