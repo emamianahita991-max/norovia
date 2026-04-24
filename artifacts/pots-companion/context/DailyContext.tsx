@@ -1,5 +1,11 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { createContext, useContext, useEffect, useState } from "react";
+   function handleSave() {
+-    setPendingSleep({ score, hours });
++    setPendingSleep({ score, hours, awakenings });
+     setSleepLogged(true);
+     router.navigate("/");
+   }
+
+import React, { createContext, useContext, useState } from "react";
 
 export type Entry = {
   functionScore: number;
@@ -12,7 +18,6 @@ export type Entry = {
   movement: boolean;
   sleepScore: number | null;
   sleepHours: number | null;
-  sleepAwakenings: number | null;
 };
 
 export type VitalReading = {
@@ -26,11 +31,9 @@ export type VitalReading = {
 type PendingSleep = {
   score: number;
   hours: number;
-  awakenings: number;
 } | null;
 
 type DailyState = {
-  isReady: boolean;
   sleepLoggedToday: boolean;
   checkInCompletedToday: boolean;
   entries: Entry[];
@@ -47,28 +50,7 @@ type DailyState = {
   completeOnboarding: () => void;
 };
 
-type PersistedDailyState = {
-  dayKey: string;
-  sleepLoggedToday: boolean;
-  checkInCompletedToday: boolean;
-  entries: Entry[];
-  vitalsReadings: VitalReading[];
-  pendingSleep: PendingSleep;
-  isFlareActive: boolean;
-  onboardingComplete: boolean;
-};
-
-const STORAGE_KEY = "norovia.daily.v1";
-
-function getDayKey(date = new Date()) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
 const DailyContext = createContext<DailyState>({
-  isReady: false,
   sleepLoggedToday: false,
   checkInCompletedToday: false,
   entries: [],
@@ -86,7 +68,6 @@ const DailyContext = createContext<DailyState>({
 });
 
 export function DailyProvider({ children }: { children: React.ReactNode }) {
-  const [isReady, setIsReady] = useState(false);
   const [sleepLoggedToday, setSleepLogged] = useState(false);
   const [checkInCompletedToday, setCheckInCompleted] = useState(false);
   const [entries, setEntries] = useState<Entry[]>([]);
@@ -94,62 +75,6 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
   const [pendingSleep, setPendingSleep] = useState<PendingSleep>(null);
   const [isFlareActive, setFlareActive] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-
-    (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
-
-        const saved = JSON.parse(raw) as PersistedDailyState;
-        const sameDay = saved.dayKey === getDayKey();
-
-        if (!active) return;
-
-        setEntries(saved.entries ?? []);
-        setVitalsReadings(saved.vitalsReadings ?? []);
-        setOnboardingComplete(Boolean(saved.onboardingComplete));
-        setSleepLogged(sameDay && Boolean(saved.sleepLoggedToday));
-        setCheckInCompleted(sameDay && Boolean(saved.checkInCompletedToday));
-        setPendingSleep(sameDay ? saved.pendingSleep ?? null : null);
-        setFlareActive(sameDay && Boolean(saved.isFlareActive));
-      } finally {
-        if (active) setIsReady(true);
-      }
-    })();
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!isReady) return;
-
-    const payload: PersistedDailyState = {
-      dayKey: getDayKey(),
-      sleepLoggedToday,
-      checkInCompletedToday,
-      entries,
-      vitalsReadings,
-      pendingSleep,
-      isFlareActive,
-      onboardingComplete,
-    };
-
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(payload)).catch(() => {});
-  }, [
-    isReady,
-    sleepLoggedToday,
-    checkInCompletedToday,
-    entries,
-    vitalsReadings,
-    pendingSleep,
-    isFlareActive,
-    onboardingComplete,
-  ]);
 
   function completeOnboarding() {
     setOnboardingComplete(true);
@@ -166,7 +91,6 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
   return (
     <DailyContext.Provider
       value={{
-        isReady,
         sleepLoggedToday,
         checkInCompletedToday,
         entries,

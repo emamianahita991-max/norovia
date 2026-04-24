@@ -23,18 +23,21 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient();
 
 function RootLayoutNav() {
-  const { onboardingComplete } = useDaily();
+  const { onboardingComplete, isReady } = useDaily();
   const segments = useSegments();
   const router = useRouter();
 
   useEffect(() => {
+    if (!isReady) return;
     const inOnboarding = segments[0] === "onboarding";
     if (!onboardingComplete && !inOnboarding) {
       router.replace("/onboarding");
     } else if (onboardingComplete && inOnboarding) {
-      router.replace("/(tabs)");
+      router.replace("/");
     }
-  }, [onboardingComplete, segments]);
+  }, [isReady, onboardingComplete, router, segments]);
+
+  if (!isReady) return null;
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
@@ -86,7 +89,7 @@ export default function RootLayout() {
       <ErrorBoundary>
         <DailyProvider>
           <QueryClientProvider client={queryClient}>
-            <GestureHandlerRootView>
+            <GestureHandlerRootView style={{ flex: 1 }}>
               <KeyboardProvider>
                 <RootLayoutNav />
               </KeyboardProvider>
