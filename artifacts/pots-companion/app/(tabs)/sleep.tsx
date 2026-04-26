@@ -260,8 +260,17 @@ export default function SleepScreen() {
         )}
       </View>
 
+      {sleepLoggedToday && (
+        <View style={styles.savedMsg}>
+          <Text style={styles.savedMsgTitle}>Sleep logged ✓</Text>
+          <Text style={styles.savedMsgSub}>You can update it anytime.</Text>
+        </View>
+      )}
+
       <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
-        <Text style={styles.saveBtnText}>Save sleep</Text>
+        <Text style={styles.saveBtnText}>
+          {sleepLoggedToday ? "Update sleep" : "Save sleep"}
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -282,6 +291,22 @@ const styles = StyleSheet.create({
   summaryText: { fontSize: 14 },
   saveBtn: { backgroundColor: "#2c2c2c", padding: 16, borderRadius: 14 },
   saveBtnText: { color: "#fff", textAlign: "center", fontWeight: "600" },
+  savedMsg: {
+    backgroundColor: "#eef4f4",
+    borderRadius: 12,
+    padding: 16,
+    alignItems: "center",
+    gap: 4,
+  },
+  savedMsgTitle: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#3a6a6b",
+  },
+  savedMsgSub: {
+    fontSize: 13,
+    color: "#6a9496",
+  },
 });
 
 const step = StyleSheet.create({
