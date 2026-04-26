@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+import { AppState } from "react-native";
 
 export type TodayState = "take-it-easy" | "mindful" | "steady";
 
@@ -102,6 +103,38 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
   const [isFlareActive, setFlareActive] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [lockedTodayState, setLockedTodayState] = useState<TodayState | null>(null);
+
+  const activeDayKeyRef = useRef<string>(getDayKey());
+
+  function resetForNewDay() {
+    activeDayKeyRef.current = getDayKey();
+    setSleepLogged(false);
+    setCheckInCompleted(false);
+    setPendingSleep(null);
+    setFlareActive(false);
+    setLockedTodayState(null);
+  }
+
+  useEffect(() => {
+    function checkDayRollover() {
+      if (getDayKey() !== activeDayKeyRef.current) {
+        resetForNewDay();
+      }
+    }
+
+    const interval = setInterval(checkDayRollover, 60_000);
+
+    const subscription = AppState.addEventListener("change", (nextState) => {
+      if (nextState === "active") {
+        checkDayRollover();
+      }
+    });
+
+    return () => {
+      clearInterval(interval);
+      subscription.remove();
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;
