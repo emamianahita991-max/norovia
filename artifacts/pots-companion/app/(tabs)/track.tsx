@@ -165,7 +165,8 @@ export default function TrackScreen() {
       : sleepHours !== null ? sleepHours < 7 : false;
     const sym = parseFloat(avgSymptom.toFixed(1));
     const computed: TodayState =
-      sym >= 6 || badSleep ? "take-it-easy"
+      badSleep ? "take-it-easy"
+      : sym >= 6 ? "take-it-easy"
       : sym >= 4 || moderateSleep ? "mindful"
       : "steady";
     lockTodayState(computed);
