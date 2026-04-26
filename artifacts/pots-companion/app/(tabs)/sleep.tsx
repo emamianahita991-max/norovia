@@ -8,8 +8,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Tabs, useRouter } from "expo-router";
-import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useDaily } from "@/context/DailyContext";
 
 const ACCENT = "#4a7c7e";
@@ -178,35 +177,19 @@ export default function SleepScreen() {
   }
 
   return (
-    <>
-      <Tabs.Screen
-        options={{
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() =>
-                router.canGoBack() ? router.back() : router.navigate("/")
-              }
-              style={{ paddingLeft: 14 }}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
-              <Feather name="chevron-left" size={26} color="#4a7c7e" />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={[
-          styles.container,
-          {
-            paddingBottom: insets.bottom + 24,
-            paddingTop: Platform.OS === "web" ? 67 : 16,
-          },
-        ]}
-      >
-        <View style={styles.pageHeader}>
-          <Text style={styles.heading}>Sleep</Text>
-        </View>
+    <ScrollView
+      style={styles.scroll}
+      contentContainerStyle={[
+        styles.container,
+        {
+          paddingBottom: insets.bottom + 24,
+          paddingTop: Platform.OS === "web" ? 67 : 16,
+        },
+      ]}
+    >
+      <View style={styles.pageHeader}>
+        <Text style={styles.heading}>Sleep</Text>
+      </View>
 
       {!sleepLoggedToday && (
         <View style={styles.promptBanner}>
@@ -280,7 +263,6 @@ export default function SleepScreen() {
         <Text style={styles.saveBtnText}>Save sleep</Text>
       </TouchableOpacity>
     </ScrollView>
-    </>
   );
 }
 
