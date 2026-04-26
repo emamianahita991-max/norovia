@@ -1,6 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
+export type TodayState = "take-it-easy" | "mindful" | "steady";
+
 export type Entry = {
   functionScore: number;
   avgSymptom: number;
@@ -38,6 +40,7 @@ type DailyState = {
   pendingSleep: PendingSleep;
   isFlareActive: boolean;
   onboardingComplete: boolean;
+  lockedTodayState: TodayState | null;
   setSleepLogged: (v: boolean) => void;
   setCheckInCompleted: (v: boolean) => void;
   setPendingSleep: (data: PendingSleep) => void;
@@ -45,6 +48,7 @@ type DailyState = {
   addVitalReading: (reading: VitalReading) => void;
   setFlareActive: (v: boolean) => void;
   completeOnboarding: () => void;
+  lockTodayState: (s: TodayState | null) => void;
 };
 
 type PersistedDailyState = {
@@ -56,6 +60,7 @@ type PersistedDailyState = {
   pendingSleep: PendingSleep;
   isFlareActive: boolean;
   onboardingComplete: boolean;
+  lockedTodayState: TodayState | null;
 };
 
 const STORAGE_KEY = "norovia.daily.v1";
@@ -76,6 +81,7 @@ const DailyContext = createContext<DailyState>({
   pendingSleep: null,
   isFlareActive: false,
   onboardingComplete: false,
+  lockedTodayState: null,
   setSleepLogged: () => {},
   setCheckInCompleted: () => {},
   setPendingSleep: () => {},
@@ -83,6 +89,7 @@ const DailyContext = createContext<DailyState>({
   addVitalReading: () => {},
   setFlareActive: () => {},
   completeOnboarding: () => {},
+  lockTodayState: () => {},
 });
 
 export function DailyProvider({ children }: { children: React.ReactNode }) {
@@ -94,10 +101,10 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
   const [pendingSleep, setPendingSleep] = useState<PendingSleep>(null);
   const [isFlareActive, setFlareActive] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
+  const [lockedTodayState, setLockedTodayState] = useState<TodayState | null>(null);
 
   useEffect(() => {
     let active = true;
-    // Safety net: always unblock the app within 1 second even if storage hangs
     const safetyTimer = setTimeout(() => {
       if (active && !isReady) setIsReady(true);
     }, 1000);
@@ -117,6 +124,7 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
         setCheckInCompleted(sameDay && Boolean(saved.checkInCompletedToday));
         setPendingSleep(sameDay ? saved.pendingSleep ?? null : null);
         setFlareActive(sameDay && Boolean(saved.isFlareActive));
+        setLockedTodayState(sameDay ? saved.lockedTodayState ?? null : null);
       } catch {
         // storage failure — proceed with defaults
       } finally {
@@ -143,6 +151,7 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
       pendingSleep,
       isFlareActive,
       onboardingComplete,
+      lockedTodayState,
     };
 
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(payload)).catch(() => {});
@@ -155,6 +164,7 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
     pendingSleep,
     isFlareActive,
     onboardingComplete,
+    lockedTodayState,
   ]);
 
   function completeOnboarding() {
@@ -167,6 +177,10 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
 
   function addVitalReading(reading: VitalReading) {
     setVitalsReadings((prev) => [...prev, reading]);
+  }
+
+  function lockTodayState(s: TodayState | null) {
+    setLockedTodayState(s);
   }
 
   return (
@@ -187,6 +201,8 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
         setFlareActive,
         onboardingComplete,
         completeOnboarding,
+        lockedTodayState,
+        lockTodayState,
       }}
     >
       {children}
