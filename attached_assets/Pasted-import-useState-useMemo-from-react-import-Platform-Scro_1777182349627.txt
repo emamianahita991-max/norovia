@@ -1,0 +1,307 @@
+import { useState, useMemo } from "react";
+import {
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
+import { useDaily } from "@/context/DailyContext";
+
+const ACCENT = "#4a7c7e";
+const MINUTES = [0, 15, 30, 45];
+
+function formatHour(h: number): string {
+  const period = h < 12 ? "AM" : "PM";
+  const display = h % 12 === 0 ? 12 : h % 12;
+  return `${display} ${period}`;
+}
+
+function formatMinute(m: number): string {
+  return m.toString().padStart(2, "0");
+}
+
+function formatTime(hour: number, minute: number): string {
+  const period = hour < 12 ? "AM" : "PM";
+  const h = hour % 12 === 0 ? 12 : hour % 12;
+  return `${h}:${formatMinute(minute)} ${period}`;
+}
+
+function calcHours(
+  bedHour: number, bedMin: number,
+  wakeHour: number, wakeMin: number
+): number {
+  let start = bedHour * 60 + bedMin;
+  let end = wakeHour * 60 + wakeMin;
+  if (end <= start) end += 24 * 60;
+  return parseFloat(((end - start) / 60).toFixed(1));
+}
+
+function sleepScore(hours: number, awakenings: number): number {
+  let score = 100;
+
+  if (hours < 6) score -= 30;
+  else if (hours < 7) score -= 15;
+
+  if (awakenings === 0) score += 5;
+  else if (awakenings <= 2) {
+    // 1–2 awakenings: no score adjustment
+  } else if (awakenings === 3) {
+    score -= 5;
+  } else if (awakenings >= 4) {
+    score -= 10;
+  }
+
+  return Math.max(0, Math.min(100, score));
+}
+
+function scoreFeedback(score: number) {
+  if (score > 80) {
+    return {
+      message: "Your sleep looks supportive today.",
+      bg: "#eef4f4",
+      textColor: "#3a6a6b",
+    };
+  }
+  if (score >= 60) {
+    return {
+      message: "Your sleep was okay. Small adjustments may help.",
+      bg: "#f0f3f5",
+      textColor: "#4a5560",
+    };
+  }
+  return {
+    message: "Short sleep may make symptoms harder today.",
+    bg: "#fff4e6",
+    textColor: "#9a5a00",
+  };
+}
+
+function TimePicker({
+  label,
+  hour,
+  minute,
+  onHourChange,
+  onMinuteChange,
+}: any) {
+  const minIdx = MINUTES.indexOf(minute);
+
+  function stepHour(dir: 1 | -1) {
+    onHourChange((hour + dir + 24) % 24);
+  }
+
+  function stepMinute(dir: 1 | -1) {
+    const next = (minIdx + dir + MINUTES.length) % MINUTES.length;
+    onMinuteChange(MINUTES[next]);
+  }
+
+  return (
+    <View style={tp.wrap}>
+      <Text style={tp.label}>{label}</Text>
+      <Text style={tp.timeDisplay}>{formatTime(hour, minute)}</Text>
+
+      <View style={tp.row}>
+        <View style={tp.col}>
+          <Text style={tp.unit}>Hour</Text>
+          <View style={tp.controls}>
+            <TouchableOpacity style={tp.btn} onPress={() => stepHour(-1)}>
+              <Text style={tp.btnText}>−</Text>
+            </TouchableOpacity>
+            <Text style={tp.value}>{formatHour(hour)}</Text>
+            <TouchableOpacity style={tp.btn} onPress={() => stepHour(1)}>
+              <Text style={tp.btnText}>+</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={tp.separator} />
+
+        <View style={tp.col}>
+          <Text style={tp.unit}>Minute</Text>
+          <View style={tp.controls}>
+            <TouchableOpacity style={tp.btn} onPress={() => stepMinute(-1)}>
+              <Text style={tp.btnText}>−</Text>
+            </TouchableOpacity>
+            <Text style={tp.value}>:{formatMinute(minute)}</Text>
+            <TouchableOpacity style={tp.btn} onPress={() => stepMinute(1)}>
+              <Text style={tp.btnText}>+</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+function StepperRow({ label, value, onDecrement, onIncrement }: any) {
+  return (
+    <View style={step.wrap}>
+      <Text style={step.label}>{label}</Text>
+      <View style={step.controls}>
+        <TouchableOpacity onPress={onDecrement} style={step.btn}>
+          <Text style={step.btnText}>−</Text>
+        </TouchableOpacity>
+        <Text style={step.count}>{value}</Text>
+        <TouchableOpacity onPress={onIncrement} style={step.btn}>
+          <Text style={step.btnText}>+</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+export default function SleepScreen() {
+  const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const { sleepLoggedToday, setSleepLogged, setPendingSleep } = useDaily();
+
+  const [bedHour, setBedHour] = useState(22);
+  const [bedMinute, setBedMinute] = useState(30);
+  const [wakeHour, setWakeHour] = useState(7);
+  const [wakeMinute, setWakeMinute] = useState(0);
+  const [awakenings, setAwakenings] = useState(0);
+
+  const hours = useMemo(() => {
+    return calcHours(bedHour, bedMinute, wakeHour, wakeMinute);
+  }, [bedHour, bedMinute, wakeHour, wakeMinute]);
+
+  const score = sleepScore(hours, awakenings);
+
+  function handleSave() {
+    setPendingSleep({ score, hours, awakenings });
+    setSleepLogged(true);
+    router.navigate("/");
+  }
+
+  return (
+    <ScrollView
+      style={styles.scroll}
+      contentContainerStyle={[
+        styles.container,
+        {
+          paddingBottom: insets.bottom + 24,
+          paddingTop: Platform.OS === "web" ? 67 : 16,
+        },
+      ]}
+    >
+      <View style={styles.pageHeader}>
+        <Text style={styles.heading}>Sleep</Text>
+      </View>
+
+      {!sleepLoggedToday && (
+        <View style={styles.promptBanner}>
+          <Text style={styles.promptText}>
+            Sleep with these symptoms is rarely simple. Let's note what you got.
+          </Text>
+        </View>
+      )}
+
+      <View style={styles.card}>
+        <TimePicker
+          label="Bedtime"
+          hour={bedHour}
+          minute={bedMinute}
+          onHourChange={setBedHour}
+          onMinuteChange={setBedMinute}
+        />
+
+        <TimePicker
+          label="Wake time"
+          hour={wakeHour}
+          minute={wakeMinute}
+          onHourChange={setWakeHour}
+          onMinuteChange={setWakeMinute}
+        />
+
+        <View style={{ gap: 6 }}>
+          <StepperRow
+            label="Night awakenings"
+            value={awakenings}
+            onDecrement={() => setAwakenings(Math.max(0, awakenings - 1))}
+            onIncrement={() => setAwakenings(Math.min(10, awakenings + 1))}
+          />
+          <Text style={{ fontSize: 12, color: "#888" }}>
+            How many times did you wake up?
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.sectionTitle}>Summary</Text>
+
+        <View style={styles.statRow}>
+          <Text style={styles.statLabel}>Total sleep</Text>
+          <Text style={styles.statValue}>{hours} h</Text>
+        </View>
+
+        <View style={styles.statRow}>
+          <Text style={styles.statLabel}>Night awakenings</Text>
+          <Text style={styles.statValue}>{awakenings}</Text>
+        </View>
+
+        <View style={styles.statRow}>
+          <Text style={styles.statLabel}>Sleep score</Text>
+          <Text style={styles.statValue}>{score} / 100</Text>
+        </View>
+
+        {(() => {
+          const fb = scoreFeedback(score);
+          return (
+            <View style={[styles.summaryBox, { backgroundColor: fb.bg }]}>
+              <Text style={[styles.summaryText, { color: fb.textColor }]}>
+                {fb.message}
+              </Text>
+            </View>
+          );
+        })()}
+      </View>
+
+      <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
+        <Text style={styles.saveBtnText}>Save sleep</Text>
+      </TouchableOpacity>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  scroll: { flex: 1, backgroundColor: "#f7f6f3" },
+  container: { paddingHorizontal: 20, gap: 16 },
+  heading: { fontSize: 28, fontWeight: "700" },
+  promptBanner: { backgroundColor: "#f0f3f5", padding: 14, borderRadius: 12 },
+  promptText: { fontSize: 14, color: "#4a5560" },
+  card: { backgroundColor: "#fff", padding: 20, borderRadius: 14, gap: 16 },
+  sectionTitle: { fontSize: 15, fontWeight: "600" },
+  statRow: { flexDirection: "row", justifyContent: "space-between" },
+  statLabel: { fontSize: 14, color: "#555" },
+  statValue: { fontSize: 18, fontWeight: "600" },
+  summaryBox: { padding: 14, borderRadius: 10 },
+  summaryText: { fontSize: 14 },
+  saveBtn: { backgroundColor: "#2c2c2c", padding: 16, borderRadius: 14 },
+  saveBtnText: { color: "#fff", textAlign: "center", fontWeight: "600" },
+});
+
+const step = StyleSheet.create({
+  wrap: { flexDirection: "row", justifyContent: "space-between" },
+  label: { fontSize: 14 },
+  controls: { flexDirection: "row", gap: 16 },
+  btn: { width: 34, height: 34, backgroundColor: ACCENT, borderRadius: 17, alignItems: "center", justifyContent: "center" },
+  btnText: { color: "#fff", fontSize: 20 },
+  count: { fontSize: 18 },
+});
+
+const tp = StyleSheet.create({
+  wrap: { gap: 8 },
+  label: { fontSize: 13, color: "#777" },
+  timeDisplay: { fontSize: 26, fontWeight: "700" },
+  row: { flexDirection: "row", alignItems: "center", gap: 12 },
+  col: { flex: 1, gap: 6 },
+  separator: { width: 1, height: 48, backgroundColor: "#eee" },
+  unit: { fontSize: 11, color: "#aaa", textAlign: "center" },
+  controls: { flexDirection: "row", justifyContent: "center", gap: 12 },
+  btn: { width: 34, height: 34, backgroundColor: ACCENT, borderRadius: 17, alignItems: "center", justifyContent: "center" },
+  btnText: { color: "#fff", fontSize: 20 },
+  value: { fontSize: 16, textAlign: "center" },
+});
