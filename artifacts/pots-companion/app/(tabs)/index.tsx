@@ -9,7 +9,7 @@ import {
   Pressable,
 } from "react-native";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useDaily, type TodayState } from "@/context/DailyContext";
@@ -27,7 +27,6 @@ export default function HomeScreen() {
     isFlareActive,
     pendingSleep,
     lockedTodayState,
-    lockTodayState,
   } = useDaily();
 
   const latestEntry = entries.length > 0 ? entries[entries.length - 1] : null;
@@ -50,35 +49,6 @@ export default function HomeScreen() {
 
     return { movementText, standingCaution };
   }
-
-  const liveTodayState: TodayState | null = (() => {
-    if (!checkInCompletedToday) return null;
-    if (avgSymptom === null && sleepScore === null && sleepHours === null) return null;
-    const sym = avgSymptom ?? 0;
-    const badSleep =
-      sleepScore !== null ? sleepScore < 60 : sleepHours !== null ? sleepHours < 6 : false;
-    const moderateSleep =
-      sleepScore !== null
-        ? sleepScore >= 60 && sleepScore < 80
-        : sleepHours !== null
-        ? sleepHours < 7
-        : false;
-    if (sym >= 6 || badSleep) return "take-it-easy";
-    if (sym >= 4 || moderateSleep) return "mindful";
-    return "steady";
-  })();
-
-  useEffect(() => {
-    if (checkInCompletedToday && liveTodayState !== null && lockedTodayState === null) {
-      lockTodayState(liveTodayState);
-    }
-  }, [checkInCompletedToday, liveTodayState, lockedTodayState]);
-
-  const stateChangePending =
-    checkInCompletedToday &&
-    lockedTodayState !== null &&
-    liveTodayState !== null &&
-    liveTodayState !== lockedTodayState;
 
   const { movementText, standingCaution } = lockedTodayState !== null
     ? getMovementGuidance(lockedTodayState, dizziness)
@@ -230,21 +200,6 @@ export default function HomeScreen() {
           );
         })()}
       </View>
-
-      {stateChangePending && (
-        <View style={styles.stateChangeBanner}>
-          <Text style={styles.stateChangeBannerText}>
-            Your inputs have changed. Update today's state?
-          </Text>
-          <TouchableOpacity
-            style={styles.stateChangeBtn}
-            onPress={() => lockTodayState(liveTodayState)}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.stateChangeBtnText}>Update state</Text>
-          </TouchableOpacity>
-        </View>
-      )}
 
       {isFlareActive && (
         <View style={styles.flareBanner}>
@@ -407,29 +362,6 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     color: "#9AA6A2",
     marginTop: 4,
-  },
-  stateChangeBanner: {
-    backgroundColor: "#f0f3f5",
-    borderRadius: 12,
-    padding: 14,
-    gap: 10,
-  },
-  stateChangeBannerText: {
-    fontSize: 14,
-    color: "#4a5560",
-    lineHeight: 20,
-  },
-  stateChangeBtn: {
-    alignSelf: "flex-start",
-    backgroundColor: "#2c2c2c",
-    borderRadius: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-  },
-  stateChangeBtnText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#fff",
   },
   ctaWrap: {
     gap: 8,

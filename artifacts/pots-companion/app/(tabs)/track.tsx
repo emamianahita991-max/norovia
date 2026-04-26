@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { useDaily } from "@/context/DailyContext";
+import { useDaily, type TodayState } from "@/context/DailyContext";
 
 type CheckIn = {
   dizziness: number;
@@ -98,7 +98,7 @@ function ToggleRow({
 export default function TrackScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { sleepLoggedToday, checkInCompletedToday, setCheckInCompleted, pendingSleep, addEntry } = useDaily();
+  const { sleepLoggedToday, checkInCompletedToday, setCheckInCompleted, pendingSleep, addEntry, lockTodayState } = useDaily();
 
   const [checkIn, setCheckIn] = useState<CheckIn>({
     dizziness: 0,
@@ -155,6 +155,21 @@ export default function TrackScreen() {
       sleepHours: pendingSleep?.hours ?? null,
       sleepAwakenings: pendingSleep?.awakenings ?? null,
     });
+
+    const sleepScore = pendingSleep?.score ?? null;
+    const sleepHours = pendingSleep?.hours ?? null;
+    const badSleep = sleepScore !== null ? sleepScore < 60
+      : sleepHours !== null ? sleepHours < 6 : false;
+    const moderateSleep = sleepScore !== null
+      ? sleepScore >= 60 && sleepScore < 80
+      : sleepHours !== null ? sleepHours < 7 : false;
+    const sym = parseFloat(avgSymptom.toFixed(1));
+    const computed: TodayState =
+      sym >= 6 || badSleep ? "take-it-easy"
+      : sym >= 4 || moderateSleep ? "mindful"
+      : "steady";
+    lockTodayState(computed);
+
     setCheckInCompleted(true);
     router.navigate("/");
   }
@@ -273,7 +288,7 @@ export default function TrackScreen() {
         activeOpacity={0.8}
       >
         <Text style={styles.saveBtnText}>
-          {checkInCompletedToday ? "Update check-in" : "Finish check-in"}
+          {checkInCompletedToday ? "Update baseline" : "Set today's baseline"}
         </Text>
       </TouchableOpacity>
 
