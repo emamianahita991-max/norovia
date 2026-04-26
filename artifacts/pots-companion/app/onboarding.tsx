@@ -82,7 +82,7 @@ export default function OnboardingScreen() {
 
         {step === 3 && (
           <Text style={styles.prompt}>
-            So, how did you sleep last night?
+            How did you sleep last night?
           </Text>
         )}
       </View>
