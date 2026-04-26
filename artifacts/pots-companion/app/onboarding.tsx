@@ -122,16 +122,6 @@ export default function OnboardingScreen() {
               : "Log last night's sleep →"}
           </Text>
         </TouchableOpacity>
-
-        {step > 0 && (
-          <TouchableOpacity
-            style={styles.backBtn}
-            onPress={() => setStep((s) => s - 1)}
-            activeOpacity={0.6}
-          >
-            <Text style={styles.backBtnText}>← Back</Text>
-          </TouchableOpacity>
-        )}
       </View>
     </View>
   );
@@ -235,14 +225,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: "#fff",
-  },
-  backBtn: {
-    alignItems: "center",
-    paddingVertical: 8,
-  },
-  backBtnText: {
-    fontSize: 15,
-    color: "#9AA6A2",
-    fontWeight: "400",
   },
 });
