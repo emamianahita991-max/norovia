@@ -52,15 +52,15 @@ function sleepScore(hours: number, awakenings: number): number {
   return Math.max(0, Math.min(100, score));
 }
 
-function scoreFeedback(score: number) {
-  if (score > 80) {
+function scoreFeedback(sleepHours: number) {
+  if (sleepHours >= 7) {
     return {
       message: "Your sleep may be supportive today.",
       bg: "#eef4f4",
       textColor: "#3a6a6b",
     };
   }
-  if (score >= 60) {
+  if (sleepHours >= 6) {
     return {
       message: "Your sleep may need a little support today.",
       bg: "#f0f3f5",
@@ -246,9 +246,9 @@ export default function SleepScreen() {
         </View>
 
         {sleepLoggedToday && pendingSleep ? (
-          <View style={[styles.summaryBox, { backgroundColor: scoreFeedback(pendingSleep.score).bg }]}>
-            <Text style={[styles.summaryText, { color: scoreFeedback(pendingSleep.score).textColor }]}>
-              {scoreFeedback(pendingSleep.score).message}
+          <View style={[styles.summaryBox, { backgroundColor: scoreFeedback(pendingSleep.hours).bg }]}>
+            <Text style={[styles.summaryText, { color: scoreFeedback(pendingSleep.hours).textColor }]}>
+              {scoreFeedback(pendingSleep.hours).message}
             </Text>
           </View>
         ) : (
