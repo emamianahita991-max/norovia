@@ -4,7 +4,6 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
-  TextInput,
   Platform,
   Modal,
   Pressable,
@@ -17,13 +16,11 @@ import { useDaily } from "@/context/DailyContext";
 
 
 
-const CONTEXTS = ["seated", "standing", "other"] as const;
-type VitalContext = (typeof CONTEXTS)[number];
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { sleepLoggedToday, checkInCompletedToday, addVitalReading, entries, isFlareActive, pendingSleep } = useDaily();
+  const { sleepLoggedToday, checkInCompletedToday, entries, isFlareActive, pendingSleep } = useDaily();
 
   const latestEntry = entries.length > 0 ? entries[entries.length - 1] : null;
   const avgSymptom: number | null = latestEntry ? latestEntry.avgSymptom : null;
@@ -128,40 +125,7 @@ export default function HomeScreen() {
     return "You seem to do better on days when fluids are stronger.";
   })();
 
-  const [vitalsOpen, setVitalsOpen] = useState(false);
-  const [systolic, setSystolic] = useState("");
-  const [diastolic, setDiastolic] = useState("");
-  const [heartRate, setHeartRate] = useState("");
-  const [vitalCtx, setVitalCtx] = useState<VitalContext>("seated");
-  const [vitalsSaved, setVitalsSaved] = useState(false);
-  const [showMeasureModal, setShowMeasureModal] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(false);
-
-  function handleSaveVitals() {
-    const hasAnyValue = systolic || diastolic || heartRate;
-    if (!hasAnyValue) {
-      setVitalsOpen(false);
-      return;
-    }
-
-    addVitalReading({
-      systolic: systolic ? parseInt(systolic, 10) : null,
-      diastolic: diastolic ? parseInt(diastolic, 10) : null,
-      heartRate: heartRate ? parseInt(heartRate, 10) : null,
-      context: vitalCtx,
-      timestamp: Date.now(),
-    });
-
-    setVitalsSaved(true);
-    setTimeout(() => {
-      setVitalsSaved(false);
-      setVitalsOpen(false);
-      setSystolic("");
-      setDiastolic("");
-      setHeartRate("");
-      setVitalCtx("seated");
-    }, 1800);
-  }
 
   function renderCTA() {
     if (!sleepLoggedToday) {
@@ -281,93 +245,6 @@ export default function HomeScreen() {
         </View>
       )}
 
-      {/* Vitals card */}
-      <View style={styles.vitalsCard}>
-        <TouchableOpacity
-          style={styles.vitalsHeader}
-          onPress={() => setVitalsOpen((v) => !v)}
-          activeOpacity={0.7}
-        >
-          <View>
-            <Text style={styles.vitalsTitle}>Vitals</Text>
-            <Text style={styles.vitalsHint}>Log a reading anytime.</Text>
-          </View>
-          <Text style={styles.vitalsToggle}>{vitalsOpen ? "−" : "+"}</Text>
-        </TouchableOpacity>
-
-        {vitalsOpen && (
-          <View style={styles.vitalsBody}>
-            <View style={styles.inputRow}>
-              <View style={styles.inputWrap}>
-                <Text style={styles.inputLabel}>Systolic</Text>
-                <TextInput
-                  style={styles.input}
-                  value={systolic}
-                  onChangeText={setSystolic}
-                  placeholder="120"
-                  placeholderTextColor="#ccc"
-                  keyboardType="number-pad"
-                  maxLength={3}
-                />
-              </View>
-              <View style={styles.inputWrap}>
-                <Text style={styles.inputLabel}>Diastolic</Text>
-                <TextInput
-                  style={styles.input}
-                  value={diastolic}
-                  onChangeText={setDiastolic}
-                  placeholder="80"
-                  placeholderTextColor="#ccc"
-                  keyboardType="number-pad"
-                  maxLength={3}
-                />
-              </View>
-              <View style={styles.inputWrap}>
-                <Text style={styles.inputLabel}>Heart rate</Text>
-                <TextInput
-                  style={styles.input}
-                  value={heartRate}
-                  onChangeText={setHeartRate}
-                  placeholder="72"
-                  placeholderTextColor="#ccc"
-                  keyboardType="number-pad"
-                  maxLength={3}
-                />
-              </View>
-            </View>
-
-            <View style={styles.ctxRow}>
-              {CONTEXTS.map((c) => (
-                <TouchableOpacity
-                  key={c}
-                  style={[styles.ctxPill, vitalCtx === c && styles.ctxPillActive]}
-                  onPress={() => setVitalCtx(c)}
-                  activeOpacity={0.7}
-                >
-                  <Text style={[styles.ctxText, vitalCtx === c && styles.ctxTextActive]}>
-                    {c}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            <TouchableOpacity onPress={() => setShowMeasureModal(true)} activeOpacity={0.6}>
-              <Text style={styles.measureLink}>How to measure</Text>
-            </TouchableOpacity>
-
-            {vitalsSaved ? (
-              <View style={styles.savedMsg}>
-                <Text style={styles.savedMsgText}>Saved.</Text>
-              </View>
-            ) : (
-              <TouchableOpacity style={styles.saveVitalsBtn} onPress={handleSaveVitals} activeOpacity={0.8}>
-                <Text style={styles.saveVitalsBtnText}>Save vitals</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        )}
-      </View>
-
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Daily plan</Text>
         {!checkInCompletedToday ? (
@@ -449,33 +326,6 @@ export default function HomeScreen() {
         </Pressable>
       </Modal>
 
-      <Modal
-        visible={showMeasureModal}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowMeasureModal(false)}
-      >
-        <Pressable style={styles.modalOverlay} onPress={() => setShowMeasureModal(false)}>
-          <Pressable style={styles.modalBox} onPress={() => {}}>
-            <Text style={styles.modalTitle}>How to measure</Text>
-            {[
-              "Sit quietly for 2–3 minutes",
-              "Keep your arm supported at heart level",
-              "Avoid talking during the reading",
-              "Take a second reading if unsure",
-            ].map((tip, i) => (
-              <View key={i} style={styles.modalRow}>
-                <Text style={styles.modalDot}>·</Text>
-                <Text style={styles.modalTip}>{tip}</Text>
-              </View>
-            ))}
-            <Text style={styles.modalFooter}>Consistency matters more than perfection.</Text>
-            <TouchableOpacity onPress={() => setShowMeasureModal(false)} activeOpacity={0.7} style={styles.modalClose}>
-              <Text style={styles.modalCloseText}>Done</Text>
-            </TouchableOpacity>
-          </Pressable>
-        </Pressable>
-      </Modal>
     </ScrollView>
   );
 }
@@ -581,110 +431,6 @@ const styles = StyleSheet.create({
     color: "#111",
   },
 
-  vitalsCard: {
-    backgroundColor: "#fff",
-    borderRadius: 14,
-    shadowColor: "#000",
-    shadowOpacity: 0.04,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    elevation: 1,
-    overflow: "hidden",
-  },
-  vitalsHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 18,
-    paddingHorizontal: 20,
-  },
-  vitalsTitle: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#111",
-  },
-  vitalsHint: {
-    fontSize: 13,
-    color: "#999",
-    marginTop: 2,
-  },
-  vitalsToggle: {
-    fontSize: 22,
-    color: "#9AA6A2",
-    fontWeight: "300",
-    lineHeight: 26,
-  },
-  vitalsBody: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    gap: 14,
-    borderTopWidth: 1,
-    borderTopColor: "#f0f0f0",
-  },
-  inputRow: {
-    flexDirection: "row",
-    gap: 10,
-    paddingTop: 14,
-  },
-  inputWrap: {
-    flex: 1,
-    gap: 6,
-  },
-  inputLabel: {
-    fontSize: 12,
-    color: "#888",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#e4e4e4",
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    fontSize: 17,
-    fontWeight: "600",
-    color: "#111",
-    textAlign: "center",
-  },
-  ctxRow: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  ctxPill: {
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    backgroundColor: "#f7f6f3",
-  },
-  ctxPillActive: {
-    backgroundColor: "#eef4f4",
-    borderColor: "#4a7c7e",
-  },
-  ctxText: {
-    fontSize: 13,
-    color: "#888",
-  },
-  ctxTextActive: {
-    color: "#4a7c7e",
-    fontWeight: "600",
-  },
-  saveVitalsBtn: {
-    backgroundColor: "#2c2c2c",
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-  },
-  saveVitalsBtnText: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#fff",
-  },
-  measureLink: {
-    fontSize: 13,
-    color: "#9AA6A2",
-    textDecorationLine: "underline",
-  },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.3)",
@@ -692,45 +438,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 32,
   },
-  modalBox: {
-    backgroundColor: "#fff",
-    borderRadius: 18,
-    padding: 24,
-    width: "100%",
-    gap: 12,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 16,
-    elevation: 8,
-  },
   modalTitle: {
     fontSize: 17,
     fontWeight: "600",
     color: "#111",
     marginBottom: 2,
-  },
-  modalRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 8,
-  },
-  modalDot: {
-    fontSize: 18,
-    color: "#9AA6A2",
-    lineHeight: 22,
-  },
-  modalTip: {
-    fontSize: 14,
-    color: "#444",
-    lineHeight: 22,
-    flex: 1,
-  },
-  modalFooter: {
-    fontSize: 13,
-    color: "#aaa",
-    fontStyle: "italic",
-    marginTop: 4,
   },
   modalClose: {
     marginTop: 4,
@@ -743,15 +455,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
     color: "#4a7c7e",
-  },
-  savedMsg: {
-    alignItems: "center",
-    paddingVertical: 10,
-  },
-  savedMsgText: {
-    fontSize: 14,
-    color: "#4a7c7e",
-    fontStyle: "italic",
   },
   aboutLink: {
     alignItems: "center",
