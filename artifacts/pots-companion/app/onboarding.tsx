@@ -14,7 +14,7 @@ const BULLETS = [
   "Track sleep",
   "Track symptoms",
   "Track hydration",
-  "See simple daily guidance",
+  "Simple daily guidance based on your inputs",
 ];
 
 export default function OnboardingScreen() {
