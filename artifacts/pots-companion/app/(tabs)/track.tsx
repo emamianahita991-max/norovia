@@ -183,7 +183,7 @@ export default function TrackScreen() {
       )}
 
       <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Symptoms</Text>
+        <Text style={styles.sectionTitle}>Baseline check-in</Text>
         {SYMPTOMS.map(({ key, label }) => (
           <SliderRow
             key={key}
@@ -201,7 +201,8 @@ export default function TrackScreen() {
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Habits today</Text>
+        <Text style={styles.sectionTitle}>Support your day</Text>
+        <Text style={styles.sectionSubtitle}>Add as your day goes.</Text>
 
         <View style={waterStyles.wrap}>
           <View style={waterStyles.headerRow}>
@@ -315,6 +316,7 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   sectionTitle: { fontSize: 15, fontWeight: "600", color: "#111" },
+  sectionSubtitle: { fontSize: 13, color: "#9AA6A2", marginTop: -6 },
   divider: { height: 1, backgroundColor: "#eee", marginVertical: 2 },
   disclaimer: {
     backgroundColor: "#fef9ec",
