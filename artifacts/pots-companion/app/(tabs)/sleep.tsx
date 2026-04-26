@@ -24,12 +24,6 @@ function formatMinute(m: number): string {
   return m.toString().padStart(2, "0");
 }
 
-function formatTime(hour: number, minute: number): string {
-  const period = hour < 12 ? "AM" : "PM";
-  const h = hour % 12 === 0 ? 12 : hour % 12;
-  return `${h}:${formatMinute(minute)} ${period}`;
-}
-
 function calcHours(
   bedHour: number, bedMin: number,
   wakeHour: number, wakeMin: number
