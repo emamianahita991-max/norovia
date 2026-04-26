@@ -156,7 +156,7 @@ function StepperRow({ label, value, onDecrement, onIncrement }: any) {
 export default function SleepScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { sleepLoggedToday, setSleepLogged, setPendingSleep } = useDaily();
+  const { sleepLoggedToday, setSleepLogged, setPendingSleep, pendingSleep } = useDaily();
 
   const [bedHour, setBedHour] = useState(22);
   const [bedMinute, setBedMinute] = useState(30);
@@ -242,11 +242,19 @@ export default function SleepScreen() {
           <Text style={styles.statValue}>{awakenings}</Text>
         </View>
 
-        <View style={[styles.summaryBox, { backgroundColor: "#f0f3f5" }]}>
-          <Text style={[styles.summaryText, { color: "#4a5560" }]}>
-            Log your sleep to see today's sleep note.
-          </Text>
-        </View>
+        {sleepLoggedToday && pendingSleep ? (
+          <View style={[styles.summaryBox, { backgroundColor: scoreFeedback(pendingSleep.score).bg }]}>
+            <Text style={[styles.summaryText, { color: scoreFeedback(pendingSleep.score).textColor }]}>
+              {scoreFeedback(pendingSleep.score).message}
+            </Text>
+          </View>
+        ) : (
+          <View style={[styles.summaryBox, { backgroundColor: "#f0f3f5" }]}>
+            <Text style={[styles.summaryText, { color: "#4a5560" }]}>
+              Log your sleep to see today's sleep note.
+            </Text>
+          </View>
+        )}
       </View>
 
       <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
