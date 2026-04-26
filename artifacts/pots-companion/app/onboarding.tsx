@@ -89,6 +89,10 @@ export default function OnboardingScreen() {
               <Text style={styles.disclaimerEmergency}>
                 If you feel unsafe or your symptoms are severe, seek medical care or call emergency services.
               </Text>
+              <Text style={styles.dataNote}>
+                Your data is currently stored on your device.{"\n"}
+                If you delete the app or change devices, your data may not carry over yet.
+              </Text>
             </>
           )}
 
@@ -207,6 +211,13 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     textAlign: "center",
     marginTop: 8,
+  },
+  dataNote: {
+    fontSize: 13,
+    color: "#888",
+    lineHeight: 20,
+    textAlign: "center",
+    marginTop: 12,
   },
   footer: {
     gap: 20,
