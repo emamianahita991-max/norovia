@@ -180,7 +180,7 @@ export default function HomeScreen() {
         <Text style={styles.heading}>Today</Text>
         {!isFlareActive && !checkInCompletedToday && (
           <Text style={styles.todayStatePlaceholder}>
-            Complete today's check-in to see your Today State.
+            Complete today's check-in to better guide your day.
           </Text>
         )}
         {(!isFlareActive && checkInCompletedToday && todayState !== null) && (() => {
@@ -192,16 +192,16 @@ export default function HomeScreen() {
               : "Steady";
           const stateSignal =
             todayState === "take-it-easy"
-              ? "Your body is working hard right now."
+              ? "Your body is under strain today."
               : todayState === "mindful"
               ? "Your body may have less in reserve today."
               : "Your inputs suggest a steadier day.";
           const stateAction =
             todayState === "take-it-easy"
-              ? "Rest is doing something. Reduce upright time and let the day come to you."
+              ? "Prioritize rest. Reduce upright time and non-essential activity."
               : todayState === "mindful"
-              ? "Work in shorter blocks and give yourself permission to stop early."
-              : "Keep your routine steady and avoid overdoing it.";
+              ? "Work in shorter blocks. Pause before symptoms build."
+              : "Keep your routine steady. Avoid overdoing it.";
           return (
             <View>
               <Text style={styles.todayStateLabel}>{stateLabel}</Text>
