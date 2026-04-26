@@ -152,11 +152,11 @@ export default function SleepScreen() {
   const router = useRouter();
   const { sleepLoggedToday, setSleepLogged, setPendingSleep, pendingSleep } = useDaily();
 
-  const [bedHour, setBedHour] = useState(22);
-  const [bedMinute, setBedMinute] = useState(30);
-  const [wakeHour, setWakeHour] = useState(7);
-  const [wakeMinute, setWakeMinute] = useState(0);
-  const [awakenings, setAwakenings] = useState(0);
+  const [bedHour, setBedHour] = useState(pendingSleep?.bedHour ?? 22);
+  const [bedMinute, setBedMinute] = useState(pendingSleep?.bedMinute ?? 30);
+  const [wakeHour, setWakeHour] = useState(pendingSleep?.wakeHour ?? 7);
+  const [wakeMinute, setWakeMinute] = useState(pendingSleep?.wakeMinute ?? 0);
+  const [awakenings, setAwakenings] = useState(pendingSleep?.awakenings ?? 0);
 
   const hours = useMemo(() => {
     return calcHours(bedHour, bedMinute, wakeHour, wakeMinute);
@@ -165,7 +165,7 @@ export default function SleepScreen() {
   const score = sleepScore(hours, awakenings);
 
   function handleSave() {
-    setPendingSleep({ score, hours, awakenings });
+    setPendingSleep({ score, hours, awakenings, bedHour, bedMinute, wakeHour, wakeMinute });
     setSleepLogged(true);
     router.navigate("/");
   }

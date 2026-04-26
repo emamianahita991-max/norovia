@@ -30,6 +30,10 @@ type PendingSleep = {
   score: number;
   hours: number;
   awakenings: number;
+  bedHour?: number;
+  bedMinute?: number;
+  wakeHour?: number;
+  wakeMinute?: number;
 } | null;
 
 type DailyState = {
