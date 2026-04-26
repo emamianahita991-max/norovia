@@ -9,10 +9,18 @@ import {
   Modal,
   Pressable,
 } from "react-native";
+
 import { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useDaily } from "@/context/DailyContext";
+
+const WHAT_YOU_TRACK = [
+  "Track sleep",
+  "Track symptoms",
+  "Track hydration",
+  "Simple daily guidance based on your inputs",
+];
 
 
 const CONTEXTS = ["seated", "standing", "other"] as const;
@@ -404,20 +412,39 @@ export default function HomeScreen() {
         onRequestClose={() => setShowAboutModal(false)}
       >
         <Pressable style={styles.modalOverlay} onPress={() => setShowAboutModal(false)}>
-          <Pressable style={styles.modalBox} onPress={() => {}}>
+          <Pressable style={styles.aboutModalBox} onPress={() => {}}>
             <Text style={styles.modalTitle}>About Norovia</Text>
-            <Text style={styles.aboutModalBody}>
-              Norovia is a lifestyle support tool created with clinical insight into POTS and dysautonomia.
-            </Text>
-            <Text style={styles.aboutModalBody}>
-              It does not diagnose, treat, or replace medical care.
-            </Text>
-            <Text style={styles.aboutModalBody}>
-              It helps you track patterns, understand your day, and make supportive lifestyle choices.
-            </Text>
-            <Text style={styles.aboutModalEmergency}>
-              If symptoms feel severe, unusual, or concerning, contact emergency services or call 911.
-            </Text>
+            <ScrollView
+              style={styles.aboutModalScroll}
+              showsVerticalScrollIndicator={false}
+              bounces={false}
+            >
+              <Text style={styles.aboutModalBody}>
+                Norovia is a lifestyle support tool created with clinical insight into POTS and dysautonomia.
+              </Text>
+              <Text style={styles.aboutModalBody}>
+                It helps you track patterns, understand your day, and make supportive lifestyle choices.
+              </Text>
+
+              <Text style={styles.aboutSectionLabel}>What you'll track</Text>
+              {WHAT_YOU_TRACK.map((item) => (
+                <View key={item} style={styles.aboutBulletRow}>
+                  <Text style={styles.aboutBulletDot}>·</Text>
+                  <Text style={styles.aboutBulletText}>{item}</Text>
+                </View>
+              ))}
+
+              <Text style={styles.aboutSectionLabel}>Disclaimer</Text>
+              <Text style={styles.aboutModalBody}>
+                This app helps you notice patterns and better understand your symptoms.
+              </Text>
+              <Text style={styles.aboutModalBody}>
+                It does not provide medical advice, diagnosis, or treatment — and does not replace medical care.
+              </Text>
+              <Text style={styles.aboutModalEmergency}>
+                If you feel unsafe or your symptoms are severe, seek medical care or call emergency services (911).
+              </Text>
+            </ScrollView>
             <TouchableOpacity
               onPress={() => setShowAboutModal(false)}
               activeOpacity={0.7}
@@ -736,10 +763,27 @@ const styles = StyleSheet.create({
     color: "#bbb",
     textDecorationLine: "underline",
   },
+  aboutModalBox: {
+    backgroundColor: "#fff",
+    borderRadius: 18,
+    padding: 24,
+    width: "100%",
+    maxHeight: "80%",
+    gap: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  aboutModalScroll: {
+    flexGrow: 0,
+  },
   aboutModalBody: {
     fontSize: 14,
     color: "#444",
     lineHeight: 22,
+    marginBottom: 8,
   },
   aboutModalEmergency: {
     fontSize: 14,
@@ -747,6 +791,33 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     fontWeight: "600",
     marginTop: 4,
+    marginBottom: 8,
+  },
+  aboutSectionLabel: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: "#9AA6A2",
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginTop: 12,
+    marginBottom: 6,
+  },
+  aboutBulletRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 8,
+    marginBottom: 4,
+  },
+  aboutBulletDot: {
+    fontSize: 18,
+    color: "#4a7c7e",
+    lineHeight: 22,
+  },
+  aboutBulletText: {
+    fontSize: 14,
+    color: "#333",
+    lineHeight: 22,
+    flex: 1,
   },
 
   section: {
