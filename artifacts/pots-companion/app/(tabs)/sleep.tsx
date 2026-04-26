@@ -80,6 +80,7 @@ function TimePicker({
   minute,
   onHourChange,
   onMinuteChange,
+  style,
 }: any) {
   const minIdx = MINUTES.indexOf(minute);
 
@@ -93,7 +94,7 @@ function TimePicker({
   }
 
   return (
-    <View style={tp.wrap}>
+    <View style={[tp.wrap, style]}>
       <Text style={tp.label}>{label}</Text>
 
       <View style={tp.row}>
@@ -207,6 +208,7 @@ export default function SleepScreen() {
           minute={wakeMinute}
           onHourChange={setWakeHour}
           onMinuteChange={setWakeMinute}
+          style={{ marginTop: 18 }}
         />
 
         <View style={{ gap: 6 }}>
@@ -289,7 +291,7 @@ const tp = StyleSheet.create({
   row: { flexDirection: "row", alignItems: "center", gap: 12 },
   col: { flex: 1, gap: 6 },
   separator: { width: 1, height: 48, backgroundColor: "#eee" },
-  unit: { fontSize: 11, color: "#aaa", textAlign: "center" },
+  unit: { fontSize: 11, color: "#ccc", textAlign: "center" },
   controls: { flexDirection: "row", justifyContent: "center", gap: 12 },
   btn: { width: 34, height: 34, backgroundColor: ACCENT, borderRadius: 17, alignItems: "center", justifyContent: "center" },
   btnText: { color: "#fff", fontSize: 20 },
