@@ -26,7 +26,7 @@ export default function OnboardingScreen() {
   const router = useRouter();
   const { completeOnboarding } = useDaily();
   const [step, setStep] = useState(0);
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState<boolean | null>(null);
 
   useEffect(() => {
     AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
@@ -37,8 +37,9 @@ export default function OnboardingScreen() {
     router.replace("/sleep");
   }
 
-  const entering = reduceMotion ? undefined : FadeIn.duration(220);
-  const exiting = reduceMotion ? undefined : FadeOut.duration(140);
+  const animate = reduceMotion === false;
+  const entering = animate ? FadeIn.duration(220) : undefined;
+  const exiting = animate ? FadeOut.duration(140) : undefined;
 
   return (
     <View
