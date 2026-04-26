@@ -233,7 +233,7 @@ export default function SleepScreen() {
         </View>
 
         <View style={styles.statRow}>
-          <Text style={styles.statLabel}>Night awakenings</Text>
+          <Text style={styles.statLabel}>Awakenings</Text>
           <Text style={styles.statValue}>{awakenings}</Text>
         </View>
 
