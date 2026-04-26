@@ -101,7 +101,6 @@ function TimePicker({
   return (
     <View style={tp.wrap}>
       <Text style={tp.label}>{label}</Text>
-      <Text style={tp.timeDisplay}>{formatTime(hour, minute)}</Text>
 
       <View style={tp.row}>
         <View style={tp.col}>
@@ -194,7 +193,7 @@ export default function SleepScreen() {
       {!sleepLoggedToday && (
         <View style={styles.promptBanner}>
           <Text style={styles.promptText}>
-            Sleep with these symptoms is rarely simple. Let's note what you got.
+            Sleep can be unpredictable. Let's note what you got.
           </Text>
         </View>
       )}
@@ -293,7 +292,6 @@ const step = StyleSheet.create({
 const tp = StyleSheet.create({
   wrap: { gap: 8 },
   label: { fontSize: 13, color: "#777" },
-  timeDisplay: { fontSize: 26, fontWeight: "700" },
   row: { flexDirection: "row", alignItems: "center", gap: 12 },
   col: { flex: 1, gap: 6 },
   separator: { width: 1, height: 48, backgroundColor: "#eee" },
