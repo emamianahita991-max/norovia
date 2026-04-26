@@ -211,15 +211,15 @@ export default function SleepScreen() {
           style={{ marginTop: 18 }}
         />
 
-        <View style={{ gap: 6 }}>
+        <View style={{ gap: 6, marginTop: 18 }}>
           <StepperRow
-            label="Night awakenings"
+            label="Awakenings"
             value={awakenings}
             onDecrement={() => setAwakenings(Math.max(0, awakenings - 1))}
             onIncrement={() => setAwakenings(Math.min(10, awakenings + 1))}
           />
           <Text style={{ fontSize: 12, color: "#888" }}>
-            How many times did you wake up?
+            How many times did you wake up during the night?
           </Text>
         </View>
       </View>
