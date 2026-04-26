@@ -48,6 +48,7 @@ export default function HomeScreen() {
 
   type TodayState = "take-it-easy" | "mindful" | "steady";
   const todayState: TodayState | null = (() => {
+    if (!checkInCompletedToday) return null;
     if (avgSymptom === null && sleepScore === null && sleepHours === null) return null;
     const sym = avgSymptom ?? 0;
     const badSleep =
