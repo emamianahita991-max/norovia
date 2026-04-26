@@ -69,7 +69,7 @@ export default function OnboardingScreen() {
         {step === 2 && (
           <>
             <Text style={styles.disclaimerText}>
-              This app is designed to help you notice patterns and better understand your symptoms.
+              This app helps you notice patterns and better understand your symptoms.
             </Text>
             <Text style={styles.disclaimerText}>
               It does not provide medical advice, diagnosis, or treatment.
@@ -177,9 +177,9 @@ const styles = StyleSheet.create({
   },
   disclaimerEmergency: {
     fontSize: 16,
-    color: "#8a3a3a",
+    color: "#666",
     lineHeight: 26,
-    fontWeight: "600",
+    fontWeight: "400",
     textAlign: "center",
     marginTop: 8,
   },
