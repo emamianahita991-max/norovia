@@ -371,21 +371,29 @@ export default function HomeScreen() {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Daily plan</Text>
-        {plan.map((item, i) => (
-          <View key={i} style={styles.bullet}>
-            <Text style={styles.bulletDot}>·</Text>
-            <Text style={styles.bulletText}>{item}</Text>
-          </View>
-        ))}
-        {!isFlareActive && latestEntry !== null && (
-          <Text style={styles.microNudge}>{microNudge}</Text>
-        )}
-        {!isFlareActive && standingCaution !== "" && (
-          <Text style={styles.standingCaution}>{standingCaution}</Text>
+        {!checkInCompletedToday ? (
+          <Text style={styles.todayStatePlaceholder}>
+            Complete your check-in to see today's plan.
+          </Text>
+        ) : (
+          <>
+            {plan.map((item, i) => (
+              <View key={i} style={styles.bullet}>
+                <Text style={styles.bulletDot}>·</Text>
+                <Text style={styles.bulletText}>{item}</Text>
+              </View>
+            ))}
+            {!isFlareActive && latestEntry !== null && (
+              <Text style={styles.microNudge}>{microNudge}</Text>
+            )}
+            {!isFlareActive && standingCaution !== "" && (
+              <Text style={styles.standingCaution}>{standingCaution}</Text>
+            )}
+          </>
         )}
       </View>
 
-      {!isFlareActive && (
+      {!isFlareActive && checkInCompletedToday && (
         <View style={styles.insight}>
           <Text style={styles.insightText}>{insight}</Text>
         </View>
