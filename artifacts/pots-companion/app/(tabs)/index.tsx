@@ -119,6 +119,8 @@ export default function HomeScreen() {
   })();
 
   const insight: string = (() => {
+    if (entries.length < 3)
+      return "We'll start noticing patterns as you log a few days.";
     if (sleepScore !== null && sleepScore < 60)
       return "Short or disrupted sleep may make symptoms harder today.";
     if (todayState === "take-it-easy") return "Harder days happen. You're not doing anything wrong.";
