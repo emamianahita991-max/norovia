@@ -61,20 +61,20 @@ function sleepScore(hours: number, awakenings: number): number {
 function scoreFeedback(score: number) {
   if (score > 80) {
     return {
-      message: "Your sleep looks supportive today.",
+      message: "Your sleep may be supportive today.",
       bg: "#eef4f4",
       textColor: "#3a6a6b",
     };
   }
   if (score >= 60) {
     return {
-      message: "Your sleep was okay. Small adjustments may help.",
+      message: "Your sleep may need a little support today.",
       bg: "#f0f3f5",
       textColor: "#4a5560",
     };
   }
   return {
-    message: "Short sleep may make symptoms harder today.",
+    message: "Short sleep may make symptoms feel harder today.",
     bg: "#fff4e6",
     textColor: "#9a5a00",
   };
@@ -242,21 +242,11 @@ export default function SleepScreen() {
           <Text style={styles.statValue}>{awakenings}</Text>
         </View>
 
-        <View style={styles.statRow}>
-          <Text style={styles.statLabel}>Sleep score</Text>
-          <Text style={styles.statValue}>{score} / 100</Text>
+        <View style={[styles.summaryBox, { backgroundColor: "#f0f3f5" }]}>
+          <Text style={[styles.summaryText, { color: "#4a5560" }]}>
+            Log your sleep to see today's sleep note.
+          </Text>
         </View>
-
-        {(() => {
-          const fb = scoreFeedback(score);
-          return (
-            <View style={[styles.summaryBox, { backgroundColor: fb.bg }]}>
-              <Text style={[styles.summaryText, { color: fb.textColor }]}>
-                {fb.message}
-              </Text>
-            </View>
-          );
-        })()}
       </View>
 
       <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
