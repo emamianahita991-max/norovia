@@ -68,18 +68,14 @@ export default function OnboardingScreen() {
 
         {step === 2 && (
           <>
-            <Text style={styles.sectionLabel}>Before you begin</Text>
-            <Text style={styles.bodyText}>
-              Norovia is a lifestyle support tool created with clinical insight into POTS and dysautonomia.
+            <Text style={styles.disclaimerText}>
+              This app is designed to help you notice patterns and better understand your symptoms.
             </Text>
-            <Text style={styles.bodyText}>
-              It does not diagnose, treat, or replace medical care.
+            <Text style={styles.disclaimerText}>
+              It does not provide medical advice, diagnosis, or treatment.
             </Text>
-            <Text style={styles.bodyText}>
-              It helps you track patterns, understand your day, and make supportive lifestyle choices.
-            </Text>
-            <Text style={styles.emergencyText}>
-              If symptoms feel severe, unusual, or concerning, contact emergency services or call 911.
+            <Text style={styles.disclaimerEmergency}>
+              If you feel unsafe or your symptoms are severe, seek medical care or call emergency services.
             </Text>
           </>
         )}
@@ -109,7 +105,7 @@ export default function OnboardingScreen() {
               : step === 1
               ? "Got it →"
               : step === 2
-              ? "Understood →"
+              ? "I understand →"
               : "Log last night's sleep →"}
           </Text>
         </TouchableOpacity>
@@ -172,12 +168,20 @@ const styles = StyleSheet.create({
     lineHeight: 32,
     fontWeight: "400",
   },
-  emergencyText: {
-    fontSize: 15,
+  disclaimerText: {
+    fontSize: 20,
+    color: "#333",
+    lineHeight: 30,
+    fontWeight: "400",
+    textAlign: "center",
+  },
+  disclaimerEmergency: {
+    fontSize: 16,
     color: "#8a3a3a",
-    lineHeight: 24,
+    lineHeight: 26,
     fontWeight: "600",
-    marginTop: 4,
+    textAlign: "center",
+    marginTop: 8,
   },
   footer: {
     gap: 20,
