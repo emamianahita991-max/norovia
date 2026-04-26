@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
+  AccessibilityInfo,
   Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useDaily } from "@/context/DailyContext";
@@ -17,18 +19,26 @@ const BULLETS = [
   "Simple daily guidance based on your inputs",
 ];
 
+const TOTAL_STEPS = 4;
+
 export default function OnboardingScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { completeOnboarding } = useDaily();
   const [step, setStep] = useState(0);
+  const [reduceMotion, setReduceMotion] = useState(false);
+
+  useEffect(() => {
+    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
+  }, []);
 
   function handleFinish() {
     completeOnboarding();
     router.replace("/sleep");
   }
 
-  const TOTAL_STEPS = 4;
+  const entering = reduceMotion ? undefined : FadeIn.duration(220);
+  const exiting = reduceMotion ? undefined : FadeOut.duration(140);
 
   return (
     <View
@@ -43,48 +53,50 @@ export default function OnboardingScreen() {
       <Text style={styles.wordmark}>Norovia</Text>
 
       <View style={styles.body}>
-        {step === 0 && (
-          <>
-            <Text style={styles.bodyText}>
-              Living with these symptoms is hard. This app won't fix everything, but it can help you notice patterns and feel a little less alone.
-            </Text>
-            <Text style={styles.bodyText}>
-              You don't have to figure it all out today.
-            </Text>
-          </>
-        )}
+        <Animated.View key={step} entering={entering} exiting={exiting} style={styles.stepContent}>
+          {step === 0 && (
+            <>
+              <Text style={styles.bodyText}>
+                Living with these symptoms is hard. This app won't fix everything, but it can help you notice patterns and feel a little less alone.
+              </Text>
+              <Text style={styles.bodyText}>
+                You don't have to figure it all out today.
+              </Text>
+            </>
+          )}
 
-        {step === 1 && (
-          <>
-            <Text style={styles.sectionLabel}>What you'll track</Text>
-            {BULLETS.map((b) => (
-              <View key={b} style={styles.bulletRow}>
-                <Text style={styles.bulletDot}>·</Text>
-                <Text style={styles.bulletText}>{b}</Text>
-              </View>
-            ))}
-          </>
-        )}
+          {step === 1 && (
+            <>
+              <Text style={styles.sectionLabel}>What you'll track</Text>
+              {BULLETS.map((b) => (
+                <View key={b} style={styles.bulletRow}>
+                  <Text style={styles.bulletDot}>·</Text>
+                  <Text style={styles.bulletText}>{b}</Text>
+                </View>
+              ))}
+            </>
+          )}
 
-        {step === 2 && (
-          <>
-            <Text style={styles.disclaimerText}>
-              This app helps you notice patterns and better understand your symptoms.
-            </Text>
-            <Text style={styles.disclaimerText}>
-              It does not provide medical advice, diagnosis, or treatment.
-            </Text>
-            <Text style={styles.disclaimerEmergency}>
-              If you feel unsafe or your symptoms are severe, seek medical care or call emergency services.
-            </Text>
-          </>
-        )}
+          {step === 2 && (
+            <>
+              <Text style={styles.disclaimerText}>
+                This app helps you notice patterns and better understand your symptoms.
+              </Text>
+              <Text style={styles.disclaimerText}>
+                It does not provide medical advice, diagnosis, or treatment.
+              </Text>
+              <Text style={styles.disclaimerEmergency}>
+                If you feel unsafe or your symptoms are severe, seek medical care or call emergency services.
+              </Text>
+            </>
+          )}
 
-        {step === 3 && (
-          <Text style={styles.prompt}>
-            How did you sleep last night?
-          </Text>
-        )}
+          {step === 3 && (
+            <Text style={styles.prompt}>
+              How did you sleep last night?
+            </Text>
+          )}
+        </Animated.View>
       </View>
 
       <View style={styles.footer}>
@@ -131,6 +143,8 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     justifyContent: "center",
+  },
+  stepContent: {
     gap: 20,
   },
   bodyText: {

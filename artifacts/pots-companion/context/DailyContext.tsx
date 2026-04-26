@@ -55,7 +55,6 @@ type PersistedDailyState = {
   vitalsReadings: VitalReading[];
   pendingSleep: PendingSleep;
   isFlareActive: boolean;
-  onboardingComplete: boolean;
 };
 
 const STORAGE_KEY = "norovia.daily.v1";
@@ -112,7 +111,6 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
 
         setEntries(saved.entries ?? []);
         setVitalsReadings(saved.vitalsReadings ?? []);
-        setOnboardingComplete(Boolean(saved.onboardingComplete));
         setSleepLogged(sameDay && Boolean(saved.sleepLoggedToday));
         setCheckInCompleted(sameDay && Boolean(saved.checkInCompletedToday));
         setPendingSleep(sameDay ? saved.pendingSleep ?? null : null);
@@ -142,7 +140,6 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
       vitalsReadings,
       pendingSleep,
       isFlareActive,
-      onboardingComplete,
     };
 
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(payload)).catch(() => {});
@@ -154,7 +151,6 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
     vitalsReadings,
     pendingSleep,
     isFlareActive,
-    onboardingComplete,
   ]);
 
   function completeOnboarding() {
