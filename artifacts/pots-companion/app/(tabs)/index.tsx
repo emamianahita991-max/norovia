@@ -215,7 +215,12 @@ export default function HomeScreen() {
         <Text style={styles.appName}>Norovia</Text>
         <Text style={styles.companion}>You don't have to figure this out all at once.</Text>
         <Text style={styles.heading}>Today</Text>
-        {(!isFlareActive && todayState !== null) && (() => {
+        {!isFlareActive && !checkInCompletedToday && (
+          <Text style={styles.todayStatePlaceholder}>
+            Complete today's check-in to see your Today State.
+          </Text>
+        )}
+        {(!isFlareActive && checkInCompletedToday && todayState !== null) && (() => {
           const stateLabel =
             todayState === "take-it-easy"
               ? "Take It Easy (Very Low Reserve)"
@@ -270,16 +275,9 @@ export default function HomeScreen() {
         </View>
       )}
 
-      {sleepScore !== null && (
-        <View style={styles.card}>
-          <Text style={styles.cardLabel}>Sleep score</Text>
-          <Text style={styles.cardValue}>{sleepScore} / 100</Text>
-        </View>
-      )}
-
       {sleepAwakenings !== null && (
         <View style={styles.card}>
-          <Text style={styles.cardLabel}>Night awakenings</Text>
+          <Text style={styles.cardLabel}>Awakenings</Text>
           <Text style={styles.cardValue}>{sleepAwakenings}</Text>
         </View>
       )}
@@ -512,6 +510,12 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     color: "#9AA6A2",
     marginTop: 3,
+  },
+  todayStatePlaceholder: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: "#9AA6A2",
+    marginTop: 4,
   },
   ctaWrap: {
     gap: 8,
