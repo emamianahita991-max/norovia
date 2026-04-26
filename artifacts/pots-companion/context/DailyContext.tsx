@@ -54,6 +54,7 @@ type DailyState = {
   setFlareActive: (v: boolean) => void;
   completeOnboarding: () => void;
   lockTodayState: (s: TodayState | null) => void;
+  resetAll: () => Promise<void>;
 };
 
 type PersistedDailyState = {
@@ -95,6 +96,7 @@ const DailyContext = createContext<DailyState>({
   setFlareActive: () => {},
   completeOnboarding: () => {},
   lockTodayState: () => {},
+  resetAll: async () => {},
 });
 
 export function DailyProvider({ children }: { children: React.ReactNode }) {
@@ -220,6 +222,18 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
     setLockedTodayState(s);
   }
 
+  async function resetAll() {
+    await AsyncStorage.removeItem(STORAGE_KEY);
+    setSleepLogged(false);
+    setCheckInCompleted(false);
+    setEntries([]);
+    setVitalsReadings([]);
+    setPendingSleep(null);
+    setFlareActive(false);
+    setLockedTodayState(null);
+    setOnboardingComplete(false);
+  }
+
   return (
     <DailyContext.Provider
       value={{
@@ -240,6 +254,7 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
         completeOnboarding,
         lockedTodayState,
         lockTodayState,
+        resetAll,
       }}
     >
       {children}

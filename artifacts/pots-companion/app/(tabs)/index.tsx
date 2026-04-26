@@ -27,6 +27,7 @@ export default function HomeScreen() {
     isFlareActive,
     pendingSleep,
     lockedTodayState,
+    resetAll,
   } = useDaily();
 
   console.log("TodayState:", lockedTodayState);
@@ -313,6 +314,13 @@ export default function HomeScreen() {
             >
               <Text style={styles.modalCloseText}>Done</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => { setShowAboutModal(false); resetAll(); }}
+              activeOpacity={0.6}
+              style={styles.resetLink}
+            >
+              <Text style={styles.resetLinkText}>Reset app data</Text>
+            </TouchableOpacity>
           </Pressable>
         </Pressable>
       </Modal>
@@ -494,6 +502,15 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     marginTop: 12,
     marginBottom: 6,
+  },
+  resetLink: {
+    alignItems: "center",
+    paddingVertical: 6,
+    marginTop: 4,
+  },
+  resetLinkText: {
+    fontSize: 11,
+    color: "#bbb",
   },
   section: {
     backgroundColor: "#fff",
