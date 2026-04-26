@@ -46,10 +46,10 @@ export default function OnboardingScreen() {
         {step === 0 && (
           <>
             <Text style={styles.bodyText}>
-              Living with these symptoms is genuinely hard. This app won't change that, but it can help you understand your patterns and feel a little less alone in them.
+              Living with these symptoms is hard. This app won't fix everything, but it can help you notice patterns and feel a little less alone.
             </Text>
             <Text style={styles.bodyText}>
-              You don't need to figure everything out at once.
+              You don't have to figure it all out today.
             </Text>
           </>
         )}
