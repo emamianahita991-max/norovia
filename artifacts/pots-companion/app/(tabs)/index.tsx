@@ -63,7 +63,9 @@ export default function HomeScreen() {
     return "steady";
   })();
 
-  const { movementText, standingCaution } = getMovementGuidance(todayState ?? "steady", dizziness);
+  const { movementText, standingCaution } = todayState !== null
+    ? getMovementGuidance(todayState, dizziness)
+    : { movementText: "", standingCaution: "" };
 
   const BASE_BULLETS: Record<TodayState, string[]> = {
     "take-it-easy": [
@@ -97,18 +99,14 @@ export default function HomeScreen() {
 
   const plan: string[] = isFlareActive
     ? FLARE_PLAN
-    : (() => {
-        const base =
-          todayState !== null
-            ? BASE_BULLETS[todayState]
-            : [
-                "Keep movement gentle and paced today.",
-                "Listen to what your body needs today.",
-              ];
+    : todayState !== null
+    ? (() => {
+        const base = BASE_BULLETS[todayState];
         return hydrationBullet
           ? [hydrationBullet, ...base].slice(0, 3)
           : base.slice(0, 3);
-      })();
+      })()
+    : [];
 
   const microNudge: string = (() => {
     if (waterLiters === null || waterLiters < 1)
@@ -232,7 +230,7 @@ export default function HomeScreen() {
               ? "Your body is working hard right now."
               : todayState === "mindful"
               ? "Your body may have less in reserve today."
-              : "Your body seems more stable today.";
+              : "Your inputs suggest a steadier day.";
           const stateAction =
             todayState === "take-it-easy"
               ? "Rest is doing something. Reduce upright time and let the day come to you."
