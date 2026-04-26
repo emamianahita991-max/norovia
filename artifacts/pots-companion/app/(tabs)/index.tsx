@@ -15,12 +15,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useDaily } from "@/context/DailyContext";
 
-const WHAT_YOU_TRACK = [
-  "Track sleep",
-  "Track symptoms",
-  "Track hydration",
-  "Simple daily guidance based on your inputs",
-];
 
 
 const CONTEXTS = ["seated", "standing", "other"] as const;
@@ -420,19 +414,11 @@ export default function HomeScreen() {
               bounces={false}
             >
               <Text style={styles.aboutModalBody}>
-                Norovia is a lifestyle support tool created with clinical insight into POTS and dysautonomia.
+                Norovia is a simple tool to help you notice patterns and understand your symptoms.
               </Text>
               <Text style={styles.aboutModalBody}>
-                It helps you track patterns, understand your day, and make supportive lifestyle choices.
+                It helps you track your day and make small, supportive adjustments.
               </Text>
-
-              <Text style={styles.aboutSectionLabel}>What you'll track</Text>
-              {WHAT_YOU_TRACK.map((item) => (
-                <View key={item} style={styles.aboutBulletRow}>
-                  <Text style={styles.aboutBulletDot}>·</Text>
-                  <Text style={styles.aboutBulletText}>{item}</Text>
-                </View>
-              ))}
 
               <Text style={styles.aboutSectionLabel}>Disclaimer</Text>
               <Text style={styles.aboutModalBody}>
@@ -802,24 +788,6 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 6,
   },
-  aboutBulletRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 8,
-    marginBottom: 4,
-  },
-  aboutBulletDot: {
-    fontSize: 18,
-    color: "#4a7c7e",
-    lineHeight: 22,
-  },
-  aboutBulletText: {
-    fontSize: 14,
-    color: "#333",
-    lineHeight: 22,
-    flex: 1,
-  },
-
   section: {
     backgroundColor: "#fff",
     borderRadius: 14,
