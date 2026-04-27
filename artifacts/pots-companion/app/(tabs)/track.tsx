@@ -157,7 +157,7 @@ export default function TrackScreen() {
       sleepScore: pendingSleep?.score ?? null,
       sleepHours: pendingSleep?.hours ?? null,
       sleepAwakenings: pendingSleep?.awakenings ?? null,
-      observation: observation.trim() || undefined,
+      observation: observation.trim(),
     });
 
     const sleepScore = pendingSleep?.score ?? null;
@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: { fontSize: 15, fontWeight: "600", color: "#111" },
   sectionSubtitle: { fontSize: 13, color: "#9AA6A2", marginTop: -6 },
-  sectionLabel: { fontSize: 13, fontWeight: "600", color: "#9AA6A2", textTransform: "uppercase", letterSpacing: 0.8 },
+  sectionLabel: { fontSize: 13, fontWeight: "600", color: "#9AA6A2" },
   divider: { height: 1, backgroundColor: "#eee", marginVertical: 2 },
   disclaimer: {
     backgroundColor: "#fef9ec",
