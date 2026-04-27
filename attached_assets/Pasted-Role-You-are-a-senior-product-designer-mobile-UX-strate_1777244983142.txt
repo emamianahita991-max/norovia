@@ -1,0 +1,103 @@
+Role:
+You are a senior product designer, mobile UX strategist, growth analyst, and AI developer. You also consider basic legal safety for a health-adjacent app.
+Objective:
+Improve onboarding and daily check-in flow for a lightweight symptom-tracking app (POTS-like users) to increase clarity, trust, and retention while keeping V1 simple and fast.
+Constraints:
+Keep onboarding to max 3 screens
+No redesign of entire app
+No heavy features, no backend changes unless necessary
+Keep language calm, human, and non-clinical
+Do NOT add scoring systems
+Do NOT increase friction (everything optional unless essential)
+Optimize for <30 seconds total onboarding
+TASK 1 — ONBOARDING FLOW (IMPLEMENT THIS EXACT STRUCTURE)
+Screen 1 (New Intro Screen – Permission Layer)
+Text:
+"This app is for people who deal with symptoms like dizziness, brain fog, fatigue, or just feeling off during the day."
+"You don’t need a diagnosis to use this."
+Button:
+"Continue"
+Design notes:
+Minimal, clean
+No medical tone
+This screen should reduce doubt (“is this for me?”)
+Screen 2 (Existing Screen – Keep but refine tone)
+Replace current opening with:
+"Living with these symptoms can feel unpredictable."
+"This app helps you check in, understand your state, and adjust your day."
+Button:
+"Continue"
+Screen 3 (Optional Safety + Expectation Light Layer)
+Text:
+"This is not medical care."
+"If you feel unsafe or your symptoms are severe, seek medical help or call emergency services."
+Small acknowledgment checkbox (optional but visible):
+"I understand"
+Button:
+"Start"
+Design notes:
+Keep visually light (not alarming)
+This covers basic legal protection without breaking flow
+TASK 2 — DAILY CHECK-IN IMPROVEMENTS
+Change:
+"How did you sleep last night?"
+TO:
+"So, how did you sleep last night?"
+→ keep tone conversational
+Add OPTIONAL field at end of check-in:
+Label:
+"Anything you noticed today?"
+or
+"Something small you noticed?"
+Must be optional
+Single-line or small text box
+No placeholder pressure text
+Do NOT expand into journaling
+Add confirmation feedback after sleep input:
+If sleep already saved:
+Show button: "Update sleep"
+If not saved:
+Show button: "Save sleep"
+→ prevents confusion, improves completion clarity
+TASK 3 — LOGIC CHECK (DO NOT REBUILD, JUST VERIFY)
+Check for bugs:
+Sleep input must correctly affect Today State
+If sleep <4h → cannot show “steady”
+If sleep 4–6h → bias toward “mindful”
+If issue exists → flag exact file and logic block causing problem
+Do NOT redesign logic yet. Only debug.
+TASK 4 — GROWTH + PRODUCT SIGNALS (LIGHTWEIGHT ONLY)
+Do NOT add analytics tools.
+Instead:
+Ensure personal observation field is saved locally
+Structure it so it can be exported later (simple JSON or array)
+Reason:
+This will be useful later for:
+pattern detection
+future AI insights
+research potential
+TASK 5 — LEGAL SAFETY (MINIMAL)
+Ensure:
+Safety line exists (already added above)
+No claims like:
+"improves symptoms"
+"treats condition"
+Use only:
+"helps you track"
+"helps you understand your day"
+TASK 6 — DEV EFFICIENCY + TROUBLESHOOTING
+Before finishing:
+Run app
+Test full onboarding flow
+Test:
+sleep input
+navigation back and forth
+state persistence
+If ANY issue:
+Identify exact component/file
+Suggest smallest fix only (no refactor)
+OUTPUT FORMAT
+Return:
+List of exact changes made
+Any bugs found + fix
+Anything that should be done next (MAX 3 items only, high ROI)
