@@ -291,12 +291,6 @@ export default function TrackScreen() {
         />
       </View>
 
-      <View style={styles.disclaimer}>
-        <Text style={styles.disclaimerText}>
-          This is a lifestyle support tool. It does not diagnose POTS or replace medical care.
-        </Text>
-      </View>
-
       <TouchableOpacity
         style={styles.saveBtn}
         onPress={handleFinish}
@@ -349,12 +343,6 @@ const styles = StyleSheet.create({
   sectionSubtitle: { fontSize: 13, color: "#9AA6A2", marginTop: -6 },
   sectionLabel: { fontSize: 13, fontWeight: "600", color: "#9AA6A2" },
   divider: { height: 1, backgroundColor: "#eee", marginVertical: 2 },
-  disclaimer: {
-    backgroundColor: "#fef9ec",
-    borderRadius: 12,
-    padding: 16,
-  },
-  disclaimerText: { fontSize: 13, color: "#8a7340", lineHeight: 20 },
   saveBtn: {
     backgroundColor: "#2c2c2c",
     borderRadius: 14,
