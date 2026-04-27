@@ -12,13 +12,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useDaily } from "@/context/DailyContext";
 
-const BULLETS = [
-  "Track sleep",
-  "Track symptoms",
-  "Track hydration",
-  "Simple daily guidance based on your inputs",
-];
-
 const TOTAL_STEPS = 4;
 
 export default function OnboardingScreen() {
@@ -27,6 +20,7 @@ export default function OnboardingScreen() {
   const { completeOnboarding } = useDaily();
   const [step, setStep] = useState(0);
   const [reduceMotion, setReduceMotion] = useState<boolean | null>(null);
+  const [acknowledged, setAcknowledged] = useState(false);
 
   useEffect(() => {
     AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
@@ -58,48 +52,55 @@ export default function OnboardingScreen() {
           {step === 0 && (
             <>
               <Text style={styles.bodyText}>
-                Living with these symptoms is hard. This app won't fix everything, but it can help you notice patterns and feel a little less alone.
+                This app is for people who deal with symptoms like dizziness, brain fog, fatigue, or just feeling off during the day.
               </Text>
               <Text style={styles.bodyText}>
-                You don't have to figure it all out today.
+                You don't need a diagnosis to use this.
               </Text>
             </>
           )}
 
           {step === 1 && (
             <>
-              <Text style={styles.sectionLabel}>What you'll track</Text>
-              {BULLETS.map((b) => (
-                <View key={b} style={styles.bulletRow}>
-                  <Text style={styles.bulletDot}>·</Text>
-                  <Text style={styles.bulletText}>{b}</Text>
-                </View>
-              ))}
+              <Text style={styles.bodyText}>
+                Living with these symptoms can feel unpredictable.
+              </Text>
+              <Text style={styles.bodyText}>
+                This app helps you check in, understand your state, and adjust your day.
+              </Text>
             </>
           )}
 
           {step === 2 && (
             <>
-              <Text style={styles.disclaimerText}>
-                This app helps you notice patterns and better understand your symptoms.
-              </Text>
-              <Text style={styles.disclaimerText}>
-                It does not provide medical advice, diagnosis, or treatment.
-              </Text>
-              <Text style={styles.disclaimerEmergency}>
-                If you feel unsafe or your symptoms are severe, seek medical care or call emergency services.
+              <Text style={styles.bodyText}>
+                This app tracks symptoms like dizziness, brain fog, fatigue, nausea, sleep, hydration, and how you're feeling day to day.
               </Text>
               <Text style={styles.dataNote}>
-                Your data is currently stored on your device.{"\n"}
-                If you delete the app or change devices, your data may not carry over yet.
+                Your data is currently stored on your device. If you delete the app or switch devices, your data may not carry over yet.
               </Text>
             </>
           )}
 
           {step === 3 && (
-            <Text style={styles.prompt}>
-              How did you sleep last night?
-            </Text>
+            <>
+              <Text style={styles.disclaimerText}>
+                This is not medical care.
+              </Text>
+              <Text style={styles.disclaimerEmergency}>
+                If you feel unsafe or your symptoms are severe, seek medical help or call emergency services.
+              </Text>
+              <TouchableOpacity
+                style={styles.checkboxRow}
+                onPress={() => setAcknowledged((v) => !v)}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.checkbox, acknowledged && styles.checkboxChecked]}>
+                  {acknowledged && <Text style={styles.checkboxTick}>✓</Text>}
+                </View>
+                <Text style={styles.checkboxLabel}>I understand</Text>
+              </TouchableOpacity>
+            </>
           )}
         </Animated.View>
       </View>
@@ -117,13 +118,7 @@ export default function OnboardingScreen() {
           activeOpacity={0.8}
         >
           <Text style={styles.btnText}>
-            {step === 0
-              ? "Continue →"
-              : step === 1
-              ? "Got it →"
-              : step === 2
-              ? "I understand →"
-              : "Log last night's sleep →"}
+            {step < TOTAL_STEPS - 1 ? "Continue →" : "Start →"}
           </Text>
         </TouchableOpacity>
 
@@ -168,35 +163,6 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     fontWeight: "400",
   },
-  sectionLabel: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#9AA6A2",
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    marginBottom: 4,
-  },
-  bulletRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 10,
-  },
-  bulletDot: {
-    fontSize: 20,
-    color: "#4a7c7e",
-    lineHeight: 26,
-  },
-  bulletText: {
-    fontSize: 17,
-    color: "#333",
-    lineHeight: 26,
-  },
-  prompt: {
-    fontSize: 22,
-    color: "#111",
-    lineHeight: 32,
-    fontWeight: "400",
-  },
   disclaimerText: {
     fontSize: 20,
     color: "#333",
@@ -213,11 +179,42 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   dataNote: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#888",
-    lineHeight: 20,
-    textAlign: "center",
-    marginTop: 12,
+    lineHeight: 22,
+    marginTop: 4,
+  },
+  checkboxRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginTop: 16,
+    alignSelf: "center",
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    borderColor: "#9AA6A2",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#f7f6f3",
+  },
+  checkboxChecked: {
+    backgroundColor: "#4a7c7e",
+    borderColor: "#4a7c7e",
+  },
+  checkboxTick: {
+    fontSize: 13,
+    color: "#fff",
+    fontWeight: "700",
+    lineHeight: 16,
+  },
+  checkboxLabel: {
+    fontSize: 15,
+    color: "#555",
+    fontWeight: "400",
   },
   footer: {
     gap: 20,
