@@ -94,6 +94,8 @@ export default function OnboardingScreen() {
                 style={styles.checkboxRow}
                 onPress={() => setAcknowledged((v) => !v)}
                 activeOpacity={0.7}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: acknowledged }}
               >
                 <View style={[styles.checkbox, acknowledged && styles.checkboxChecked]}>
                   {acknowledged && <Text style={styles.checkboxTick}>✓</Text>}
@@ -179,10 +181,11 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   dataNote: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#888",
-    lineHeight: 22,
-    marginTop: 4,
+    lineHeight: 20,
+    textAlign: "center",
+    marginTop: 12,
   },
   checkboxRow: {
     flexDirection: "row",
