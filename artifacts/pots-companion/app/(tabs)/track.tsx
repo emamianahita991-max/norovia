@@ -160,13 +160,9 @@ export default function TrackScreen() {
       observation: observation.trim(),
     });
 
-    const sleepScore = pendingSleep?.score ?? null;
     const sleepHours = pendingSleep?.hours ?? null;
-    const badSleep = sleepScore !== null ? sleepScore < 60
-      : sleepHours !== null ? sleepHours < 6 : false;
-    const moderateSleep = sleepScore !== null
-      ? sleepScore >= 60 && sleepScore < 80
-      : sleepHours !== null ? sleepHours < 7 : false;
+    const badSleep = sleepHours !== null ? sleepHours < 4 : false;
+    const moderateSleep = sleepHours !== null ? sleepHours >= 4 && sleepHours < 6 : false;
     const sym = parseFloat(avgSymptom.toFixed(1));
     const computed: TodayState =
       badSleep ? "take-it-easy"
