@@ -17,6 +17,36 @@ import { useDaily, type TodayState } from "@/context/DailyContext";
 
 
 
+function getTodayStateExplanation(
+  sleepHours: number | null,
+  avgSymptom: number | null
+): string | null {
+  if (sleepHours === null && avgSymptom === null) {
+    return null;
+  }
+
+  if (sleepHours !== null && sleepHours < 4) {
+    return "Very short sleep is limiting your capacity today.";
+  }
+
+  if (
+    sleepHours !== null && sleepHours >= 4 && sleepHours < 6 &&
+    avgSymptom !== null && avgSymptom >= 6
+  ) {
+    return "Lower sleep and higher symptoms are both contributing today.";
+  }
+
+  if (sleepHours !== null && sleepHours >= 4 && sleepHours < 6) {
+    return "Reduced sleep is likely affecting how you feel today.";
+  }
+
+  if (avgSymptom !== null && avgSymptom >= 6) {
+    return "Your symptoms are more elevated today.";
+  }
+
+  return "Things look relatively stable today.";
+}
+
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -182,12 +212,7 @@ export default function HomeScreen() {
               : lockedTodayState === "mindful"
               ? "Mindful (Low Reserve)"
               : "Steady";
-          const stateSignal =
-            lockedTodayState === "take-it-easy"
-              ? "Your body is under strain today."
-              : lockedTodayState === "mindful"
-              ? "Your body may have less in reserve today."
-              : "Your inputs suggest a steadier day.";
+          const stateExplanation = getTodayStateExplanation(sleepHours, avgSymptom);
           const stateAction =
             lockedTodayState === "take-it-easy"
               ? "Prioritize rest. Reduce upright time and non-essential activity."
@@ -197,7 +222,9 @@ export default function HomeScreen() {
           return (
             <View>
               <Text style={styles.todayStateLabel}>{stateLabel}</Text>
-              <Text style={styles.todayStateLabel}>{stateSignal}</Text>
+              {stateExplanation !== null && (
+                <Text style={styles.todayStateExplanation}>{stateExplanation}</Text>
+              )}
               <Text style={styles.todayStateLabel}>{stateAction}</Text>
             </View>
           );
@@ -366,6 +393,12 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     color: "#9AA6A2",
     marginTop: 3,
+  },
+  todayStateExplanation: {
+    fontSize: 13,
+    color: "#6a7d7e",
+    marginTop: 6,
+    lineHeight: 20,
   },
   todayStatePlaceholder: {
     fontSize: 14,
