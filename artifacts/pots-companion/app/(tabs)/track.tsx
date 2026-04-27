@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Switch,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -116,6 +117,8 @@ export default function TrackScreen() {
     movement: false,
   });
 
+  const [observation, setObservation] = useState("");
+
   const [waterHistory, setWaterHistory] = useState<number[]>([]);
   const waterLiters = parseFloat(waterHistory.reduce((a, b) => a + b, 0).toFixed(2));
 
@@ -154,6 +157,7 @@ export default function TrackScreen() {
       sleepScore: pendingSleep?.score ?? null,
       sleepHours: pendingSleep?.hours ?? null,
       sleepAwakenings: pendingSleep?.awakenings ?? null,
+      observation: observation.trim() || undefined,
     });
 
     const sleepScore = pendingSleep?.score ?? null;
@@ -277,6 +281,20 @@ export default function TrackScreen() {
         />
       </View>
 
+      <View style={styles.card}>
+        <Text style={styles.sectionLabel}>Anything you noticed today?</Text>
+        <TextInput
+          style={obs.input}
+          value={observation}
+          onChangeText={setObservation}
+          maxLength={200}
+          multiline={false}
+          returnKeyType="done"
+          blurOnSubmit
+          placeholderTextColor="#bbb"
+        />
+      </View>
+
       <View style={styles.disclaimer}>
         <Text style={styles.disclaimerText}>
           This is a lifestyle support tool. It does not diagnose POTS or replace medical care.
@@ -333,6 +351,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: { fontSize: 15, fontWeight: "600", color: "#111" },
   sectionSubtitle: { fontSize: 13, color: "#9AA6A2", marginTop: -6 },
+  sectionLabel: { fontSize: 13, fontWeight: "600", color: "#9AA6A2", textTransform: "uppercase", letterSpacing: 0.8 },
   divider: { height: 1, backgroundColor: "#eee", marginVertical: 2 },
   disclaimer: {
     backgroundColor: "#fef9ec",
@@ -380,6 +399,19 @@ const toggle = StyleSheet.create({
     paddingVertical: 4,
   },
   label: { fontSize: 14, color: "#444", flex: 1 },
+});
+
+const obs = StyleSheet.create({
+  input: {
+    borderWidth: 1,
+    borderColor: "#e8edec",
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: "#111",
+    backgroundColor: "#fafafa",
+  },
 });
 
 const waterStyles = StyleSheet.create({

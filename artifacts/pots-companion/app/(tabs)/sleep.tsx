@@ -196,7 +196,7 @@ export default function SleepScreen() {
       {!sleepLoggedToday && (
         <View style={styles.promptBanner}>
           <Text style={styles.promptText}>
-            Sleep can be unpredictable. Let's note what you got.
+            So, how did you sleep last night?
           </Text>
         </View>
       )}
@@ -279,6 +279,7 @@ export default function SleepScreen() {
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: "#f7f6f3" },
   container: { paddingHorizontal: 20, gap: 16 },
+  pageHeader: { marginBottom: 0 },
   heading: { fontSize: 28, fontWeight: "700" },
   promptBanner: { backgroundColor: "#f0f3f5", padding: 14, borderRadius: 12 },
   promptText: { fontSize: 14, color: "#4a5560" },

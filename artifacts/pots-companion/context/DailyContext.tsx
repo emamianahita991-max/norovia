@@ -16,6 +16,7 @@ export type Entry = {
   sleepScore: number | null;
   sleepHours: number | null;
   sleepAwakenings: number | null;
+  observation?: string;
 };
 
 export type VitalReading = {
