@@ -143,6 +143,11 @@ export default function HomeScreen() {
       ? getDailyPlan(lockedTodayState, fatigue, dizziness, brainFog)
       : null;
 
+  const isSevereLowReserve =
+    lockedTodayState === "take-it-easy" &&
+    avgSymptom !== null &&
+    avgSymptom >= 7;
+
   const [showAboutModal, setShowAboutModal] = useState(false);
 
   function renderCTA() {
@@ -208,20 +213,26 @@ export default function HomeScreen() {
               : lockedTodayState === "mindful"
               ? "Mindful (Low Reserve)"
               : "Steady";
-          const stateExplanation = getTodayStateExplanation(sleepHours, avgSymptom);
-          const stateAction =
+
+          if (isSevereLowReserve) {
+            return (
+              <View>
+                <Text style={styles.todayStateLabel}>{stateLabel}</Text>
+              </View>
+            );
+          }
+
+          const subLine =
             lockedTodayState === "take-it-easy"
-              ? "Prioritize rest. Reduce upright time and non-essential activity."
+              ? "Today is a stabilization day."
               : lockedTodayState === "mindful"
               ? "Work in shorter blocks. Pause before symptoms build."
-              : "Keep your routine steady. Avoid overdoing it.";
+              : "You have usable capacity today.";
+
           return (
             <View>
               <Text style={styles.todayStateLabel}>{stateLabel}</Text>
-              {stateExplanation !== null && (
-                <Text style={styles.todayStateExplanation}>{stateExplanation}</Text>
-              )}
-              <Text style={styles.todayStateLabel}>{stateAction}</Text>
+              <Text style={styles.todayStateExplanation}>{subLine}</Text>
             </View>
           );
         })()}
@@ -257,23 +268,23 @@ export default function HomeScreen() {
         </>
       )}
 
-      {!isFlareActive && renderCTA()}
+      {!isFlareActive && !isSevereLowReserve && renderCTA()}
 
-      {avgSymptom !== null && (
+      {avgSymptom !== null && !isFlareActive && !isSevereLowReserve && (
         <View style={styles.card}>
           <Text style={styles.cardLabel}>Average symptom score</Text>
           <Text style={styles.cardValue}>{avgSymptom.toFixed(1)}</Text>
         </View>
       )}
 
-      {sleepHours !== null && (
+      {sleepHours !== null && !isFlareActive && !isSevereLowReserve && (
         <View style={styles.card}>
           <Text style={styles.cardLabel}>Sleep last night</Text>
           <Text style={styles.cardValue}>{sleepHours} h</Text>
         </View>
       )}
 
-      {sleepAwakenings !== null && (
+      {sleepAwakenings !== null && !isFlareActive && lockedTodayState === "steady" && (
         <View style={styles.card}>
           <Text style={styles.cardLabel}>Awakenings</Text>
           <Text style={styles.cardValue}>{sleepAwakenings}</Text>
