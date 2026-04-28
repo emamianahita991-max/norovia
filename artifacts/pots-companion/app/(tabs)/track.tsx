@@ -173,6 +173,11 @@ export default function TrackScreen() {
       computed = "steady";
     }
 
+    // Low energy override: even if other metrics look steady, protect the day
+    if (checkIn.energy <= 3 && computed === "steady") {
+      computed = "mindful";
+    }
+
     lockTodayState(computed);
     setCheckInCompleted(true);
     router.navigate("/");

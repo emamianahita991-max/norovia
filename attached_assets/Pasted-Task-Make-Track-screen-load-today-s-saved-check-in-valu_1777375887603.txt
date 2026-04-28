@@ -1,0 +1,83 @@
+Task: Make Track screen load today’s saved check-in values instead of defaults
+
+Role:
+You are a senior mobile MVP engineer. Keep this simple. Do not redesign the app. Do not add features.
+
+Problem:
+After the user completes a check-in, returning to the Track screen still shows default slider values:
+- energy: 5
+- dizziness: 0
+- brainFog: 0
+
+This breaks trust because the user already recorded today’s data.
+
+Goal:
+If the user has already recorded a check-in today, the Track screen should prefill the sliders with today’s latest saved values so the user can review/update them.
+
+After a new day starts, the Track screen should return to default values.
+
+Files likely involved:
+- artifacts/pots-companion/app/(tabs)/track.tsx
+- artifacts/pots-companion/context/DailyContext.tsx if needed
+
+Required behavior:
+
+1. On Track screen load/focus:
+- Check if there is an entry for today.
+- If yes, set checkIn state from that latest today entry:
+  energy: latestTodayEntry.energy
+  dizziness: latestTodayEntry.dizziness
+  brainFog: latestTodayEntry.brainFog
+
+2. If there is no entry for today:
+- Use default values:
+  energy: 5
+  dizziness: 0
+  brainFog: 0
+
+3. If user updates sliders and taps finish:
+- Save the updated values as today’s current check-in.
+- Do not visually reset sliders back to defaults after saving.
+
+4. After midnight / new calendar day:
+- Track screen should no longer use yesterday’s entry.
+- It should show defaults again until today’s first check-in is completed.
+
+5. Use the existing date logic already used for checkInCompletedToday if possible.
+- Do not create a complicated new date system.
+- Use the app’s existing definition of “today.”
+
+Important:
+- Preserve the new 3-input check-in only:
+  energy
+  dizziness
+  brainFog
+- Do not bring back old symptoms.
+- Do not change Daily Plan logic except for the energy guard below.
+
+Additional calibration fix:
+Low energy should prevent a “steady” state.
+
+After Today State is computed, add this guard:
+
+if (checkIn.energy <= 3 && computed === "steady") {
+  computed = "mindful";
+}
+
+Reason:
+Energy is a capacity limiter. Even if dizziness and brain fog are low, energy 3/10 should not feel like a steady day.
+
+Do NOT:
+- Redesign UI
+- Add new screens
+- Add new scoring system
+- Change flare mode
+- Change trends
+- Bring back removed inputs
+
+Acceptance criteria:
+1. After completing a check-in, returning to Track shows the saved values for today.
+2. User can adjust today’s saved values instead of starting from defaults.
+3. After a new day, Track returns to defaults.
+4. Energy 3/10 cannot produce “steady.”
+5. Existing Daily Plan structure remains unchanged.

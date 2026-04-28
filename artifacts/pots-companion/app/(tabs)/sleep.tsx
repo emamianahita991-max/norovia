@@ -186,7 +186,7 @@ export default function SleepScreen() {
 
     if (checkInCompletedToday && entries.length > 0) {
       const latest = entries[entries.length - 1];
-      const { avgSymptom, maxSymptom } = latest;
+      const { avgSymptom, maxSymptom, energy } = latest;
       let recomputed: TodayState;
       if (hours < 4) {
         recomputed = "take-it-easy";
@@ -201,6 +201,12 @@ export default function SleepScreen() {
       } else {
         recomputed = "steady";
       }
+
+      // Low energy override: even if other metrics look steady, protect the day
+      if (energy <= 3 && recomputed === "steady") {
+        recomputed = "mindful";
+      }
+
       lockTodayState(recomputed);
     }
 
