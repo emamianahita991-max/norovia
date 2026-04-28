@@ -58,8 +58,8 @@ function getDailyPlan(
     return {
       mode: "Today has usable capacity — handle it deliberately.",
       actions,
-      pacing: "Work in short blocks — stop before symptoms build.",
-      permission: "Stay in control — don't let the day run you.",
+      pacing: "Pause before symptoms build.",
+      permission: "Leave some capacity unused.",
     };
   }
 
