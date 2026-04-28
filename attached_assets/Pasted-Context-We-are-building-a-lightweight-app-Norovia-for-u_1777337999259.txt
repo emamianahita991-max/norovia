@@ -1,0 +1,134 @@
+Context
+We are building a lightweight app (Norovia) for users with fluctuating daily capacity (e.g., POTS).
+The app collects daily inputs:
+Energy (1–10) → higher = better
+Dizziness (1–10) → higher = worse
+Brain fog (1–10) → higher = worse
+Sleep (hours)
+Goal:
+Generate:
+Today State
+Short Explanation (optional)
+Daily Plan (clear, actionable)
+Constraints (VERY IMPORTANT)
+Keep logic simple (if/else only)
+No scoring systems
+No complex math
+No long paragraphs
+Max 3 actions
+Output must be:
+short
+clear
+actionable
+No generic advice (e.g., “listen to your body”)
+No medical claims
+STEP 1 — NORMALIZE ENERGY
+Energy is reversed (high = good), so convert it:
+fatigue = 10 - energy
+STEP 2 — CALCULATE SYMPTOM LOAD
+avgSymptom = (fatigue + dizziness + brainFog) / 3
+maxSymptom = max(fatigue, dizziness, brainFog)
+STEP 3 — DETERMINE TODAY STATE
+States:
+"take-it-easy"
+"mindful"
+"steady"
+1. Sleep gate (first priority)
+If sleep < 4 → state = "take-it-easy"
+If sleep 4–6 → state cannot be "steady"
+2. Symptom severity
+If maxSymptom ≥ 8 → "take-it-easy"
+If avgSymptom ≥ 6.5 → "take-it-easy"
+If avgSymptom between 4 and 6.4 → "mindful"
+If avgSymptom < 4 → "steady"
+3. Combined override
+If sleep is 4–6 AND avgSymptom ≥ 6
+→ force "take-it-easy"
+STEP 4 — EXPLANATION (1 LINE MAX)
+Return only one line OR nothing.
+Rules:
+If sleep < 4
+→ "Very short sleep is limiting your capacity today."
+If sleep 4–6 AND avgSymptom ≥ 6
+→ "Lower sleep and higher symptoms are both contributing today."
+If sleep 4–6
+→ "Reduced sleep is likely affecting how you feel today."
+If avgSymptom ≥ 6.5
+→ "Your symptoms are more elevated today."
+Otherwise
+→ return empty string
+STEP 5 — DAILY PLAN STRUCTURE
+Each plan must include:
+mode (1 line)
+actions (max 3)
+pacing (1 line)
+permission (1 line)
+STATE: TAKE-IT-EASY
+mode:
+"Today is a stabilization day."
+actions:
+"Stay mostly seated or lying down"
+"Keep activity very short (5–10 min at a time)"
+"Hydrate early and consistently"
+pacing:
+"Stop early if symptoms rise."
+permission:
+"Doing less today is the right move."
+STATE: MINDFUL
+mode:
+"Today has usable capacity — handle it deliberately."
+actions:
+"Keep movement gentle — seated if needed"
+"Pick 2–3 priorities and start with the smallest version"
+"Pause before walking after standing"
+pacing:
+"Leave some capacity unused."
+permission:
+"You're in control of how you use today."
+STATE: STEADY
+mode:
+"You have usable capacity today."
+actions:
+"Do your main tasks earlier in the day"
+"Keep movement steady, not intense"
+"Take short breaks before fatigue builds"
+pacing:
+"Stop before you feel drained."
+permission:
+"Use today, but don’t spend tomorrow’s energy."
+STEP 6 — PERSONALIZATION (VERY LIGHT)
+Find the highest of:
+fatigue
+dizziness
+brainFog
+Then adjust ONE action only (do not exceed 3 total actions):
+If fatigue highest:
+replace or emphasize:
+→ "Take breaks earlier than usual"
+If dizziness highest:
+replace or emphasize:
+→ "Move slowly when standing"
+If brain fog highest:
+replace or emphasize:
+→ "Keep tasks simple and few"
+OUTPUT FORMAT (STRICT)
+Return:
+{
+  state: "mindful",
+  explanation: "Reduced sleep is likely affecting how you feel today.",
+  plan: {
+    mode: "...",
+    actions: ["...", "...", "..."],
+    pacing: "...",
+    permission: "..."
+  }
+}
+DO NOT
+Do not add extra text
+Do not explain logic
+Do not exceed 3 actions
+Do not change tone
+Do not add new features
+GOAL
+When the user opens the app, they should feel:
+"I know how to run my day."
