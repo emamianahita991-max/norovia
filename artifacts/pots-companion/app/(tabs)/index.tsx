@@ -297,7 +297,6 @@ export default function HomeScreen() {
 
       {!isFlareActive && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Daily plan</Text>
           {!checkInCompletedToday ? (
             <Text style={styles.todayStatePlaceholder}>
               Complete your check-in to see today's plan.
