@@ -208,20 +208,12 @@ export default function HomeScreen() {
             );
           }
 
-          const subLine =
-            lockedTodayState === "take-it-easy"
-              ? "Today is a stabilization day."
-              : lockedTodayState === "mindful"
-              ? "Work in shorter blocks. Pause before symptoms build."
-              : "You have usable capacity today.";
-
           return (
             <View>
               <Text style={styles.todayStateLabel}>{stateLabel}</Text>
               {lockedTodayState === "take-it-easy" && (
                 <Text style={styles.todayStateQualifier}>(very low reserve)</Text>
               )}
-              <Text style={styles.todayStateExplanation}>{subLine}</Text>
             </View>
           );
         })()}
@@ -403,12 +395,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#b0bcb8",
     marginTop: 1,
-  },
-  todayStateExplanation: {
-    fontSize: 13,
-    color: "#6a7d7e",
-    marginTop: 6,
-    lineHeight: 20,
   },
   todayStatePlaceholder: {
     fontSize: 14,
