@@ -1,0 +1,160 @@
+Task: Fix Flare Mode screen copy + make Flare Mode override the Home screen
+
+Role:
+You are a senior mobile MVP engineer. Keep this simple, clean, and readable. Do not add new features.
+
+Context:
+Norovia has a Flare Mode for days when the user needs stabilization. When Flare Mode is ON, it should act like a full system override, not just a banner.
+
+Goal:
+When Flare Mode is active:
+1. The Flare Mode screen should show a clear stabilization plan.
+2. The Home screen should stop showing the normal daily plan/check-in placeholder and instead show the flare plan.
+3. Language should be short, calm, and directive.
+
+FILES:
+- artifacts/pots-companion/app/(tabs)/flare.tsx
+- artifacts/pots-companion/app/(tabs)/index.tsx
+
+--------------------------------------------------
+PART 1 — Update Flare Mode screen copy
+--------------------------------------------------
+
+When Flare Mode is ACTIVE, use this exact structure:
+
+Banner:
+Title:
+"Flare Mode Active"
+
+Body:
+"Today is a stabilization day."
+"Your priority is staying stable."
+
+Focus card title:
+"Focus on this today"
+
+Bullets:
+- "Sit or lie down whenever you can"
+- "Start fluids and salt early in the day"
+- "Avoid prolonged standing"
+
+Pacing line:
+"Stop early if symptoms rise."
+
+Permission line:
+"Doing less today is the right move."
+
+Button:
+"Turn off Flare Mode"
+
+Emergency card:
+Title:
+"When to seek urgent care"
+
+Body:
+"If you have chest pain, severe shortness of breath, fainting with injury, or cannot keep fluids down, call 911 right away."
+
+"If something feels seriously wrong, call 911."
+
+Disclaimer:
+"Norovia is a lifestyle support tool. It does not provide medical care."
+
+--------------------------------------------------
+PART 2 — Home screen override when Flare Mode is ON
+--------------------------------------------------
+
+When isFlareActive === true:
+
+DO NOT show:
+- normal Daily plan card
+- "Complete your check-in to see today's plan."
+- normal Today State logic
+- normal plan logic
+
+Instead show this on Home:
+
+Banner:
+Title:
+"Flare Mode Active"
+
+Body:
+"Today is a stabilization day."
+"Your priority is staying stable."
+
+Then show a flare plan card:
+
+Title:
+"Focus on this today"
+
+Bullets:
+- "Sit or lie down whenever you can"
+- "Start fluids and salt early in the day"
+- "Avoid prolonged standing"
+
+Pacing:
+"Stop early if symptoms rise."
+
+Permission:
+"Doing less today is the right move."
+
+Add a button below the flare plan:
+"Turn off Flare Mode"
+
+This button should call the same function/state update used on the Flare Mode tab to turn flare mode off.
+
+--------------------------------------------------
+PART 3 — Remove old Home flare copy
+--------------------------------------------------
+
+Remove this text from Home when flare is active:
+
+"You're not doing anything wrong. Your body needs more support right now, and that's enough reason to slow down."
+
+Do not replace it with another long supportive paragraph.
+
+--------------------------------------------------
+PART 4 — Preserve normal behavior when Flare Mode is OFF
+--------------------------------------------------
+
+When isFlareActive === false:
+- Home screen should behave exactly as before
+- Daily plan should show only after check-in
+- Sleep button should remain unchanged
+- Normal Today State and plan logic should remain unchanged
+
+--------------------------------------------------
+PART 5 — Styling
+--------------------------------------------------
+
+Reuse existing styles as much as possible.
+
+If needed, add only small new styles for:
+- flare plan card
+- flare pacing line
+- flare permission line
+
+Keep visual style consistent with current app:
+- calm
+- minimal
+- soft red for flare
+- no clutter
+
+--------------------------------------------------
+DO NOT
+--------------------------------------------------
+
+- Do not add new features
+- Do not add new inputs
+- Do not change check-in logic
+- Do not change sleep logic
+- Do not change trends
+- Do not add medical advice beyond the emergency text above
+- Do not use long paragraphs
+- Do not overengineer
+
+Acceptance criteria:
+1. Flare Mode screen uses the exact updated copy.
+2. Home screen is overridden when flare is ON.
+3. Home does not show normal daily plan placeholder while flare is ON.
+4. Turning flare off returns Home to normal behavior.
+5. Copy is short, calm, and directive.
