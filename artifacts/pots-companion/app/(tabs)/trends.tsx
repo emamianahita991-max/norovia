@@ -41,10 +41,10 @@ function analyze(entries: Entry[]): Analysis | null {
     const waterGood = pct(goodDays, wellHydrated);
     const waterBad = pct(badDays, wellHydrated);
     if (waterGood >= 0.6 && waterBad < 0.4) {
-      helps.push("You seem to feel better on days with stronger hydration.");
+      helps.push("On days with higher hydration, symptoms were lower.");
     }
     if (waterBad > 0.6) {
-      worsens.push("Lower hydration days may be linked to worse symptoms.");
+      worsens.push("Low hydration days have coincided with higher symptoms.");
     }
 
     const sleepHrsGood = goodDays.filter((e) => e.sleepHours !== null).map((e) => e.sleepHours!);
@@ -52,38 +52,38 @@ function analyze(entries: Entry[]): Analysis | null {
     const sleepAvgGood = avg(sleepHrsGood);
     const sleepAvgBad = avg(sleepHrsBad);
     if (sleepAvgGood !== null && sleepAvgBad !== null && sleepAvgGood >= 7 && sleepAvgBad < 6) {
-      helps.push("Your symptoms appear worse after shorter or more disrupted sleep.");
+      helps.push("Days with more sleep have coincided with lower symptoms.");
     }
 
     const comprGood = pct(goodDays, (e) => e.compression);
     const comprBad = pct(badDays, (e) => e.compression);
     if (comprGood > 0.6 && comprBad < 0.4) {
-      helps.push("Compression may be helping reduce your symptoms.");
+      helps.push("Days with compression have coincided with lower symptoms.");
     }
 
     const moveGood = pct(goodDays, (e) => e.movement);
     const moveBad = pct(badDays, (e) => e.movement);
     if (moveGood > 0.6 && moveBad < 0.4) {
-      helps.push("Gentle movement seems to support how you feel.");
+      helps.push("Days with gentle movement have coincided with lower symptoms.");
     }
   }
 
   const recentHours = entries.slice(-3).filter((e) => e.sleepHours !== null).map((e) => e.sleepHours!);
   if (recentHours.length >= 2 && recentHours.every((h) => h < 6)) {
-    worsens.push("Short sleep may be contributing to fatigue and brain fog.");
+    worsens.push("Short sleep days have coincided with higher fatigue.");
   }
 
   const recentWindow = entries.slice(-7);
   const noComprHighDizz = recentWindow.some((e) => !e.compression && e.dizziness >= 6);
   if (noComprHighDizz) {
-    worsens.push("Skipping compression on high-symptom days may be making things harder.");
+    worsens.push("Days without compression have coincided with higher dizziness.");
   }
 
   const highFatigueLowSleep = recentWindow.some(
     (e) => e.fatigue >= 7 && e.sleepHours !== null && e.sleepHours < 6,
   );
   if (highFatigueLowSleep) {
-    worsens.push("Fatigue seems to increase after poor sleep.");
+    worsens.push("High fatigue days have coincided with poor sleep.");
   }
 
   const recent = entries.slice(-3);
@@ -92,16 +92,16 @@ function analyze(entries: Entry[]): Analysis | null {
   const lowComprRecent = recent.filter((e) => !e.compression).length >= 2;
 
   if (lowSleepRecent) {
-    tryNext.push("Prioritize a lower-demand day when sleep is short.");
+    tryNext.push("Next step: plan a lower-demand day after short sleep.");
   } else if (lowWaterRecent) {
-    tryNext.push("Try focusing on fluids earlier in the day.");
+    tryNext.push("Next step: prioritize fluids earlier in the day.");
   } else if (lowComprRecent) {
-    tryNext.push("Consider using compression on higher symptom days.");
+    tryNext.push("Next step: try compression on higher symptom days.");
   }
 
   return {
-    helps: helps.slice(0, 2),
-    worsens: worsens.slice(0, 2),
+    helps: helps.slice(0, 1),
+    worsens: worsens.slice(0, 1),
     tryNext: tryNext.slice(0, 1),
   };
 }
@@ -308,32 +308,12 @@ export default function TrendsScreen() {
       </View>
 
       {!result ? (
-        <>
-          <View style={styles.emptyCard}>
-            <Text style={styles.emptyTitle}>You're building your pattern</Text>
-            <Text style={styles.emptyBody}>
-              Life with these symptoms is unpredictable. A few days of check-ins will help you start to see what's behind that unpredictability.
-            </Text>
-          </View>
-
-          <View style={styles.focusCard}>
-            <Text style={styles.focusLabel}>What to focus on for now:</Text>
-            {[
-              "Logging how you feel each day",
-              "Noticing sleep and hydration",
-              "Keeping things simple",
-            ].map((item, i) => (
-              <View key={i} style={styles.focusRow}>
-                <Text style={styles.focusDot}>·</Text>
-                <Text style={styles.focusItem}>{item}</Text>
-              </View>
-            ))}
-          </View>
-
-          <Text style={styles.emptyFooter}>
-            You don't need perfect data — just a few consistent days.
+        <View style={styles.emptyCard}>
+          <Text style={styles.emptyTitle}>You're building your pattern</Text>
+          <Text style={styles.emptyBody}>
+            A few days of check-ins will help this become clearer.
           </Text>
-        </>
+        </View>
       ) : (
         <>
           <View style={styles.card}>
@@ -343,7 +323,7 @@ export default function TrendsScreen() {
                 <InsightRow key={i} text={item} dotStyle={styles.dotGood} />
               ))
             ) : (
-              <Text style={styles.emptySection}>Not enough data yet for this section.</Text>
+              <Text style={styles.emptySection}>Not enough data yet.</Text>
             )}
           </View>
 
@@ -354,7 +334,7 @@ export default function TrendsScreen() {
                 <InsightRow key={i} text={item} dotStyle={styles.dotBad} />
               ))
             ) : (
-              <Text style={styles.emptySection}>Not enough data yet for this section.</Text>
+              <Text style={styles.emptySection}>Not enough data yet.</Text>
             )}
           </View>
 
@@ -425,47 +405,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
     lineHeight: 22,
-  },
-  focusCard: {
-    backgroundColor: "#fff",
-    borderRadius: 14,
-    padding: 20,
-    gap: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.04,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    elevation: 1,
-  },
-  focusLabel: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#444",
-    marginBottom: 2,
-  },
-  focusRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 8,
-  },
-  focusDot: {
-    fontSize: 18,
-    color: "#9AA6A2",
-    lineHeight: 22,
-  },
-  focusItem: {
-    fontSize: 14,
-    color: "#555",
-    lineHeight: 22,
-    flex: 1,
-  },
-  emptyFooter: {
-    fontSize: 13,
-    color: "#aaa",
-    lineHeight: 20,
-    fontStyle: "italic",
-    textAlign: "center",
-    paddingHorizontal: 8,
   },
   emptySection: {
     fontSize: 13,

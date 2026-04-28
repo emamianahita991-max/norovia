@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { useDaily } from "@/context/DailyContext";
+import { useDaily, type TodayState } from "@/context/DailyContext";
 
 const ACCENT = "#4a7c7e";
 const MINUTES = [0, 15, 30, 45];
@@ -150,7 +150,15 @@ function StepperRow({ label, value, onDecrement, onIncrement }: any) {
 export default function SleepScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { sleepLoggedToday, setSleepLogged, setPendingSleep, pendingSleep } = useDaily();
+  const {
+    sleepLoggedToday,
+    setSleepLogged,
+    setPendingSleep,
+    pendingSleep,
+    checkInCompletedToday,
+    entries,
+    lockTodayState,
+  } = useDaily();
 
   const [bedHour, setBedHour] = useState(pendingSleep?.bedHour ?? 22);
   const [bedMinute, setBedMinute] = useState(pendingSleep?.bedMinute ?? 30);
@@ -175,6 +183,27 @@ export default function SleepScreen() {
   function handleSave() {
     setPendingSleep({ score, hours, awakenings, bedHour, bedMinute, wakeHour, wakeMinute });
     setSleepLogged(true);
+
+    if (checkInCompletedToday && entries.length > 0) {
+      const latest = entries[entries.length - 1];
+      const { avgSymptom, maxSymptom } = latest;
+      let recomputed: TodayState;
+      if (hours < 4) {
+        recomputed = "take-it-easy";
+      } else if (maxSymptom >= 8 || avgSymptom >= 6.5) {
+        recomputed = "take-it-easy";
+      } else if (hours < 6 && avgSymptom >= 6) {
+        recomputed = "take-it-easy";
+      } else if (hours < 6) {
+        recomputed = "mindful";
+      } else if (avgSymptom >= 4) {
+        recomputed = "mindful";
+      } else {
+        recomputed = "steady";
+      }
+      lockTodayState(recomputed);
+    }
+
     router.navigate("/");
   }
 
