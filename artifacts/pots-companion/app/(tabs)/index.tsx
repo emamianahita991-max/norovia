@@ -235,7 +235,7 @@ export default function HomeScreen() {
             <Text style={styles.flareBannerText}>Your priority is staying stable.</Text>
           </View>
 
-          <View style={styles.card}>
+          <View style={styles.section}>
             <Text style={styles.sectionTitle}>Focus on this today</Text>
             {FLARE_BULLETS.map((b, i) => (
               <View key={i} style={styles.bullet}>
