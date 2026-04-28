@@ -1,0 +1,174 @@
+Copy-paste this to Replit:
+
+Task: Add Home UI density scaling by Today State severity
+Role:
+You are a senior mobile MVP engineer. Keep this simple. Do not redesign the app. Do not add new features.
+Context:
+Norovia Home currently shows the same density of information across all states:
+- Today header/explanation
+- check-in complete banner
+- average symptom score
+- sleep
+- awakenings
+- daily plan
+This feels too busy on severe days. The worse the day, the fewer elements should be visible.
+File:
+artifacts/pots-companion/app/(tabs)/index.tsx
+Goal:
+Make the Home screen scale its visual density based on the user’s Today State / symptom load.
+Core rule:
+The worse the day, the fewer elements on screen.
+--------------------------------------------------
+PART 1 — Define UI density flags
+--------------------------------------------------
+Near the derived values in HomeScreen, add simple flags:
+const isSevereLowReserve =
+  lockedTodayState === "take-it-easy" && avgSymptom >= 7;
+const isMindfulState =
+  lockedTodayState === "mindful";
+const isSteadyState =
+  lockedTodayState === "steady";
+Important:
+- Use the existing avgSymptom value already derived from latestEntry.
+- Do not create a new scoring system.
+- Do not change Today State logic.
+--------------------------------------------------
+PART 2 — Severe / very low reserve UI
+--------------------------------------------------
+When isSevereLowReserve === true:
+SHOW:
+- Today title/state
+- Daily plan card
+HIDE:
+- check-in complete banner
+- average symptom score card
+- sleep last night card
+- awakenings card
+- long descriptive explanation
+- any extra guidance paragraph above the plan
+Daily plan should remain:
+mode:
+"Today is a stabilization day."
+actions:
+- "Stay mostly seated or lying down"
+- "Move slowly when standing" OR existing personalized action
+- "Hydrate early and consistently"
+pacing:
+"Stop early if symptoms rise."
+permission:
+"Doing less today is the right move."
+Do not add more than 3 actions.
+--------------------------------------------------
+PART 3 — Mindful UI
+--------------------------------------------------
+When lockedTodayState === "mindful" and isSevereLowReserve is false:
+SHOW:
+- Today title/state
+- check-in complete banner
+- average symptom score card
+- sleep last night card
+- Daily plan card
+HIDE:
+- awakenings card
+Top explanatory copy:
+Use only ONE line under the state:
+"Work in shorter blocks. Pause before symptoms build."
+Remove duplicated or generic lines like:
+- "Things look relatively stable today."
+- "Prioritize rest. Reduce upright time and non-essential activity."
+Daily plan remains the structured mindful plan:
+mode:
+"Today has usable capacity — handle it deliberately."
+actions:
+- "Keep movement gentle — seated if needed"
+- "Pick 2–3 priorities and start with the smallest version"
+- personalized third action if applicable
+pacing:
+"Work in short blocks — stop before symptoms build."
+permission:
+"Stay in control — don't let the day run you."
+--------------------------------------------------
+PART 4 — Steady UI
+--------------------------------------------------
+When lockedTodayState === "steady":
+SHOW:
+- Today title/state
+- check-in complete banner
+- average symptom score card
+- sleep last night card
+- awakenings card
+- Daily plan card
+Top explanatory copy:
+Use only ONE line under the state:
+"You have usable capacity today."
+Remove duplicated or generic lines like:
+- "Things look relatively stable today."
+- "Keep your routine steady. Avoid overdoing it."
+Daily plan remains the structured steady plan:
+mode:
+"You have usable capacity today."
+actions:
+- "Do your main tasks earlier in the day"
+- "Keep movement steady, not intense"
+- personalized third action if applicable
+pacing:
+"Keep momentum, but don't push to exhaustion."
+permission:
+"You can move forward today."
+--------------------------------------------------
+PART 5 — Take-it-easy but not severe
+--------------------------------------------------
+When lockedTodayState === "take-it-easy" but avgSymptom < 7:
+SHOW:
+- Today title/state
+- check-in complete banner
+- average symptom score card
+- sleep last night card
+- Daily plan card
+HIDE:
+- awakenings card
+Top explanatory copy:
+Use only ONE line:
+"Today is a stabilization day."
+Remove:
+"Prioritize rest. Reduce upright time and non-essential activity."
+Daily plan remains:
+mode:
+"Today is a stabilization day."
+actions:
+- "Stay mostly seated or lying down"
+- "Keep activity very short (5–10 min at a time)"
+- personalized third action if applicable
+pacing:
+"Stop early if symptoms rise."
+permission:
+"Doing less today is the right move."
+--------------------------------------------------
+PART 6 — Flare Mode stays separate
+--------------------------------------------------
+Do not change Flare Mode behavior.
+If isFlareActive === true:
+- keep the existing full Home override
+- do not show normal state UI
+- do not show check-in banner
+- do not show score/sleep/awakenings cards
+- do not show normal Daily Plan section
+--------------------------------------------------
+PART 7 — Remove low-value duplicate copy
+--------------------------------------------------
+Remove these phrases wherever they appear on Home normal state rendering:
+"Things look relatively stable today."
+"Prioritize rest. Reduce upright time and non-essential activity."
+"Keep your routine steady. Avoid overdoing it."
+Keep copy short and state-specific.
+--------------------------------------------------
+PART 8 — Acceptance criteria
+--------------------------------------------------
+1. Severe low reserve day shows minimal UI: Today/state + Daily Plan only.
+2. Mindful day hides awakenings and shows only one short explanatory line.
+3. Take-it-easy non-severe hides awakenings and uses only "Today is a stabilization day."
+4. Steady day may show full tracking cards.
+5. Flare Mode override remains unchanged.
+6. No new features added.
+7. Today State logic is unchanged.
+8. Daily Plan structure remains mode → actions → pacing → permission.
