@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
-import { PanGestureHandler, State } from "react-native-gesture-handler";
+import { PanGestureHandler, State, type PanGestureHandlerStateChangeEvent } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useDaily } from "@/context/DailyContext";
@@ -36,8 +36,12 @@ export default function OnboardingScreen() {
     if (Math.abs(translationX) < Math.abs(translationY) * 1.5) return;
     if (translationX > 60 && step > 0) {
       setStep((s) => s - 1);
-    } else if (translationX < -60 && step < TOTAL_STEPS - 1) {
-      setStep((s) => s + 1);
+    } else if (translationX < -60) {
+      if (step < TOTAL_STEPS - 1) {
+        setStep((s) => s + 1);
+      } else {
+        handleFinish();
+      }
     }
   }
 
@@ -58,7 +62,7 @@ export default function OnboardingScreen() {
       <Text style={styles.wordmark}>Norovia</Text>
 
       <PanGestureHandler
-        onHandlerStateChange={(e) => {
+        onHandlerStateChange={(e: PanGestureHandlerStateChangeEvent) => {
           if (e.nativeEvent.state !== State.END) return;
           handleSwipe(e.nativeEvent.translationX, e.nativeEvent.translationY);
         }}
