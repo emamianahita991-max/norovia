@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { PanGestureHandler, State } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useDaily } from "@/context/DailyContext";
@@ -31,6 +32,15 @@ export default function OnboardingScreen() {
     router.replace("/sleep");
   }
 
+  function handleSwipe(translationX: number, translationY: number) {
+    if (Math.abs(translationX) < Math.abs(translationY) * 1.5) return;
+    if (translationX > 60 && step > 0) {
+      setStep((s) => s - 1);
+    } else if (translationX < -60 && step < TOTAL_STEPS - 1) {
+      setStep((s) => s + 1);
+    }
+  }
+
   const animate = reduceMotion === false;
   const entering = animate ? FadeIn.duration(220) : undefined;
   const exiting = animate ? FadeOut.duration(140) : undefined;
@@ -47,65 +57,72 @@ export default function OnboardingScreen() {
     >
       <Text style={styles.wordmark}>Norovia</Text>
 
-      <View style={styles.body}>
-        <Animated.View key={step} entering={entering} exiting={exiting} style={styles.stepContent}>
-          {step === 0 && (
-            <>
-              <Text style={styles.bodyText}>
-                This app is for people who deal with symptoms like dizziness, brain fog, fatigue, or just feeling off during the day.
-              </Text>
-              <Text style={styles.bodyText}>
-                You don't need a diagnosis to use this.
-              </Text>
-            </>
-          )}
+      <PanGestureHandler
+        onHandlerStateChange={(e) => {
+          if (e.nativeEvent.state !== State.END) return;
+          handleSwipe(e.nativeEvent.translationX, e.nativeEvent.translationY);
+        }}
+      >
+        <View style={styles.body}>
+          <Animated.View key={step} entering={entering} exiting={exiting} style={styles.stepContent}>
+            {step === 0 && (
+              <>
+                <Text style={styles.bodyText}>
+                  This app is for people who deal with symptoms like dizziness, brain fog, fatigue, or just feeling off during the day.
+                </Text>
+                <Text style={styles.bodyText}>
+                  You don't need a diagnosis to use this.
+                </Text>
+              </>
+            )}
 
-          {step === 1 && (
-            <>
-              <Text style={styles.bodyText}>
-                Living with these symptoms can feel unpredictable.
-              </Text>
-              <Text style={styles.bodyText}>
-                This app helps you check in, understand your state, and adjust your day.
-              </Text>
-            </>
-          )}
+            {step === 1 && (
+              <>
+                <Text style={styles.bodyText}>
+                  Living with these symptoms can feel unpredictable.
+                </Text>
+                <Text style={styles.bodyText}>
+                  This app helps you check in, understand your state, and adjust your day.
+                </Text>
+              </>
+            )}
 
-          {step === 2 && (
-            <>
-              <Text style={styles.bodyText}>
-                This app tracks symptoms like dizziness, brain fog, fatigue, nausea, sleep, hydration, and how you're feeling day to day.
-              </Text>
-              <Text style={styles.dataNote}>
-                Your data is currently stored on your device. If you delete the app or switch devices, your data may not carry over yet.
-              </Text>
-            </>
-          )}
+            {step === 2 && (
+              <>
+                <Text style={styles.bodyText}>
+                  This app tracks symptoms like dizziness, brain fog, fatigue, nausea, sleep, hydration, and how you're feeling day to day.
+                </Text>
+                <Text style={styles.dataNote}>
+                  Your data is currently stored on your device. If you delete the app or switch devices, your data may not carry over yet.
+                </Text>
+              </>
+            )}
 
-          {step === 3 && (
-            <>
-              <Text style={styles.disclaimerText}>
-                This is not medical care.
-              </Text>
-              <Text style={styles.disclaimerEmergency}>
-                If you feel unsafe or your symptoms are severe, seek medical help or call emergency services.
-              </Text>
-              <TouchableOpacity
-                style={styles.checkboxRow}
-                onPress={() => setAcknowledged((v) => !v)}
-                activeOpacity={0.7}
-                accessibilityRole="checkbox"
-                accessibilityState={{ checked: acknowledged }}
-              >
-                <View style={[styles.checkbox, acknowledged && styles.checkboxChecked]}>
-                  {acknowledged && <Text style={styles.checkboxTick}>✓</Text>}
-                </View>
-                <Text style={styles.checkboxLabel}>I understand</Text>
-              </TouchableOpacity>
-            </>
-          )}
-        </Animated.View>
-      </View>
+            {step === 3 && (
+              <>
+                <Text style={styles.disclaimerText}>
+                  This is not medical care.
+                </Text>
+                <Text style={styles.disclaimerEmergency}>
+                  If you feel unsafe or your symptoms are severe, seek medical help or call emergency services.
+                </Text>
+                <TouchableOpacity
+                  style={styles.checkboxRow}
+                  onPress={() => setAcknowledged((v) => !v)}
+                  activeOpacity={0.7}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: acknowledged }}
+                >
+                  <View style={[styles.checkbox, acknowledged && styles.checkboxChecked]}>
+                    {acknowledged && <Text style={styles.checkboxTick}>✓</Text>}
+                  </View>
+                  <Text style={styles.checkboxLabel}>I understand</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </Animated.View>
+        </View>
+      </PanGestureHandler>
 
       <View style={styles.footer}>
         <View style={styles.dots}>
@@ -123,16 +140,6 @@ export default function OnboardingScreen() {
             {step < TOTAL_STEPS - 1 ? "Continue →" : "Start →"}
           </Text>
         </TouchableOpacity>
-
-        {step > 0 && (
-          <TouchableOpacity
-            style={styles.backBtn}
-            onPress={() => setStep((s) => s - 1)}
-            activeOpacity={0.6}
-          >
-            <Text style={styles.backBtnText}>← Back</Text>
-          </TouchableOpacity>
-        )}
       </View>
     </View>
   );
@@ -246,14 +253,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: "#fff",
-  },
-  backBtn: {
-    alignItems: "center",
-    paddingVertical: 8,
-  },
-  backBtnText: {
-    fontSize: 15,
-    color: "#9AA6A2",
-    fontWeight: "400",
   },
 });
