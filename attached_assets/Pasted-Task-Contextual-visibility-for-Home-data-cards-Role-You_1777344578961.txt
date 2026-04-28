@@ -1,0 +1,80 @@
+Task: Contextual visibility for Home data cards
+
+Role:
+You are a senior mobile MVP engineer. Keep this simple. Do not redesign the app. Do not add new features.
+
+File:
+artifacts/pots-companion/app/(tabs)/index.tsx
+
+Goal:
+Reduce Home screen clutter by showing score/sleep cards only when they help the user.
+
+Core rule:
+The lower the user’s capacity, the less data should be shown.
+
+Use existing values only:
+- lockedTodayState
+- avgSymptom
+- sleepHours
+- isFlareActive
+
+Do not change Today State logic.
+
+Visibility rules:
+
+1. If isFlareActive === true:
+- hide average symptom score
+- hide sleep last night
+- hide awakenings
+- keep existing flare override unchanged
+
+2. If lockedTodayState === "take-it-easy" AND avgSymptom >= 7:
+- hide average symptom score
+- hide sleep last night
+- hide awakenings
+
+3. If lockedTodayState === "take-it-easy" AND avgSymptom < 7:
+- hide average symptom score
+- show sleep last night if sleepHours is not null
+- hide awakenings
+
+4. If lockedTodayState === "mindful":
+- hide average symptom score
+- show sleep last night if sleepHours is not null
+- hide awakenings
+
+5. If lockedTodayState === "steady":
+- show average symptom score
+- show sleep last night if sleepHours is not null
+- show awakenings if sleepAwakenings is not null
+
+Implementation suggestion:
+Create simple booleans near the derived values:
+
+const showSymptomScore =
+  !isFlareActive &&
+  lockedTodayState === "steady";
+
+const showSleepCard =
+  !isFlareActive &&
+  sleepHours !== null &&
+  !(
+    lockedTodayState === "take-it-easy" &&
+    avgSymptom >= 7
+  );
+
+const showAwakeningsCard =
+  !isFlareActive &&
+  lockedTodayState === "steady" &&
+  sleepAwakenings !== null;
+
+Then wrap the existing cards with these booleans.
+
+Acceptance criteria:
+1. Severe take-it-easy high reserve screen shows no score/sleep/awakenings cards.
+2. Mindful screen shows sleep only, no score, no awakenings.
+3. Take-it-easy non-severe shows sleep only, no score, no awakenings.
+4. Steady screen shows score, sleep, and awakenings.
+5. Flare Mode remains unchanged.
+6. No logic changes to Today State.
+7. No new UI sections.
