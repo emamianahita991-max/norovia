@@ -117,10 +117,17 @@ export default function HomeScreen() {
     checkInCompletedToday,
     entries,
     isFlareActive,
+    setFlareActive,
     pendingSleep,
     lockedTodayState,
     resetAll,
   } = useDaily();
+
+  const FLARE_BULLETS = [
+    "Sit or lie down whenever you can",
+    "Start fluids and salt early in the day",
+    "Avoid prolonged standing",
+  ];
 
   const latestEntry = entries.length > 0 ? entries[entries.length - 1] : null;
   const avgSymptom: number | null = latestEntry ? latestEntry.avgSymptom : null;
@@ -221,16 +228,36 @@ export default function HomeScreen() {
       </View>
 
       {isFlareActive && (
-        <View style={styles.flareBanner}>
-          <Text style={styles.flareBannerTitle}>Flare Mode Active</Text>
-          <Text style={styles.flareBannerText}>This is a stabilization day. Rest counts as care.</Text>
-          <Text style={styles.flareReassurance}>
-            You're not doing anything wrong. Your body needs more support right now, and that's enough reason to slow down.
-          </Text>
-        </View>
+        <>
+          <View style={styles.flareBanner}>
+            <Text style={styles.flareBannerTitle}>Flare Mode Active</Text>
+            <Text style={styles.flareBannerText}>Today is a stabilization day.</Text>
+            <Text style={styles.flareBannerText}>Your priority is staying stable.</Text>
+          </View>
+
+          <View style={styles.card}>
+            <Text style={styles.sectionTitle}>Focus on this today</Text>
+            {FLARE_BULLETS.map((b, i) => (
+              <View key={i} style={styles.bullet}>
+                <Text style={styles.bulletDot}>·</Text>
+                <Text style={styles.bulletText}>{b}</Text>
+              </View>
+            ))}
+            <Text style={styles.flarePacing}>Stop early if symptoms rise.</Text>
+            <Text style={styles.flarePermission}>Doing less today is the right move.</Text>
+          </View>
+
+          <TouchableOpacity
+            style={styles.flareOffBtn}
+            onPress={() => setFlareActive(false)}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.flareOffBtnText}>Turn off Flare Mode</Text>
+          </TouchableOpacity>
+        </>
       )}
 
-      {renderCTA()}
+      {!isFlareActive && renderCTA()}
 
       {avgSymptom !== null && (
         <View style={styles.card}>
@@ -253,26 +280,28 @@ export default function HomeScreen() {
         </View>
       )}
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Daily plan</Text>
-        {!checkInCompletedToday || isFlareActive ? (
-          <Text style={styles.todayStatePlaceholder}>
-            Complete your check-in to see today's plan.
-          </Text>
-        ) : dailyPlan !== null ? (
-          <>
-            <Text style={styles.planMode}>{dailyPlan.mode}</Text>
-            {dailyPlan.actions.map((action, i) => (
-              <View key={i} style={styles.bullet}>
-                <Text style={styles.bulletDot}>·</Text>
-                <Text style={styles.bulletText}>{action}</Text>
-              </View>
-            ))}
-            <Text style={styles.planPacing}>{dailyPlan.pacing}</Text>
-            <Text style={styles.planPermission}>{dailyPlan.permission}</Text>
-          </>
-        ) : null}
-      </View>
+      {!isFlareActive && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Daily plan</Text>
+          {!checkInCompletedToday ? (
+            <Text style={styles.todayStatePlaceholder}>
+              Complete your check-in to see today's plan.
+            </Text>
+          ) : dailyPlan !== null ? (
+            <>
+              <Text style={styles.planMode}>{dailyPlan.mode}</Text>
+              {dailyPlan.actions.map((action, i) => (
+                <View key={i} style={styles.bullet}>
+                  <Text style={styles.bulletDot}>·</Text>
+                  <Text style={styles.bulletText}>{action}</Text>
+                </View>
+              ))}
+              <Text style={styles.planPacing}>{dailyPlan.pacing}</Text>
+              <Text style={styles.planPermission}>{dailyPlan.permission}</Text>
+            </>
+          ) : null}
+        </View>
+      )}
 
       <TouchableOpacity
         style={styles.aboutLink}
@@ -594,11 +623,27 @@ const styles = StyleSheet.create({
     color: "#7a4040",
     lineHeight: 20,
   },
-  flareReassurance: {
+  flarePacing: {
     fontSize: 13,
-    color: "#9a5a5a",
-    lineHeight: 20,
+    color: "#888",
     fontStyle: "italic",
+    marginTop: 10,
+  },
+  flarePermission: {
+    fontSize: 13,
+    color: "#666",
     marginTop: 4,
+  },
+  flareOffBtn: {
+    backgroundColor: "#b03a3a",
+    borderRadius: 16,
+    paddingVertical: 18,
+    alignItems: "center",
+  },
+  flareOffBtnText: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#fff",
+    letterSpacing: 0.2,
   },
 });
