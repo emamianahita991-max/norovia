@@ -148,6 +148,20 @@ export default function HomeScreen() {
     avgSymptom !== null &&
     avgSymptom >= 7;
 
+  const showSymptomScore =
+    !isFlareActive &&
+    lockedTodayState === "steady";
+
+  const showSleepCard =
+    !isFlareActive &&
+    sleepHours !== null &&
+    !(lockedTodayState === "take-it-easy" && (avgSymptom ?? 0) >= 7);
+
+  const showAwakeningsCard =
+    !isFlareActive &&
+    lockedTodayState === "steady" &&
+    sleepAwakenings !== null;
+
   const [showAboutModal, setShowAboutModal] = useState(false);
 
   function renderCTA() {
@@ -274,21 +288,21 @@ export default function HomeScreen() {
 
       {!isFlareActive && !isSevereLowReserve && renderCTA()}
 
-      {avgSymptom !== null && !isFlareActive && !isSevereLowReserve && (
+      {showSymptomScore && avgSymptom !== null && (
         <View style={styles.card}>
           <Text style={styles.cardLabel}>Average symptom score</Text>
           <Text style={styles.cardValue}>{avgSymptom.toFixed(1)}</Text>
         </View>
       )}
 
-      {sleepHours !== null && !isFlareActive && !isSevereLowReserve && (
+      {showSleepCard && (
         <View style={styles.card}>
           <Text style={styles.cardLabel}>Sleep last night</Text>
           <Text style={styles.cardValue}>{sleepHours} h</Text>
         </View>
       )}
 
-      {sleepAwakenings !== null && !isFlareActive && lockedTodayState === "steady" && (
+      {showAwakeningsCard && (
         <View style={styles.card}>
           <Text style={styles.cardLabel}>Awakenings</Text>
           <Text style={styles.cardValue}>{sleepAwakenings}</Text>
