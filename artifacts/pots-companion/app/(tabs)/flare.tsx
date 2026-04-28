@@ -62,7 +62,7 @@ export default function FlareScreen() {
               Today is a stabilization day.
             </Text>
             <Text style={styles.activeBannerText}>
-              Focus on staying stable.
+              Your priority is staying stable.
             </Text>
           </View>
 
