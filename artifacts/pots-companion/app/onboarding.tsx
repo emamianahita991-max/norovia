@@ -63,7 +63,7 @@ export default function OnboardingScreen() {
           {step === 1 && (
             <>
               <Text style={styles.bodyText}>
-                Living with this can feel unpredictable.
+                Living with these symptoms can feel unpredictable.
               </Text>
               <Text style={styles.bodyText}>
                 This helps you make sense of your day.
