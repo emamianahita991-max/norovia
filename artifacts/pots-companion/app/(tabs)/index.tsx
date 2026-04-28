@@ -209,7 +209,7 @@ export default function HomeScreen() {
         {(!isFlareActive && checkInCompletedToday && lockedTodayState !== null) && (() => {
           const stateLabel =
             lockedTodayState === "take-it-easy"
-              ? "Take It Easy (Very Low Reserve)"
+              ? "Take It Easy"
               : lockedTodayState === "mindful"
               ? "Mindful (Low Reserve)"
               : "Steady";
@@ -218,6 +218,7 @@ export default function HomeScreen() {
             return (
               <View>
                 <Text style={styles.todayStateLabel}>{stateLabel}</Text>
+                <Text style={styles.todayStateQualifier}>(very low reserve)</Text>
               </View>
             );
           }
@@ -232,6 +233,9 @@ export default function HomeScreen() {
           return (
             <View>
               <Text style={styles.todayStateLabel}>{stateLabel}</Text>
+              {lockedTodayState === "take-it-easy" && (
+                <Text style={styles.todayStateQualifier}>(very low reserve)</Text>
+              )}
               <Text style={styles.todayStateExplanation}>{subLine}</Text>
             </View>
           );
@@ -413,6 +417,11 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     color: "#9AA6A2",
     marginTop: 3,
+  },
+  todayStateQualifier: {
+    fontSize: 12,
+    color: "#b0bcb8",
+    marginTop: 1,
   },
   todayStateExplanation: {
     fontSize: 13,
