@@ -1,5 +1,5 @@
 import Slider from "@react-native-community/slider";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   Platform,
   ScrollView,
@@ -12,7 +12,16 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 import { useDaily, type TodayState } from "@/context/DailyContext";
+
+function isSameDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
 
 type CheckIn = {
   energy: number;
@@ -89,7 +98,31 @@ function ToggleRow({
 export default function TrackScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { sleepLoggedToday, checkInCompletedToday, setCheckInCompleted, pendingSleep, addEntry, lockTodayState } = useDaily();
+  const { sleepLoggedToday, checkInCompletedToday, setCheckInCompleted, pendingSleep, entries, addEntry, lockTodayState } = useDaily();
+
+  useFocusEffect(
+    useCallback(() => {
+      const last = entries[entries.length - 1];
+
+      if (
+        checkInCompletedToday &&
+        last &&
+        isSameDay(new Date(last.date), new Date())
+      ) {
+        setCheckIn({
+          energy: last.energy,
+          dizziness: last.dizziness,
+          brainFog: last.brainFog,
+        });
+      } else {
+        setCheckIn({
+          energy: 5,
+          dizziness: 0,
+          brainFog: 0,
+        });
+      }
+    }, [entries, checkInCompletedToday])
+  );
 
   const [checkIn, setCheckIn] = useState<CheckIn>({
     energy: 5,
@@ -133,6 +166,7 @@ export default function TrackScreen() {
     const sleepHours = pendingSleep?.hours ?? null;
 
     addEntry({
+      date: Date.now(),
       energy: checkIn.energy,
       dizziness,
       brainFog,

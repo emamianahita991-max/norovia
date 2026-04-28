@@ -5,6 +5,7 @@ import { AppState } from "react-native";
 export type TodayState = "take-it-easy" | "mindful" | "steady";
 
 export type Entry = {
+  date: number;
   energy: number;
   dizziness: number;
   brainFog: number;
