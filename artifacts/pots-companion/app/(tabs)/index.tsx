@@ -236,7 +236,7 @@ export default function HomeScreen() {
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Focus on this today</Text>
+            <Text style={styles.sectionTitle}>Focus today</Text>
             {FLARE_BULLETS.map((b, i) => (
               <View key={i} style={styles.bullet}>
                 <Text style={styles.bulletDot}>·</Text>

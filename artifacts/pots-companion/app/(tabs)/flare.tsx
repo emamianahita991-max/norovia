@@ -67,7 +67,7 @@ export default function FlareScreen() {
           </View>
 
           <View style={styles.card}>
-            <Text style={styles.sectionTitle}>Focus on this today</Text>
+            <Text style={styles.sectionTitle}>Focus today</Text>
             {BULLETS.map((b, i) => (
               <View key={i} style={styles.bullet}>
                 <Text style={styles.bulletDot}>·</Text>
