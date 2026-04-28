@@ -63,10 +63,10 @@ export default function OnboardingScreen() {
           {step === 1 && (
             <>
               <Text style={styles.bodyText}>
-                Living with these symptoms can feel unpredictable.
+                Living with this can feel unpredictable.
               </Text>
               <Text style={styles.bodyText}>
-                This app helps you check in, understand your state, and adjust your day.
+                This helps you make sense of your day.
               </Text>
             </>
           )}
@@ -74,7 +74,10 @@ export default function OnboardingScreen() {
           {step === 2 && (
             <>
               <Text style={styles.bodyText}>
-                This app tracks symptoms like dizziness, brain fog, fatigue, sleep, hydration, and how you're feeling day to day.
+                A quick daily check-in turns how you feel into a clear state.
+              </Text>
+              <Text style={styles.bodyText}>
+                So you know how to adjust your day.
               </Text>
               <Text style={styles.dataNote}>
                 Your data is currently stored on your device. If you delete the app or switch devices, your data may not carry over yet.
