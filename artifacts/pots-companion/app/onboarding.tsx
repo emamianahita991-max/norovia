@@ -74,7 +74,7 @@ export default function OnboardingScreen() {
           {step === 2 && (
             <>
               <Text style={styles.bodyText}>
-                This app tracks energy, dizziness, and brain fog — along with sleep, hydration, and habits like salt, compression, and movement.
+                This app tracks symptoms like dizziness, brain fog, fatigue, sleep, hydration, and how you're feeling day to day.
               </Text>
               <Text style={styles.dataNote}>
                 Your data is currently stored on your device. If you delete the app or switch devices, your data may not carry over yet.
