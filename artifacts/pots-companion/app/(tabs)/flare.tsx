@@ -10,7 +10,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDaily } from "@/context/DailyContext";
 
 const BULLETS = [
-  "Sit or lie down as much as possible",
+  "Sit or lie down whenever you can",
   "Start fluids and salt early",
   "Avoid prolonged standing",
 ];
