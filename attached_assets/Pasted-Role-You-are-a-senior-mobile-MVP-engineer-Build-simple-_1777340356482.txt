@@ -1,0 +1,101 @@
+Role:
+You are a senior mobile MVP engineer. Build simple, clean, readable UI and logic. No overengineering.
+Context
+We are implementing Flare Mode in a health app (Norovia) for users with POTS-like fluctuating capacity.
+Flare Mode is a full-day override state.
+When ON:
+It replaces normal daily plan behavior
+It reduces cognitive load
+It gives clear, minimal, directive guidance
+Core Requirements
+Flare Mode has two states:
+Inactive
+Active
+STATE 1 — INACTIVE
+Display:
+Title: "Flare Mode"
+Status text: "Inactive"
+Button:
+Label:
+"Turn on Flare Mode"
+Style:
+Neutral (dark/gray)
+Large, full-width
+STATE 2 — ACTIVE
+1. MODE BANNER (TOP PRIORITY)
+Display a highlighted container:
+Title:
+"Flare Mode Active"
+Text:
+"Today is a stabilization day."
+"Your priority is staying stable."
+Notes:
+Keep text short
+No extra explanation
+Visually distinct (light red background or similar)
+2. DAILY PLAN (PRIMARY CONTENT — DIRECTLY UNDER BANNER)
+Section title:
+"Focus on this today"
+Display exactly 3 actions (bullet points):
+"Sit or lie down as much as possible"
+"Start fluids and salt early"
+"Avoid prolonged standing"
+3. PACING LINE
+Display below actions:
+"Stop early if symptoms rise."
+Style:
+Slightly muted
+Italic if possible
+4. PERMISSION LINE
+Display below pacing:
+"Doing less today is the right move."
+Style:
+Subtle but readable
+Slightly softer color than main text
+5. TOGGLE BUTTON (SECONDARY, BELOW PLAN)
+Label:
+"Turn off Flare Mode"
+Style:
+Red button
+Full width
+6. EMERGENCY BLOCK (BOTTOM — KEEP BUT SIMPLIFY)
+Title:
+"When to seek urgent care"
+Text:
+"If you have chest pain, severe shortness of breath, fainting with injury, or cannot keep fluids down, call 911 right away."
+"If something feels seriously wrong, call 911."
+Small disclaimer (smaller text):
+"Norovia is a lifestyle support tool. It does not provide medical care."
+BEHAVIOR RULES
+When Flare Mode is ON:
+Hide or override normal daily plan on Home screen
+Do NOT show:
+Today State
+Daily Plan (normal logic)
+Flare Mode becomes the only plan
+When Flare Mode is OFF:
+App behaves normally (no changes)
+UI STRUCTURE (IMPORTANT ORDER)
+When ACTIVE, render in this order:
+Flare Mode banner
+Daily plan (actions)
+Pacing
+Permission
+Turn off button
+Emergency block
+DO NOT
+Do not add more than 3 actions
+Do not add extra explanations
+Do not add animations or complexity
+Do not merge with normal daily plan
+Do not add scoring or tracking
+Do not change tone
+GOAL
+When a user turns on Flare Mode, they should feel:
+"I don’t need to think. I know what to do."
+OUTPUT
+Implement:
+UI for Flare Mode screen
+Toggle logic (on/off state)
+Conditional rendering (active vs inactive)
+Keep code clean and minimal.

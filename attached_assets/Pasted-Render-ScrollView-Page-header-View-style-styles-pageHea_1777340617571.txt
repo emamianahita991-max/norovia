@@ -1,0 +1,143 @@
+Render:
+<ScrollView>
+
+  {/* Page header */}
+  <View style={styles.pageHeader}>
+    <Text style={styles.appName}>Norovia</Text>
+    <Text style={styles.heading}>Flare Mode</Text>
+    <Text style={styles.subheading}>Inactive</Text>
+  </View>
+
+  {/* Toggle button */}
+  <TouchableOpacity style={styles.toggleBtnOff} onPress={...}>
+    <Text style={styles.toggleBtnText}>Turn on Flare Mode</Text>
+  </TouchableOpacity>
+
+  {/* Emergency block */}
+  <EmergencyBlock />
+
+</ScrollView>
+STATE 2 — ACTIVE (STRICT ORDER)
+Render:
+<ScrollView>
+
+  {/* Page header */}
+  <View style={styles.pageHeader}>
+    <Text style={styles.appName}>Norovia</Text>
+    <Text style={styles.heading}>Flare Mode</Text>
+    <Text style={styles.subheading}>Active</Text>
+  </View>
+
+  {/* 1. Mode banner */}
+  <View style={styles.activeBanner}>
+    <Text style={styles.activeBannerTitle}>Flare Mode Active</Text>
+    <Text style={styles.activeBannerText}>Today is a stabilization day.</Text>
+    <Text style={styles.activeBannerText}>Focus on staying stable.</Text>
+  </View>
+
+  {/* 2. Daily plan */}
+  <View style={styles.card}>
+    <Text style={styles.sectionTitle}>Focus on this today</Text>
+
+    {BULLETS.map((b, i) => (
+      <View key={i} style={styles.bullet}>
+        <Text style={styles.bulletDot}>·</Text>
+        <Text style={styles.bulletText}>{b}</Text>
+      </View>
+    ))}
+
+    {/* 3. Pacing */}
+    <Text style={styles.pacing}>
+      Stop early if symptoms rise.
+    </Text>
+
+    {/* 4. Permission */}
+    <Text style={styles.permission}>
+      Doing less today is the right move.
+    </Text>
+  </View>
+
+  {/* 5. Toggle button */}
+  <TouchableOpacity style={styles.toggleBtnOn} onPress={...}>
+    <Text style={styles.toggleBtnText}>Turn off Flare Mode</Text>
+  </TouchableOpacity>
+
+  {/* 6. Emergency block */}
+  <EmergencyBlock />
+
+</ScrollView>
+BULLETS (EXACTLY 3)
+const BULLETS = [
+  "Sit or lie down as much as possible",
+  "Start fluids and salt early",
+  "Avoid prolonged standing",
+];
+EMERGENCY BLOCK (ALWAYS VISIBLE)
+<View style={styles.safety}>
+  <Text style={styles.safetyTitle}>When to seek urgent care</Text>
+
+  <Text style={styles.safetyText}>
+    If you have chest pain, severe shortness of breath, fainting with injury,
+    or cannot keep fluids down, call 911 right away.
+  </Text>
+
+  <Text style={styles.safetyText}>
+    If something feels seriously wrong, call 911.
+  </Text>
+
+  <Text style={styles.disclaimer}>
+    Norovia is a lifestyle support tool. It does not provide medical care.
+  </Text>
+</View>
+STYLES (ADD / UPDATE)
+pacing: {
+  fontSize: 13,
+  color: "#888",
+  fontStyle: "italic",
+  marginTop: 10,
+},
+
+permission: {
+  fontSize: 13,
+  color: "#666",
+  marginTop: 4,
+},
+
+toggleBtnOff: {
+  backgroundColor: "#2c2c2c",
+  borderRadius: 16,
+  paddingVertical: 22,
+  alignItems: "center",
+  marginTop: 16,
+},
+
+toggleBtnOn: {
+  backgroundColor: "#b03a3a",
+  borderRadius: 16,
+  paddingVertical: 22,
+  alignItems: "center",
+  marginTop: 16,
+},
+
+toggleBtnText: {
+  fontSize: 18,
+  fontWeight: "700",
+  color: "#fff",
+  letterSpacing: 0.2,
+},
+REMOVE
+old button styles:
+mainBtn
+mainBtnActive
+mainBtnText
+old 4-bullet plan
+any duplicate or outdated plan content
+DO NOT
+Do not add more than 3 bullets
+Do not change wording
+Do not add extra sections
+Do not merge with normal daily plan
+Do not add animations
+GOAL
+When Flare Mode is ON, the user should feel:
+"This is a different kind of day. I know exactly what to do."
