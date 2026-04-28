@@ -14,8 +14,70 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useDaily, type TodayState } from "@/context/DailyContext";
 
+type DailyPlan = {
+  mode: string;
+  actions: string[];
+  pacing: string;
+  permission: string;
+};
 
+function getDailyPlan(
+  state: TodayState,
+  fatigue: number,
+  dizziness: number,
+  brainFog: number
+): DailyPlan {
+  const highest = Math.max(fatigue, dizziness, brainFog);
 
+  if (state === "take-it-easy") {
+    const actions = [
+      "Stay mostly seated or lying down",
+      "Keep activity very short (5–10 min at a time)",
+      "Hydrate early and consistently",
+    ];
+    if (fatigue === highest) actions[2] = "Take breaks earlier than usual";
+    else if (dizziness === highest) actions[1] = "Move slowly when standing";
+    else if (brainFog === highest) actions[2] = "Keep tasks simple and few";
+    return {
+      mode: "Today is a stabilization day.",
+      actions,
+      pacing: "Stop early if symptoms rise.",
+      permission: "Doing less today is the right move.",
+    };
+  }
+
+  if (state === "mindful") {
+    const actions = [
+      "Keep movement gentle — seated if needed",
+      "Pick 2–3 priorities and start with the smallest version",
+      "Pause before walking after standing",
+    ];
+    if (fatigue === highest) actions[2] = "Take breaks earlier than usual";
+    else if (dizziness === highest) actions[2] = "Move slowly when standing";
+    else if (brainFog === highest) actions[1] = "Keep tasks simple and few";
+    return {
+      mode: "Today has usable capacity — handle it deliberately.",
+      actions,
+      pacing: "Work in short blocks — stop before symptoms build.",
+      permission: "Stay in control — don't let the day run you.",
+    };
+  }
+
+  const actions = [
+    "Do your main tasks earlier in the day",
+    "Keep movement steady, not intense",
+    "Take short breaks before fatigue builds",
+  ];
+  if (fatigue === highest) actions[2] = "Take breaks earlier than usual";
+  else if (dizziness === highest) actions[1] = "Move slowly when standing";
+  else if (brainFog === highest) actions[0] = "Keep tasks simple and few";
+  return {
+    mode: "You have usable capacity today.",
+    actions,
+    pacing: "Keep momentum, but don't push to exhaustion.",
+    permission: "You can move forward today.",
+  };
+}
 
 function getTodayStateExplanation(
   sleepHours: number | null,
@@ -60,92 +122,19 @@ export default function HomeScreen() {
     resetAll,
   } = useDaily();
 
-  console.log("TodayState:", lockedTodayState);
-
   const latestEntry = entries.length > 0 ? entries[entries.length - 1] : null;
   const avgSymptom: number | null = latestEntry ? latestEntry.avgSymptom : null;
   const sleepHours: number | null = pendingSleep?.hours ?? latestEntry?.sleepHours ?? null;
-  const sleepScore: number | null = pendingSleep?.score ?? null;
   const sleepAwakenings: number | null =
     pendingSleep?.awakenings ?? latestEntry?.sleepAwakenings ?? null;
-  const waterLiters: number | null = latestEntry ? latestEntry.waterLiters : null;
-  const dizziness: number = latestEntry ? latestEntry.dizziness : 0;
+  const fatigue: number = latestEntry?.fatigue ?? 0;
+  const dizziness: number = latestEntry?.dizziness ?? 0;
+  const brainFog: number = latestEntry?.brainFog ?? 0;
 
-  function getMovementGuidance(state: string, diz: number) {
-    const movementText =
-      state === "steady"
-        ? "Keep your routine steady today."
-        : "Keep movement gentle. Use recumbent or seated movement if needed.";
-
-    const standingCaution =
-      diz >= 5 ? "Pause before standing. Make a fist or rise slowly." : "";
-
-    return { movementText, standingCaution };
-  }
-
-  const { movementText, standingCaution } = lockedTodayState !== null
-    ? getMovementGuidance(lockedTodayState, dizziness)
-    : { movementText: "", standingCaution: "" };
-
-  const BASE_BULLETS: Record<TodayState, string[]> = {
-    "take-it-easy": [
-      "Reduce standing time where you can.",
-      movementText,
-    ],
-    mindful: [
-      "If standing feels harder, compression may help.",
-      movementText,
-    ],
-    steady: [
-      movementText,
-      "Use gentle movement if it feels supportive.",
-    ],
-  };
-
-  const hydrationBullet: string | null = (() => {
-    if (waterLiters !== null && waterLiters < 1)
-      return "Prioritize fluids early in the day.";
-    if (waterLiters !== null && waterLiters < 2)
-      return "Keep fluids steady through the rest of the day.";
-    return null;
-  })();
-
-  const FLARE_PLAN = [
-    "Sit or lie down when possible.",
-    "Prioritize fluids and salt early.",
-    "Avoid prolonged standing and heat.",
-    "Delay non-essential tasks if you can.",
-  ];
-
-  const plan: string[] = isFlareActive
-    ? FLARE_PLAN
-    : lockedTodayState !== null
-    ? (() => {
-        const base = BASE_BULLETS[lockedTodayState];
-        return hydrationBullet
-          ? [hydrationBullet, ...base].slice(0, 3)
-          : base.slice(0, 3);
-      })()
-    : [];
-
-  const microNudge: string = (() => {
-    if (waterLiters === null || waterLiters < 1)
-      return "A small glass of water now could help.";
-    if (waterLiters < 2)
-      return "You're building well. Keep fluids steady.";
-    return "You're on track. Keep the pace gentle.";
-  })();
-
-  const insight: string = (() => {
-    if (entries.length < 3)
-      return "We'll start noticing patterns as you log a few days.";
-    if (sleepHours !== null && sleepHours < 6)
-      return "Short or disrupted sleep may make symptoms harder today.";
-    if (lockedTodayState === "take-it-easy") return "Harder days happen. You're not doing anything wrong.";
-    if (lockedTodayState === "mindful") return "A gentler pace isn't giving up. It's working with what you have.";
-    if (lockedTodayState === "steady") return "Today looks steadier so far. Keep it simple.";
-    return "You seem to do better on days when fluids are stronger.";
-  })();
+  const dailyPlan: DailyPlan | null =
+    !isFlareActive && checkInCompletedToday && lockedTodayState !== null
+      ? getDailyPlan(lockedTodayState, fatigue, dizziness, brainFog)
+      : null;
 
   const [showAboutModal, setShowAboutModal] = useState(false);
 
@@ -266,33 +255,24 @@ export default function HomeScreen() {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Daily plan</Text>
-        {!checkInCompletedToday ? (
+        {!checkInCompletedToday || isFlareActive ? (
           <Text style={styles.todayStatePlaceholder}>
             Complete your check-in to see today's plan.
           </Text>
-        ) : (
+        ) : dailyPlan !== null ? (
           <>
-            {plan.map((item, i) => (
+            <Text style={styles.planMode}>{dailyPlan.mode}</Text>
+            {dailyPlan.actions.map((action, i) => (
               <View key={i} style={styles.bullet}>
                 <Text style={styles.bulletDot}>·</Text>
-                <Text style={styles.bulletText}>{item}</Text>
+                <Text style={styles.bulletText}>{action}</Text>
               </View>
             ))}
-            {!isFlareActive && latestEntry !== null && (
-              <Text style={styles.microNudge}>{microNudge}</Text>
-            )}
-            {!isFlareActive && standingCaution !== "" && (
-              <Text style={styles.standingCaution}>{standingCaution}</Text>
-            )}
+            <Text style={styles.planPacing}>{dailyPlan.pacing}</Text>
+            <Text style={styles.planPermission}>{dailyPlan.permission}</Text>
           </>
-        )}
+        ) : null}
       </View>
-
-      {!isFlareActive && checkInCompletedToday && (
-        <View style={styles.insight}>
-          <Text style={styles.insightText}>{insight}</Text>
-        </View>
-      )}
 
       <TouchableOpacity
         style={styles.aboutLink}
@@ -578,29 +558,21 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     flex: 1,
   },
-  insight: {
-    backgroundColor: "#eef4f4",
-    borderRadius: 14,
-    padding: 18,
-  },
-  insightText: {
+  planMode: {
     fontSize: 14,
-    color: "#3a6a6b",
-    lineHeight: 22,
+    color: "#4a7c7e",
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  planPacing: {
+    fontSize: 13,
+    color: "#888",
+    marginTop: 10,
     fontStyle: "italic",
   },
-  microNudge: {
+  planPermission: {
     fontSize: 13,
-    color: "#9AA6A2",
-    lineHeight: 20,
-    fontStyle: "italic",
-    marginTop: 6,
-  },
-  standingCaution: {
-    fontSize: 13,
-    color: "#6a9496",
-    lineHeight: 20,
-    fontStyle: "italic",
+    color: "#555",
     marginTop: 4,
   },
   flareBanner: {
