@@ -1,0 +1,86 @@
+Role:
+You are a senior mobile MVP engineer. Simplify the Trends screen to reduce cognitive load and improve trust. Do not add new features.
+Context
+The current Trends screen tries to infer causes (e.g., “you feel better when…”).
+This creates:
+low trust (data is limited)
+high cognitive load
+mismatch with the rest of the app (which is simple and directive)
+We want Trends to be:
+observational (not interpretive)
+minimal
+easy to read in low-energy states
+GOAL
+Transform Trends into a simple reflection layer:
+Show what seems to help (1 line)
+Show what seems to worsen symptoms (1 line)
+Show one next step (1 line)
+No more than that.
+PART 1 — UPDATE ANALYZE FUNCTION OUTPUT
+In analyze():
+1. Remove causal language
+Replace phrases like:
+“You seem to feel better when…”
+“X may be linked to…”
+With observational phrasing only:
+Use patterns like:
+“On days with higher hydration, symptoms were lower.”
+“Short sleep days have coincided with higher fatigue.”
+“Days without compression have coincided with higher dizziness.”
+Do NOT imply cause.
+2. Limit output to ONE item per section
+Change:
+helps: helps.slice(0, 2),
+worsens: worsens.slice(0, 2),
+To:
+helps: helps.slice(0, 1),
+worsens: worsens.slice(0, 1),
+3. Simplify "tryNext"
+Replace all “Try…” phrasing.
+Use:
+tryNext.push("Next step: prioritize fluids earlier in the day.");
+Pattern:
+Always start with “Next step:”
+Keep it short
+Only ONE item
+PART 2 — SIMPLIFY EMPTY STATE
+Replace current long text:
+Life with these symptoms is unpredictable...
+With:
+Title:
+"You’re building your pattern"
+Body:
+"A few days of check-ins will help this become clearer."
+PART 3 — REMOVE GENERIC “FOCUS” SECTION
+Delete this entire block:
+<View style={styles.focusCard}>
+  ...
+</View>
+This section is not personalized and adds noise.
+PART 4 — KEEP STRUCTURE SIMPLE
+Final UI structure when data exists:
+Card 1:
+What seems to help
+→ show only 1 line or “Not enough data yet”
+Card 2:
+What seems to make symptoms worse
+→ show only 1 line or “Not enough data yet”
+Card 3 (optional):
+Next step
+→ show 1 short line (only if available)
+PART 5 — DO NOT CHANGE
+Do NOT change export feature
+Do NOT change data structure
+Do NOT add charts or graphs
+Do NOT add new metrics
+Do NOT increase text length
+ACCEPTANCE CRITERIA
+Each section shows max 1 line
+No causal language (“because”, “leads to”, “causes”)
+Language is observational and simple
+“Next step” starts with “Next step:”
+Empty state is short and calm
+No extra sections or noise
+GOAL
+User should feel:
+“I understand my patterns a bit better — without needing to think.”
