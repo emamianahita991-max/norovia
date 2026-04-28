@@ -31,7 +31,7 @@ function getTodayStateExplanation(
 
   if (
     sleepHours !== null && sleepHours >= 4 && sleepHours < 6 &&
-    avgSymptom !== null && avgSymptom >= 6
+    avgSymptom !== null && avgSymptom >= 6.5
   ) {
     return "Lower sleep and higher symptoms are both contributing today.";
   }
@@ -40,7 +40,7 @@ function getTodayStateExplanation(
     return "Reduced sleep is likely affecting how you feel today.";
   }
 
-  if (avgSymptom !== null && avgSymptom >= 6) {
+  if (avgSymptom !== null && avgSymptom >= 6.5) {
     return "Your symptoms are more elevated today.";
   }
 
@@ -139,7 +139,7 @@ export default function HomeScreen() {
   const insight: string = (() => {
     if (entries.length < 3)
       return "We'll start noticing patterns as you log a few days.";
-    if (sleepScore !== null && sleepScore < 60)
+    if (sleepHours !== null && sleepHours < 6)
       return "Short or disrupted sleep may make symptoms harder today.";
     if (lockedTodayState === "take-it-easy") return "Harder days happen. You're not doing anything wrong.";
     if (lockedTodayState === "mindful") return "A gentler pace isn't giving up. It's working with what you have.";
