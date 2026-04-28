@@ -79,35 +79,6 @@ function getDailyPlan(
   };
 }
 
-function getTodayStateExplanation(
-  sleepHours: number | null,
-  avgSymptom: number | null
-): string | null {
-  if (sleepHours === null && avgSymptom === null) {
-    return null;
-  }
-
-  if (sleepHours !== null && sleepHours < 4) {
-    return "Very short sleep is limiting your capacity today.";
-  }
-
-  if (
-    sleepHours !== null && sleepHours >= 4 && sleepHours < 6 &&
-    avgSymptom !== null && avgSymptom >= 6.5
-  ) {
-    return "Lower sleep and higher symptoms are both contributing today.";
-  }
-
-  if (sleepHours !== null && sleepHours >= 4 && sleepHours < 6) {
-    return "Reduced sleep is likely affecting how you feel today.";
-  }
-
-  if (avgSymptom !== null && avgSymptom >= 6.5) {
-    return "Your symptoms are more elevated today.";
-  }
-
-  return "Things look relatively stable today.";
-}
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
@@ -361,9 +332,6 @@ export default function HomeScreen() {
               </Text>
 
               <Text style={styles.aboutSectionLabel}>Disclaimer</Text>
-              <Text style={styles.aboutModalBody}>
-                This app helps you notice patterns and better understand your symptoms.
-              </Text>
               <Text style={styles.aboutModalBody}>
                 It does not provide medical advice, diagnosis, or treatment — and does not replace medical care.
               </Text>
