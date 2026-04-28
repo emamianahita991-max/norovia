@@ -11,7 +11,7 @@ import { useDaily } from "@/context/DailyContext";
 
 const BULLETS = [
   "Sit or lie down whenever you can",
-  "Start fluids and salt early",
+  "Start fluids and salt early in the day",
   "Avoid prolonged standing",
 ];
 
