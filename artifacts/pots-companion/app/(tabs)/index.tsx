@@ -41,7 +41,7 @@ function getDailyPlan(
     return {
       mode: "Today is a stabilization day.",
       actions,
-      pacing: "Stop early if symptoms rise.",
+      pacing: "Stop early — don't wait for symptoms to build.",
       permission: "Doing less today is the right move.",
     };
   }
@@ -258,7 +258,7 @@ export default function HomeScreen() {
                 <Text style={styles.bulletText}>{b}</Text>
               </View>
             ))}
-            <Text style={styles.flarePacing}>Stop early if symptoms rise.</Text>
+            <Text style={styles.flarePacing}>Stop early — don't wait for symptoms to build.</Text>
             <Text style={styles.flarePermission}>Doing less today is the right move.</Text>
           </View>
 

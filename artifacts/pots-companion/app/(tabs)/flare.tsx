@@ -74,7 +74,7 @@ export default function FlareScreen() {
                 <Text style={styles.bulletText}>{b}</Text>
               </View>
             ))}
-            <Text style={styles.pacing}>Stop early if symptoms rise.</Text>
+            <Text style={styles.pacing}>Stop early — don't wait for symptoms to build.</Text>
             <Text style={styles.permission}>
               Doing less today is the right move.
             </Text>
