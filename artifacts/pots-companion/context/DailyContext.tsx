@@ -5,15 +5,16 @@ import { AppState } from "react-native";
 export type TodayState = "take-it-easy" | "mindful" | "steady";
 
 export type Entry = {
-  functionScore: number;
-  avgSymptom: number;
+  energy: number;
   dizziness: number;
+  brainFog: number;
   fatigue: number;
+  avgSymptom: number;
+  maxSymptom: number;
   waterLiters: number;
   salt: boolean;
   compression: boolean;
   movement: boolean;
-  sleepScore: number | null;
   sleepHours: number | null;
   sleepAwakenings: number | null;
   observation?: string;

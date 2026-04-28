@@ -28,8 +28,8 @@ function pct(days: Entry[], pred: (e: Entry) => boolean): number {
 function analyze(entries: Entry[]): Analysis | null {
   if (entries.length < 3) return null;
 
-  const goodDays = entries.filter((e) => e.functionScore >= 6 && e.avgSymptom <= 4);
-  const badDays = entries.filter((e) => e.functionScore <= 4 || e.avgSymptom >= 6);
+  const goodDays = entries.filter((e) => e.energy >= 6 && e.avgSymptom <= 4);
+  const badDays = entries.filter((e) => e.energy <= 4 || e.avgSymptom >= 6);
 
   const helps: string[] = [];
   const worsens: string[] = [];
@@ -47,11 +47,11 @@ function analyze(entries: Entry[]): Analysis | null {
       worsens.push("Lower hydration days may be linked to worse symptoms.");
     }
 
-    const sleepScoresGood = goodDays.filter((e) => e.sleepScore !== null).map((e) => e.sleepScore!);
-    const sleepScoresBad = badDays.filter((e) => e.sleepScore !== null).map((e) => e.sleepScore!);
-    const sleepAvgGood = avg(sleepScoresGood);
-    const sleepAvgBad = avg(sleepScoresBad);
-    if (sleepAvgGood !== null && sleepAvgBad !== null && sleepAvgGood >= 75 && sleepAvgBad < 65) {
+    const sleepHrsGood = goodDays.filter((e) => e.sleepHours !== null).map((e) => e.sleepHours!);
+    const sleepHrsBad = badDays.filter((e) => e.sleepHours !== null).map((e) => e.sleepHours!);
+    const sleepAvgGood = avg(sleepHrsGood);
+    const sleepAvgBad = avg(sleepHrsBad);
+    if (sleepAvgGood !== null && sleepAvgBad !== null && sleepAvgGood >= 7 && sleepAvgBad < 6) {
       helps.push("Your symptoms appear worse after shorter or more disrupted sleep.");
     }
 
@@ -80,14 +80,14 @@ function analyze(entries: Entry[]): Analysis | null {
   }
 
   const highFatigueLowSleep = recentWindow.some(
-    (e) => e.fatigue >= 7 && e.sleepScore !== null && e.sleepScore < 60,
+    (e) => e.fatigue >= 7 && e.sleepHours !== null && e.sleepHours < 6,
   );
   if (highFatigueLowSleep) {
     worsens.push("Fatigue seems to increase after poor sleep.");
   }
 
   const recent = entries.slice(-3);
-  const lowSleepRecent = recent.filter((e) => e.sleepScore !== null && e.sleepScore < 60).length >= 1;
+  const lowSleepRecent = recent.filter((e) => e.sleepHours !== null && e.sleepHours < 6).length >= 1;
   const lowWaterRecent = recent.filter((e) => e.waterLiters < 2.0).length >= 2;
   const lowComprRecent = recent.filter((e) => !e.compression).length >= 2;
 
@@ -121,9 +121,6 @@ function buildReportHtml(entries: Entry[], vitals: VitalReading[]): string {
   const sleepHours = entries
     .map((e) => e.sleepHours)
     .filter((h): h is number => h !== null);
-  const sleepScores = entries
-    .map((e) => e.sleepScore)
-    .filter((s): s is number => s !== null);
   const awakenings = entries
     .map((e) => e.sleepAwakenings)
     .filter((a): a is number => a !== null);
@@ -223,7 +220,6 @@ ${hrs.length > 0 ? `
 <h2>Hydration and Habits</h2>
 <table class="data">
   ${row("Average sleep hours", sleepHours.length ? `${n(avg(sleepHours), 1)} h` : "—")}
-  ${row("Average sleep score", sleepScores.length ? `${n(avg(sleepScores), 0)} / 100` : "—")}
   ${row("Average night awakenings", awakenings.length ? n(avg(awakenings), 1) : "—")}
   ${row("Days with adequate hydration", entries.length ? `${daysHydrated} of ${entries.length}` : "—")}
   ${row("Days with compression worn", entries.length ? `${daysCompression} of ${entries.length}` : "—")}

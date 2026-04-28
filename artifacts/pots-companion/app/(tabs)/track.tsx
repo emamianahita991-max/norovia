@@ -15,13 +15,9 @@ import { useRouter } from "expo-router";
 import { useDaily, type TodayState } from "@/context/DailyContext";
 
 type CheckIn = {
+  energy: number;
   dizziness: number;
-  palpitations: number;
-  fatigue: number;
   brainFog: number;
-  nausea: number;
-  headache: number;
-  functionScore: number;
 };
 
 type Habits = {
@@ -33,25 +29,18 @@ type Habits = {
 const WATER_GOAL = 3.0;
 const WATER_INCREMENTS = [0.25, 0.5, 1.0];
 
-const SYMPTOMS: { key: keyof CheckIn; label: string }[] = [
-  { key: "dizziness", label: "Dizziness / lightheadedness" },
-  { key: "palpitations", label: "Palpitations" },
-  { key: "fatigue", label: "Fatigue" },
-  { key: "brainFog", label: "Brain fog" },
-  { key: "nausea", label: "Nausea" },
-  { key: "headache", label: "Headache" },
-];
-
 const ACCENT = "#4a7c7e";
 
 function SliderRow({
   label,
   value,
   onChange,
+  hint,
 }: {
   label: string;
   value: number;
   onChange: (v: number) => void;
+  hint?: string;
 }) {
   return (
     <View style={row.wrap}>
@@ -70,6 +59,7 @@ function SliderRow({
         maximumTrackTintColor="#ddd"
         thumbTintColor={ACCENT}
       />
+      {hint ? <Text style={row.hint}>{hint}</Text> : null}
     </View>
   );
 }
@@ -102,13 +92,9 @@ export default function TrackScreen() {
   const { sleepLoggedToday, checkInCompletedToday, setCheckInCompleted, pendingSleep, addEntry, lockTodayState } = useDaily();
 
   const [checkIn, setCheckIn] = useState<CheckIn>({
+    energy: 5,
     dizziness: 0,
-    palpitations: 0,
-    fatigue: 0,
     brainFog: 0,
-    nausea: 0,
-    headache: 0,
-    functionScore: 5,
   });
 
   const [habits, setHabits] = useState<Habits>({
@@ -130,7 +116,7 @@ export default function TrackScreen() {
     setWaterHistory((prev) => (prev.length > 0 ? prev.slice(0, -1) : prev));
   }
 
-  function setSymptom(key: keyof CheckIn) {
+  function setField(key: keyof CheckIn) {
     return (v: number) => setCheckIn((prev) => ({ ...prev, [key]: v }));
   }
 
@@ -139,38 +125,55 @@ export default function TrackScreen() {
   }
 
   function handleFinish() {
-    const symptomKeys: (keyof typeof checkIn)[] = [
-      "dizziness", "palpitations", "fatigue", "brainFog", "nausea", "headache",
-    ];
-    const avgSymptom =
-      symptomKeys.reduce((sum, k) => sum + checkIn[k], 0) / symptomKeys.length;
+    const fatigue = 10 - checkIn.energy;
+    const { dizziness, brainFog } = checkIn;
+    const avgSymptom = parseFloat(((fatigue + dizziness + brainFog) / 3).toFixed(1));
+    const maxSymptom = Math.max(fatigue, dizziness, brainFog);
+
+    const sleepHours = pendingSleep?.hours ?? null;
 
     addEntry({
-      functionScore: checkIn.functionScore,
-      avgSymptom: parseFloat(avgSymptom.toFixed(1)),
-      dizziness: checkIn.dizziness,
-      fatigue: checkIn.fatigue,
+      energy: checkIn.energy,
+      dizziness,
+      brainFog,
+      fatigue,
+      avgSymptom,
+      maxSymptom,
       waterLiters,
       salt: habits.salt,
       compression: habits.compression,
       movement: habits.movement,
-      sleepScore: pendingSleep?.score ?? null,
-      sleepHours: pendingSleep?.hours ?? null,
+      sleepHours,
       sleepAwakenings: pendingSleep?.awakenings ?? null,
       observation: observation.trim(),
     });
 
-    const sleepHours = pendingSleep?.hours ?? null;
-    const badSleep = sleepHours !== null ? sleepHours < 4 : false;
-    const moderateSleep = sleepHours !== null ? sleepHours >= 4 && sleepHours < 6 : false;
-    const sym = parseFloat(avgSymptom.toFixed(1));
-    const computed: TodayState =
-      badSleep ? "take-it-easy"
-      : sym >= 6 ? "take-it-easy"
-      : sym >= 4 || moderateSleep ? "mindful"
-      : "steady";
-    lockTodayState(computed);
+    let computed: TodayState;
 
+    // Step 1: sleep gate
+    if (sleepHours !== null && sleepHours < 4) {
+      computed = "take-it-easy";
+    }
+    // Step 2: symptom severity
+    else if (maxSymptom >= 8 || avgSymptom >= 6.5) {
+      computed = "take-it-easy";
+    }
+    // Step 3: combined override (moderate sleep + elevated symptoms)
+    else if (sleepHours !== null && sleepHours < 6 && avgSymptom >= 6) {
+      computed = "take-it-easy";
+    }
+    // Step 4: moderate sleep cap — cannot be steady
+    else if (sleepHours !== null && sleepHours < 6) {
+      computed = "mindful";
+    }
+    // Step 5: symptom-only decision
+    else if (avgSymptom >= 4) {
+      computed = "mindful";
+    } else {
+      computed = "steady";
+    }
+
+    lockTodayState(computed);
     setCheckInCompleted(true);
     router.navigate("/");
   }
@@ -199,20 +202,22 @@ export default function TrackScreen() {
       )}
 
       <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Baseline check-in</Text>
-        {SYMPTOMS.map(({ key, label }) => (
-          <SliderRow
-            key={key}
-            label={label}
-            value={checkIn[key]}
-            onChange={setSymptom(key)}
-          />
-        ))}
-        <View style={styles.divider} />
+        <Text style={styles.sectionTitle}>How are you feeling right now?</Text>
         <SliderRow
-          label="How functional do you feel today?"
-          value={checkIn.functionScore}
-          onChange={setSymptom("functionScore")}
+          label="Energy"
+          value={checkIn.energy}
+          onChange={setField("energy")}
+          hint="0 = no energy · 10 = full energy"
+        />
+        <SliderRow
+          label="Dizziness / lightheadedness"
+          value={checkIn.dizziness}
+          onChange={setField("dizziness")}
+        />
+        <SliderRow
+          label="Brain fog"
+          value={checkIn.brainFog}
+          onChange={setField("brainFog")}
         />
       </View>
 
@@ -342,7 +347,6 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 15, fontWeight: "600", color: "#111" },
   sectionSubtitle: { fontSize: 13, color: "#9AA6A2", marginTop: -6 },
   sectionLabel: { fontSize: 13, fontWeight: "600", color: "#9AA6A2" },
-  divider: { height: 1, backgroundColor: "#eee", marginVertical: 2 },
   saveBtn: {
     backgroundColor: "#2c2c2c",
     borderRadius: 14,
@@ -373,6 +377,7 @@ const row = StyleSheet.create({
   label: { fontSize: 14, color: "#444", flex: 1 },
   value: { fontSize: 16, fontWeight: "600", color: "#111", minWidth: 24, textAlign: "right" },
   slider: { width: "100%", height: 36 },
+  hint: { fontSize: 11, color: "#bbb", marginTop: -2 },
 });
 
 const toggle = StyleSheet.create({

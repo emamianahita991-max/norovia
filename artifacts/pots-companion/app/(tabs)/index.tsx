@@ -65,7 +65,7 @@ export default function HomeScreen() {
   const latestEntry = entries.length > 0 ? entries[entries.length - 1] : null;
   const avgSymptom: number | null = latestEntry ? latestEntry.avgSymptom : null;
   const sleepHours: number | null = pendingSleep?.hours ?? latestEntry?.sleepHours ?? null;
-  const sleepScore: number | null = pendingSleep?.score ?? latestEntry?.sleepScore ?? null;
+  const sleepScore: number | null = pendingSleep?.score ?? null;
   const sleepAwakenings: number | null =
     pendingSleep?.awakenings ?? latestEntry?.sleepAwakenings ?? null;
   const waterLiters: number | null = latestEntry ? latestEntry.waterLiters : null;
