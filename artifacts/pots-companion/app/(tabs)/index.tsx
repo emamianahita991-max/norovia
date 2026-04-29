@@ -64,7 +64,7 @@ function getDailyPlan(
     mode: "You have solid capacity today.",
     actions,
     pacing: "Keep momentum, but don't push to exhaustion.",
-    permission: "You can move forward today.",
+    permission: "Move steadily, and keep some reserve.",
   };
 }
 
