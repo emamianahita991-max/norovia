@@ -58,7 +58,7 @@ function getDailyPlan(
   const actions = [
     "Do your main tasks earlier in the day",
     "Keep movement steady, not intense",
-    "Take breaks to help your energy last longer",
+    "Take breaks to stay steady through the day",
   ];
   return {
     mode: "You have solid capacity today.",
