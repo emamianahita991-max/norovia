@@ -182,34 +182,22 @@ export default function TrackScreen() {
       observation: observation.trim(),
     });
 
-    let computed: TodayState;
+    const sleepAwakenings = pendingSleep?.awakenings ?? null;
+    const effectiveSleep = sleepHours !== null
+      ? Math.max(0, sleepHours - (sleepAwakenings ?? 0) * 0.25)
+      : 8;
 
-    // Step 1: sleep gate
-    if (sleepHours !== null && sleepHours < 4) {
+    let computed: TodayState;
+    if (effectiveSleep < 4) {
       computed = "take-it-easy";
-    }
-    // Step 2: symptom severity
-    else if (maxSymptom >= 8 || avgSymptom >= 6.5) {
+    } else if (maxSymptom >= 8 || avgSymptom >= 6) {
       computed = "take-it-easy";
-    }
-    // Step 3: combined override (moderate sleep + elevated symptoms)
-    else if (sleepHours !== null && sleepHours < 6 && avgSymptom >= 6) {
-      computed = "take-it-easy";
-    }
-    // Step 4: moderate sleep cap — cannot be steady
-    else if (sleepHours !== null && sleepHours < 6) {
+    } else if (effectiveSleep < 6) {
       computed = "mindful";
-    }
-    // Step 5: symptom-only decision
-    else if (avgSymptom >= 4) {
+    } else if (maxSymptom >= 6 || checkIn.energy <= 4 || avgSymptom >= 4) {
       computed = "mindful";
     } else {
       computed = "steady";
-    }
-
-    // Low energy override: even if other metrics look steady, protect the day
-    if (checkIn.energy <= 3 && computed === "steady") {
-      computed = "mindful";
     }
 
     lockTodayState(computed);

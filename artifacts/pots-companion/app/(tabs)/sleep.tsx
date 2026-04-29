@@ -187,24 +187,18 @@ export default function SleepScreen() {
     if (checkInCompletedToday && entries.length > 0) {
       const latest = entries[entries.length - 1];
       const { avgSymptom, maxSymptom, energy } = latest;
+      const effectiveSleep = Math.max(0, hours - (awakenings ?? 0) * 0.25);
       let recomputed: TodayState;
-      if (hours < 4) {
+      if (effectiveSleep < 4) {
         recomputed = "take-it-easy";
-      } else if (maxSymptom >= 8 || avgSymptom >= 6.5) {
+      } else if (maxSymptom >= 8 || avgSymptom >= 6) {
         recomputed = "take-it-easy";
-      } else if (hours < 6 && avgSymptom >= 6) {
-        recomputed = "take-it-easy";
-      } else if (hours < 6) {
+      } else if (effectiveSleep < 6) {
         recomputed = "mindful";
-      } else if (avgSymptom >= 4) {
+      } else if (maxSymptom >= 6 || energy <= 4 || avgSymptom >= 4) {
         recomputed = "mindful";
       } else {
         recomputed = "steady";
-      }
-
-      // Low energy override: even if other metrics look steady, protect the day
-      if (energy <= 3 && recomputed === "steady") {
-        recomputed = "mindful";
       }
 
       lockTodayState(recomputed);
