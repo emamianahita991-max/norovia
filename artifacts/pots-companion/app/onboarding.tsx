@@ -52,7 +52,7 @@ export default function OnboardingScreen() {
           {step === 0 && (
             <>
               <Text style={styles.bodyText}>
-                This app is for people who deal with symptoms like dizziness, brain fog, fatigue, or just feeling off during the day.
+                This app is for people who deal with symptoms like dizziness, palpitations, fatigue, or just feeling off during the day.
               </Text>
               <Text style={styles.bodyText}>
                 You don't need a diagnosis to use this.
