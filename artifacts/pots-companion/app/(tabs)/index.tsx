@@ -25,9 +25,9 @@ function getDailyPlan(
   state: TodayState,
   fatigue: number,
   dizziness: number,
-  brainFog: number
+  palpitations: number
 ): DailyPlan {
-  const highest = Math.max(fatigue, dizziness, brainFog);
+  const highest = Math.max(fatigue, dizziness, palpitations);
 
   if (state === "take-it-easy") {
     const actions = [
@@ -37,7 +37,7 @@ function getDailyPlan(
     ];
     if (fatigue === highest) actions[2] = "Take breaks earlier than usual";
     else if (dizziness === highest) actions[1] = "Move slowly when standing";
-    else if (brainFog === highest) actions[2] = "Keep tasks simple and few";
+    else if (palpitations === highest) actions[2] = "Keep tasks simple and few";
     return {
       mode: "Today is a stabilization day.",
       actions,
@@ -54,7 +54,7 @@ function getDailyPlan(
     ];
     if (fatigue === highest) actions[2] = "Take breaks earlier than usual";
     else if (dizziness === highest) actions[2] = "Move slowly when standing";
-    else if (brainFog === highest) actions[1] = "Keep tasks simple and few";
+    else if (palpitations === highest) actions[1] = "Keep tasks simple and few";
     return {
       mode: "Today has usable capacity — handle it deliberately.",
       actions,
@@ -70,7 +70,7 @@ function getDailyPlan(
   ];
   if (fatigue === highest) actions[2] = "Take breaks earlier than usual";
   else if (dizziness === highest) actions[1] = "Move slowly when standing";
-  else if (brainFog === highest) actions[0] = "Keep tasks simple and few";
+  else if (palpitations === highest) actions[0] = "Keep tasks simple and few";
   return {
     mode: "You have usable capacity today.",
     actions,
@@ -107,11 +107,11 @@ export default function HomeScreen() {
     pendingSleep?.awakenings ?? latestEntry?.sleepAwakenings ?? null;
   const fatigue: number = latestEntry?.fatigue ?? 0;
   const dizziness: number = latestEntry?.dizziness ?? 0;
-  const brainFog: number = latestEntry?.brainFog ?? 0;
+  const palpitations: number = latestEntry?.palpitations ?? 0;
 
   const dailyPlan: DailyPlan | null =
     !isFlareActive && checkInCompletedToday && lockedTodayState !== null
-      ? getDailyPlan(lockedTodayState, fatigue, dizziness, brainFog)
+      ? getDailyPlan(lockedTodayState, fatigue, dizziness, palpitations)
       : null;
 
   const isSevereLowReserve =

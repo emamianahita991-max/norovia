@@ -8,7 +8,7 @@ export type Entry = {
   date: number;
   energy: number;
   dizziness: number;
-  brainFog: number;
+  palpitations: number;
   fatigue: number;
   avgSymptom: number;
   maxSymptom: number;

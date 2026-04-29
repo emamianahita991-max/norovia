@@ -27,7 +27,7 @@ function isSameDay(a: Date, b: Date): boolean {
 type CheckIn = {
   energy: number;
   dizziness: number;
-  brainFog: number;
+  palpitations: number;
 };
 
 type Habits = {
@@ -113,13 +113,13 @@ export default function TrackScreen() {
         setCheckIn({
           energy: last.energy,
           dizziness: last.dizziness,
-          brainFog: last.brainFog,
+          palpitations: last.palpitations,
         });
       } else {
         setCheckIn({
           energy: 5,
           dizziness: 0,
-          brainFog: 0,
+          palpitations: 0,
         });
       }
     }, [entries, checkInCompletedToday])
@@ -128,7 +128,7 @@ export default function TrackScreen() {
   const [checkIn, setCheckIn] = useState<CheckIn>({
     energy: 5,
     dizziness: 0,
-    brainFog: 0,
+    palpitations: 0,
   });
 
   const [habits, setHabits] = useState<Habits>({
@@ -149,9 +149,9 @@ export default function TrackScreen() {
 
   function handleFinish() {
     const fatigue = 10 - checkIn.energy;
-    const { dizziness, brainFog } = checkIn;
-    const avgSymptom = parseFloat(((fatigue + dizziness + brainFog) / 3).toFixed(1));
-    const maxSymptom = Math.max(fatigue, dizziness, brainFog);
+    const { dizziness, palpitations } = checkIn;
+    const avgSymptom = parseFloat(((fatigue + dizziness + palpitations) / 3).toFixed(1));
+    const maxSymptom = Math.max(fatigue, dizziness, palpitations);
 
     const sleepHours = pendingSleep?.hours ?? null;
 
@@ -159,7 +159,7 @@ export default function TrackScreen() {
       date: Date.now(),
       energy: checkIn.energy,
       dizziness,
-      brainFog,
+      palpitations,
       fatigue,
       avgSymptom,
       maxSymptom,
@@ -217,9 +217,9 @@ export default function TrackScreen() {
           onChange={setField("dizziness")}
         />
         <SliderRow
-          label="Brain fog"
-          value={checkIn.brainFog}
-          onChange={setField("brainFog")}
+          label="Palpitations / racing heart"
+          value={checkIn.palpitations}
+          onChange={setField("palpitations")}
         />
       </View>
 
