@@ -99,7 +99,7 @@ function ToggleRow({
 export default function TrackScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { sleepLoggedToday, checkInCompletedToday, setCheckInCompleted, pendingSleep, entries, addEntry, lockTodayState } = useDaily();
+  const { sleepLoggedToday, checkInCompletedToday, setCheckInCompleted, pendingSleep, entries, addEntry, lockTodayState, waterHistory, waterLiters, addWater, undoWater } = useDaily();
 
   useFocusEffect(
     useCallback(() => {
@@ -138,17 +138,6 @@ export default function TrackScreen() {
   });
 
   const [observation, setObservation] = useState("");
-
-  const [waterHistory, setWaterHistory] = useState<number[]>([]);
-  const waterLiters = parseFloat(waterHistory.reduce((a, b) => a + b, 0).toFixed(2));
-
-  function addWater(inc: number) {
-    setWaterHistory((prev) => [...prev, inc]);
-  }
-
-  function undoWater() {
-    setWaterHistory((prev) => (prev.length > 0 ? prev.slice(0, -1) : prev));
-  }
 
   function setField(key: keyof CheckIn) {
     return (v: number) => setCheckIn((prev) => ({ ...prev, [key]: v }));
@@ -306,7 +295,9 @@ export default function TrackScreen() {
           returnKeyType="done"
           blurOnSubmit
           placeholderTextColor="#bbb"
+          placeholder="e.g. felt worse after lunch, headache at 3pm"
         />
+        <Text style={{ fontSize: 11, color: "#bbb", textAlign: "right" }}>{observation.length}/200</Text>
       </View>
 
       <TouchableOpacity

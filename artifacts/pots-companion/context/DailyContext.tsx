@@ -49,6 +49,8 @@ type DailyState = {
   isFlareActive: boolean;
   onboardingComplete: boolean;
   lockedTodayState: TodayState | null;
+  waterHistory: number[];
+  waterLiters: number;
   setSleepLogged: (v: boolean) => void;
   setCheckInCompleted: (v: boolean) => void;
   setPendingSleep: (data: PendingSleep) => void;
@@ -57,6 +59,8 @@ type DailyState = {
   setFlareActive: (v: boolean) => void;
   completeOnboarding: () => void;
   lockTodayState: (s: TodayState | null) => void;
+  addWater: (inc: number) => void;
+  undoWater: () => void;
   resetAll: () => Promise<void>;
 };
 
@@ -70,6 +74,7 @@ type PersistedDailyState = {
   isFlareActive: boolean;
   onboardingComplete: boolean;
   lockedTodayState: TodayState | null;
+  waterHistory: number[];
 };
 
 const STORAGE_KEY = "norovia.daily.v1";
@@ -91,6 +96,8 @@ const DailyContext = createContext<DailyState>({
   isFlareActive: false,
   onboardingComplete: false,
   lockedTodayState: null,
+  waterHistory: [],
+  waterLiters: 0,
   setSleepLogged: () => {},
   setCheckInCompleted: () => {},
   setPendingSleep: () => {},
@@ -99,6 +106,8 @@ const DailyContext = createContext<DailyState>({
   setFlareActive: () => {},
   completeOnboarding: () => {},
   lockTodayState: () => {},
+  addWater: () => {},
+  undoWater: () => {},
   resetAll: async () => {},
 });
 
@@ -112,6 +121,9 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
   const [isFlareActive, setFlareActive] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [lockedTodayState, setLockedTodayState] = useState<TodayState | null>(null);
+  const [waterHistory, setWaterHistory] = useState<number[]>([]);
+
+  const waterLiters = parseFloat(waterHistory.reduce((a, b) => a + b, 0).toFixed(2));
 
   const activeDayKeyRef = useRef<string>(getDayKey());
 
@@ -122,6 +134,7 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
     setPendingSleep(null);
     setFlareActive(false);
     setLockedTodayState(null);
+    setWaterHistory([]);
   }
 
   useEffect(() => {
@@ -167,6 +180,7 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
         setPendingSleep(sameDay ? saved.pendingSleep ?? null : null);
         setFlareActive(sameDay && Boolean(saved.isFlareActive));
         setLockedTodayState(sameDay ? saved.lockedTodayState ?? null : null);
+        setWaterHistory(sameDay ? (saved.waterHistory ?? []) : []);
       } catch {
         // storage failure — proceed with defaults
       } finally {
@@ -194,6 +208,7 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
       isFlareActive,
       onboardingComplete,
       lockedTodayState,
+      waterHistory,
     };
 
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(payload)).catch(() => {});
@@ -207,6 +222,7 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
     isFlareActive,
     onboardingComplete,
     lockedTodayState,
+    waterHistory,
   ]);
 
   function completeOnboarding() {
@@ -225,6 +241,14 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
     setLockedTodayState(s);
   }
 
+  function addWater(inc: number) {
+    setWaterHistory((prev) => [...prev, inc]);
+  }
+
+  function undoWater() {
+    setWaterHistory((prev) => (prev.length > 0 ? prev.slice(0, -1) : prev));
+  }
+
   async function resetAll() {
     await AsyncStorage.removeItem(STORAGE_KEY);
     setSleepLogged(false);
@@ -235,6 +259,7 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
     setFlareActive(false);
     setLockedTodayState(null);
     setOnboardingComplete(false);
+    setWaterHistory([]);
   }
 
   return (
@@ -257,6 +282,10 @@ export function DailyProvider({ children }: { children: React.ReactNode }) {
         completeOnboarding,
         lockedTodayState,
         lockTodayState,
+        waterHistory,
+        waterLiters,
+        addWater,
+        undoWater,
         resetAll,
       }}
     >

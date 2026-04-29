@@ -28,7 +28,7 @@ export default function OnboardingScreen() {
 
   function handleFinish() {
     completeOnboarding();
-    router.replace("/sleep");
+    router.replace("/");
   }
 
   const animate = reduceMotion === false;
