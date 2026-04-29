@@ -27,17 +27,12 @@ function getDailyPlan(
   dizziness: number,
   palpitations: number
 ): DailyPlan {
-  const highest = Math.max(fatigue, dizziness, palpitations);
-
   if (state === "take-it-easy") {
     const actions = [
       "Stay mostly seated or lying down",
       "Keep activity very short (5–10 min at a time)",
       "Hydrate early and consistently",
     ];
-    if (fatigue === highest) actions[2] = "Take breaks earlier than usual";
-    else if (dizziness === highest) actions[1] = "Move slowly when standing";
-    else if (palpitations === highest) actions[2] = "Keep tasks simple and few";
     return {
       mode: "Today is a stabilization day.",
       actions,
@@ -52,9 +47,6 @@ function getDailyPlan(
       "Pick 2–3 priorities and start with the smallest version",
       "Pause before walking after standing",
     ];
-    if (fatigue === highest) actions[2] = "Take breaks earlier than usual";
-    else if (dizziness === highest) actions[2] = "Move slowly when standing";
-    else if (palpitations === highest) actions[1] = "Keep tasks simple and few";
     return {
       mode: "Today has usable capacity — handle it deliberately.",
       actions,
@@ -66,13 +58,10 @@ function getDailyPlan(
   const actions = [
     "Do your main tasks earlier in the day",
     "Keep movement steady, not intense",
-    "Take short breaks before fatigue builds",
+    "Take breaks to help your energy last longer",
   ];
-  if (fatigue === highest) actions[2] = "Take breaks earlier than usual";
-  else if (dizziness === highest) actions[1] = "Move slowly when standing";
-  else if (palpitations === highest) actions[0] = "Keep tasks simple and few";
   return {
-    mode: "You have usable capacity today.",
+    mode: "You have solid capacity today.",
     actions,
     pacing: "Keep momentum, but don't push to exhaustion.",
     permission: "You can move forward today.",
