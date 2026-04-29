@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import {
   Platform,
   ScrollView,
@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { useDaily } from "@/context/DailyContext";
 import { computeTodayState } from "@/utils/computeTodayState";
 
@@ -167,6 +167,14 @@ export default function SleepScreen() {
   const [wakeMinute, setWakeMinute] = useState(pendingSleep?.wakeMinute ?? 0);
   const [awakenings, setAwakenings] = useState(pendingSleep?.awakenings ?? 0);
   const [justSaved, setJustSaved] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setJustSaved(false);
+      };
+    }, [])
+  );
 
   useEffect(() => {
     setBedHour(pendingSleep?.bedHour ?? 22);
