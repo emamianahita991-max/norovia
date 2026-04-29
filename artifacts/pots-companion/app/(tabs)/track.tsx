@@ -113,7 +113,7 @@ export default function TrackScreen() {
         setCheckIn({
           energy: last.energy,
           dizziness: last.dizziness,
-          palpitations: last.palpitations,
+          palpitations: last.palpitations ?? 0,
         });
       } else {
         setCheckIn({
