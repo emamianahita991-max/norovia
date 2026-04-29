@@ -1,0 +1,84 @@
+Fix two issues in DailyContext. Do not touch any other files.
+
+═══════════════════════════════════════
+ISSUE 1 — Fix brainFog reference in index.tsx
+═══════════════════════════════════════
+
+In index.tsx, find this line:
+  const brainFog: number = latestEntry?.brainFog ?? 0;
+
+Replace with:
+  const brainFog: number = latestEntry?.palpitations ?? 0;
+
+That is the only change to index.tsx.
+
+═══════════════════════════════════════
+ISSUE 2 — Add AsyncStorage persistence to DailyContext
+═══════════════════════════════════════
+
+Install if not already installed:
+  npx expo install @react-native-async-storage/async-storage
+
+In DailyContext.tsx, add persistence using AsyncStorage.
+Rules:
+— Do not redesign or restructure the context
+— Do not change any field names or types
+— Wrap existing state with load-on-mount + save-on-change
+— Handle empty storage gracefully (no crashes)
+
+Here is the exact pattern to follow:
+
+1. Import AsyncStorage at the top:
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+2. Define storage keys as constants:
+const STORAGE_KEYS = {
+  entries: 'norovia_entries',
+  onboardingComplete: 'norovia_onboarding',
+  sleepLogged: 'norovia_sleep_logged',
+  pendingSleep: 'norovia_pending_sleep',
+  checkInCompleted: 'norovia_checkin',
+  flareActive: 'norovia_flare',
+  lockedTodayState: 'norovia_today_state',
+  waterHistory: 'norovia_water_history',
+  lastResetDate: 'norovia_last_reset_date',
+};
+
+3. Add a hydration step on mount. In the DailyProvider,
+add a useEffect that runs once on mount:
+— Load each key from AsyncStorage
+— Parse JSON safely (wrap in try/catch)
+— Set state from stored values
+— After all values loaded, set isReady = true
+
+4. Add midnight reset logic inside the same mount useEffect:
+— Read 'norovia_last_reset_date' from storage
+— Compare to today's date string (YYYY-MM-DD)
+— If different: reset sleepLoggedToday, checkInCompletedToday,
+  lockedTodayState, waterHistory, and pendingSleep to defaults
+— Save today's date string back to 'norovia_last_reset_date'
+— Do NOT reset: entries (keep history), onboardingComplete,
+  flareActive
+
+5. Save to AsyncStorage whenever state changes.
+Add individual useEffects for each piece of state:
+— entries → save as JSON
+— onboardingComplete → save as JSON
+— sleepLoggedToday → save as JSON
+— pendingSleep → save as JSON
+— checkInCompletedToday → save as JSON
+— isFlareActive → save as JSON
+— lockedTodayState → save as JSON
+— waterHistory → save as JSON
+
+Each save useEffect should be:
+  useEffect(() => {
+    AsyncStorage.setItem(KEY, JSON.stringify(value)).catch(() => {});
+  }, [value]);
+
+6. The resetAll() function should also clear all AsyncStorage keys.
+
+Do not change any other files.
+Do not change any field names, types, or component structure.
+Do not add loading spinners or new UI.
+isReady already gates rendering — that is sufficient.
