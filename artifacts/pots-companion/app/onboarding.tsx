@@ -118,8 +118,9 @@ export default function OnboardingScreen() {
         </View>
 
         <TouchableOpacity
-          style={styles.btn}
+          style={[styles.btn, step === TOTAL_STEPS - 1 && !acknowledged && styles.btnDisabled]}
           onPress={step < TOTAL_STEPS - 1 ? () => setStep((s) => s + 1) : handleFinish}
+          disabled={step === TOTAL_STEPS - 1 && !acknowledged}
           activeOpacity={0.8}
         >
           <Text style={styles.btnText}>
@@ -249,6 +250,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: "#fff",
+  },
+  btnDisabled: {
+    opacity: 0.35,
   },
   backBtn: {
     alignItems: "center",
