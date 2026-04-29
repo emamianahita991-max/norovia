@@ -166,6 +166,7 @@ export default function SleepScreen() {
   const [wakeHour, setWakeHour] = useState(pendingSleep?.wakeHour ?? 7);
   const [wakeMinute, setWakeMinute] = useState(pendingSleep?.wakeMinute ?? 0);
   const [awakenings, setAwakenings] = useState(pendingSleep?.awakenings ?? 0);
+  const [justSaved, setJustSaved] = useState(false);
 
   useEffect(() => {
     setBedHour(pendingSleep?.bedHour ?? 22);
@@ -182,17 +183,19 @@ export default function SleepScreen() {
   const score = sleepScore(hours, awakenings);
 
   function handleSave() {
+    const isFirstSave = !sleepLoggedToday;
     setPendingSleep({ score, hours, awakenings, bedHour, bedMinute, wakeHour, wakeMinute });
     setSleepLogged(true);
 
     if (checkInCompletedToday && entries.length > 0) {
       const latest = entries[entries.length - 1];
       const recomputed = computeTodayState({ sleepHours: hours, sleepAwakenings: awakenings, maxSymptom: latest.maxSymptom, avgSymptom: latest.avgSymptom, energy: latest.energy });
-
       lockTodayState(recomputed);
     }
 
-    router.navigate("/");
+    if (isFirstSave) {
+      setJustSaved(true);
+    }
   }
 
   return (
@@ -284,9 +287,16 @@ export default function SleepScreen() {
         </View>
       )}
 
-      <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
+      <TouchableOpacity
+        style={styles.saveBtn}
+        onPress={justSaved ? () => router.navigate("/(tabs)/track") : handleSave}
+      >
         <Text style={styles.saveBtnText}>
-          {sleepLoggedToday ? "Update sleep" : "Save sleep"}
+          {justSaved
+            ? "Start today's check-in →"
+            : sleepLoggedToday
+            ? "Update sleep"
+            : "Save sleep"}
         </Text>
       </TouchableOpacity>
     </ScrollView>
