@@ -13,7 +13,8 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
-import { useDaily, type TodayState } from "@/context/DailyContext";
+import { useDaily } from "@/context/DailyContext";
+import { computeTodayState } from "@/utils/computeTodayState";
 
 function isSameDay(a: Date, b: Date): boolean {
   return (
@@ -183,22 +184,7 @@ export default function TrackScreen() {
     });
 
     const sleepAwakenings = pendingSleep?.awakenings ?? null;
-    const effectiveSleep = sleepHours !== null
-      ? Math.max(0, sleepHours - (sleepAwakenings ?? 0) * 0.25)
-      : 8;
-
-    let computed: TodayState;
-    if (effectiveSleep < 4) {
-      computed = "take-it-easy";
-    } else if (maxSymptom >= 8 || avgSymptom >= 6) {
-      computed = "take-it-easy";
-    } else if (effectiveSleep < 6) {
-      computed = "mindful";
-    } else if (maxSymptom >= 6 || checkIn.energy <= 4 || avgSymptom >= 4) {
-      computed = "mindful";
-    } else {
-      computed = "steady";
-    }
+    const computed = computeTodayState({ sleepHours, sleepAwakenings, maxSymptom, avgSymptom, energy: checkIn.energy });
 
     lockTodayState(computed);
     setCheckInCompleted(true);

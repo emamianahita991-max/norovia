@@ -9,7 +9,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { useDaily, type TodayState } from "@/context/DailyContext";
+import { useDaily } from "@/context/DailyContext";
+import { computeTodayState } from "@/utils/computeTodayState";
 
 const ACCENT = "#4a7c7e";
 const MINUTES = [0, 15, 30, 45];
@@ -186,20 +187,7 @@ export default function SleepScreen() {
 
     if (checkInCompletedToday && entries.length > 0) {
       const latest = entries[entries.length - 1];
-      const { avgSymptom, maxSymptom, energy } = latest;
-      const effectiveSleep = Math.max(0, hours - (awakenings ?? 0) * 0.25);
-      let recomputed: TodayState;
-      if (effectiveSleep < 4) {
-        recomputed = "take-it-easy";
-      } else if (maxSymptom >= 8 || avgSymptom >= 6) {
-        recomputed = "take-it-easy";
-      } else if (effectiveSleep < 6) {
-        recomputed = "mindful";
-      } else if (maxSymptom >= 6 || energy <= 4 || avgSymptom >= 4) {
-        recomputed = "mindful";
-      } else {
-        recomputed = "steady";
-      }
+      const recomputed = computeTodayState({ sleepHours: hours, sleepAwakenings: awakenings, maxSymptom: latest.maxSymptom, avgSymptom: latest.avgSymptom, energy: latest.energy });
 
       lockTodayState(recomputed);
     }
