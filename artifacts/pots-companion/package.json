@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/pots-companion",
+  "name": "pots-companion",
   "version": "0.0.0",
   "private": true,
   "main": "expo-router/entry",
@@ -60,5 +60,6 @@
   },
   "engines": {
     "node": ">=20.16.0"
-  }
+  },
+  "packageManager": "npm@10.9.2"
 }
