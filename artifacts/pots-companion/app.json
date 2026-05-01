@@ -30,6 +30,12 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "78b42fd1-ab7f-4640-86b8-ed67e866e472"
+      }
+    },
+    "owner": "anahitaemami"
   }
 }
