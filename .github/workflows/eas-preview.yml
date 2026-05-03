@@ -36,21 +36,41 @@ jobs:
         id: build
         run: |
           BUILD_JSON=$(eas build --profile preview --platform android --non-interactive --json 2>/dev/null)
-          BUILD_URL=$(echo "$BUILD_JSON" | node -e "process.stdin.resume(); let d=''; process.stdin.on('data',c=>d+=c); process.stdin.on('end',()=>{ try { const b=JSON.parse(d); console.log(b[0]?.buildDetailsPageUrl || b?.buildDetailsPageUrl || ''); } catch(e){ console.log(''); }})")
-          ARTIFACT_URL=$(echo "$BUILD_JSON" | node -e "process.stdin.resume(); let d=''; process.stdin.on('data',c=>d+=c); process.stdin.on('end',()=>{ try { const b=JSON.parse(d); console.log(b[0]?.artifacts?.buildUrl || b?.artifacts?.buildUrl || ''); } catch(e){ console.log(''); }})")
-          echo "build_details_page_url=$BUILD_URL" >> $GITHUB_OUTPUT
-          echo "artifact_url=$ARTIFACT_URL" >> $GITHUB_OUTPUT
+          BUILD_URL=$(echo "$BUILD_JSON" | node -e "
+            let d='';
+            process.stdin.on('data',c=>d+=c);
+            process.stdin.on('end',()=>{
+              try {
+                const b=JSON.parse(d);
+                const item=Array.isArray(b)?b[0]:b;
+                console.log(item.buildDetailsPageUrl||'');
+              } catch(e){ console.log(''); }
+            });
+          ")
+          ARTIFACT_URL=$(echo "$BUILD_JSON" | node -e "
+            let d='';
+            process.stdin.on('data',c=>d+=c);
+            process.stdin.on('end',()=>{
+              try {
+                const b=JSON.parse(d);
+                const item=Array.isArray(b)?b[0]:b;
+                console.log(item.artifacts?.buildUrl||'');
+              } catch(e){ console.log(''); }
+            });
+          ")
+          echo "buildDetailsPageUrl=$BUILD_URL" >> $GITHUB_OUTPUT
+          echo "artifactUrl=$ARTIFACT_URL" >> $GITHUB_OUTPUT
 
       - name: Comment APK link on PR
         uses: actions/github-script@v7
         with:
           script: |
-            const buildUrl = '${{ steps.build.outputs.build_details_page_url }}';
-            const artifactUrl = '${{ steps.build.outputs.artifact_url }}';
+            const buildUrl = '${{ steps.build.outputs.buildDetailsPageUrl }}';
+            const artifactUrl = '${{ steps.build.outputs.artifactUrl }}';
             const body = [
               '## Preview Build Ready',
               '',
-              buildUrl ? `**Build details:** ${buildUrl}` : '_Build submitted to EAS — check your Expo dashboard for the build link._',
+              `**Build details:** ${buildUrl || '_(see Expo dashboard)_'}`,
               artifactUrl ? `**Download APK:** ${artifactUrl}` : '_APK link will appear in the build details page once the build finishes._',
               '',
               '_Built with EAS on commit ${{ github.sha }}_',
