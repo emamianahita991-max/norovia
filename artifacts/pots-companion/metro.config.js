@@ -1,19 +1,24 @@
 if (!Array.prototype.toReversed) {
-  Array.prototype.toReversed = function () {
-    return this.slice().reverse();
-  };
+  Object.defineProperty(Array.prototype, 'toReversed', {
+    value: function () { return this.slice().reverse(); },
+    writable: true, configurable: true, enumerable: false,
+  });
 }
 if (!Array.prototype.toSorted) {
-  Array.prototype.toSorted = function (compareFn) {
-    return this.slice().sort(compareFn);
-  };
+  Object.defineProperty(Array.prototype, 'toSorted', {
+    value: function (compareFn) { return this.slice().sort(compareFn); },
+    writable: true, configurable: true, enumerable: false,
+  });
 }
 if (!Array.prototype.toSpliced) {
-  Array.prototype.toSpliced = function (start, deleteCount) {
-    var copy = this.slice();
-    copy.splice.apply(copy, arguments);
-    return copy;
-  };
+  Object.defineProperty(Array.prototype, 'toSpliced', {
+    value: function (start, deleteCount) {
+      var copy = this.slice();
+      copy.splice.apply(copy, arguments);
+      return copy;
+    },
+    writable: true, configurable: true, enumerable: false,
+  });
 }
 
 const { getDefaultConfig } = require("expo/metro-config");
