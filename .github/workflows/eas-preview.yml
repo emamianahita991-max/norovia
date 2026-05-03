@@ -1,0 +1,64 @@
+name: EAS Preview Build
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    name: Build preview APK
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: artifacts/pots-companion
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Set up Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build preview (Android APK)
+        id: build
+        uses: expo/eas-build-action@v0
+        with:
+          type: build
+          profile: preview
+          platform: android
+          working-directory: artifacts/pots-companion
+
+      - name: Comment APK link on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const buildUrl = '${{ steps.build.outputs.buildDetailsPageUrl }}';
+            const artifactUrl = '${{ steps.build.outputs.artifactUrl }}';
+            const body = [
+              '## Preview Build Ready',
+              '',
+              `**Build details:** ${buildUrl}`,
+              artifactUrl ? `**Download APK:** ${artifactUrl}` : '_APK link will appear in the build details page once the build finishes._',
+              '',
+              '_Built with EAS on commit ${{ github.sha }}_',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
