@@ -25,18 +25,19 @@ function getDailyPlan(
   state: TodayState,
   fatigue: number,
   dizziness: number,
-  palpitations: number
+  palpitations: number,
+  isEvening: boolean
 ): DailyPlan {
   if (state === "take-it-easy") {
     const actions = [
       "Stay mostly seated or lying down",
       "Keep activity very short (5–10 min at a time)",
-      "Hydrate early and consistently",
+      isEvening ? "Keep hydrating through the evening" : "Hydrate early and consistently",
     ];
     return {
-      mode: "Today is a stabilization day.",
+      mode: isEvening ? "Tonight is for stabilization." : "Today is a stabilization day.",
       actions,
-      pacing: "Stop early — don't wait for symptoms to build.",
+      pacing: isEvening ? "Don't push — tonight is for recovery." : "Stop early — don't wait for symptoms to build.",
       permission: "Doing less today is the right move.",
     };
   }
@@ -48,7 +49,7 @@ function getDailyPlan(
       "Pause before walking after standing",
     ];
     return {
-      mode: "Today has usable capacity — handle it deliberately.",
+      mode: isEvening ? "You've made it through — close today out gently." : "Today has usable capacity — handle it deliberately.",
       actions,
       pacing: "Pause before symptoms build.",
       permission: "Leave some capacity unused.",
@@ -56,12 +57,12 @@ function getDailyPlan(
   }
 
   const actions = [
-    "Do your main tasks earlier in the day",
+    isEvening ? "Wind down — no need to push more today" : "Do your main tasks earlier in the day",
     "Keep movement steady, not intense",
-    "Take breaks to stay steady through the day",
+    isEvening ? "Focus on recovery and rest tonight" : "Take breaks to stay steady through the day",
   ];
   return {
-    mode: "You have solid capacity today.",
+    mode: isEvening ? "You've held up well today." : "You have solid capacity today.",
     actions,
     pacing: "Keep momentum, but don't push to exhaustion.",
     permission: "Move steadily, and keep some reserve.",
@@ -100,7 +101,7 @@ export default function HomeScreen() {
 
   const dailyPlan: DailyPlan | null =
     !isFlareActive && checkInCompletedToday && lockedTodayState !== null
-      ? getDailyPlan(lockedTodayState, fatigue, dizziness, palpitations)
+      ? getDailyPlan(lockedTodayState, fatigue, dizziness, palpitations, isEvening)
       : null;
 
   const isSevereLowReserve =
@@ -121,6 +122,9 @@ export default function HomeScreen() {
     !isFlareActive &&
     lockedTodayState === "steady" &&
     sleepAwakenings !== null;
+
+  const hour = new Date().getHours();
+  const isEvening = hour >= 18;
 
   const [showAboutModal, setShowAboutModal] = useState(false);
 
@@ -147,7 +151,7 @@ export default function HomeScreen() {
           onPress={() => router.navigate("/track")}
           activeOpacity={0.8}
         >
-          <Text style={styles.checkInBtnText}>Complete today's check-in</Text>
+          <Text style={styles.checkInBtnText}>Quick check-in</Text>
         </TouchableOpacity>
       );
     }
@@ -155,7 +159,7 @@ export default function HomeScreen() {
     return (
       <View style={styles.ctaWrap}>
         <View style={styles.doneCard}>
-          <Text style={styles.doneBtnText}>Today's check-in complete ✓</Text>
+          <Text style={styles.doneBtnText}>Quick check-in complete ✓</Text>
         </View>
         <Text style={styles.ctaHint}>You can update it anytime.</Text>
       </View>
@@ -177,7 +181,7 @@ export default function HomeScreen() {
         <Text style={styles.heading}>Today</Text>
         {!isFlareActive && !checkInCompletedToday && (
           <Text style={styles.todayStatePlaceholder}>
-            Complete today's check-in to better guide your day.
+            Quick check-in to better guide your day.
           </Text>
         )}
         {(!isFlareActive && checkInCompletedToday && lockedTodayState !== null) && (() => {
@@ -193,6 +197,9 @@ export default function HomeScreen() {
               <View>
                 <Text style={styles.todayStateLabel}>{stateLabel}</Text>
                 <Text style={styles.todayStateQualifier}>(very low reserve)</Text>
+                <Text style={styles.todayStateContext}>
+                  {isEvening ? "Use this to close your day" : "Use this to guide your day"}
+                </Text>
               </View>
             );
           }
@@ -203,6 +210,9 @@ export default function HomeScreen() {
               {lockedTodayState === "take-it-easy" && (
                 <Text style={styles.todayStateQualifier}>(very low reserve)</Text>
               )}
+              <Text style={styles.todayStateContext}>
+                {isEvening ? "Use this to close your day" : "Use this to guide your day"}
+              </Text>
             </View>
           );
         })()}
@@ -390,6 +400,11 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     color: "#9AA6A2",
     marginTop: 4,
+  },
+  todayStateContext: {
+    fontSize: 13,
+    color: "#9AA6A2",
+    marginTop: 2,
   },
   ctaWrap: {
     gap: 8,
