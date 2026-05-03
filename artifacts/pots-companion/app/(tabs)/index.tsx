@@ -32,12 +32,12 @@ function getDailyPlan(
     const actions = [
       "Stay mostly seated or lying down",
       "Keep activity very short (5–10 min at a time)",
-      isEvening ? "Keep hydrating through the evening" : "Hydrate early and consistently",
+      isEvening ? "Sip fluids — small amounts, consistently" : "Hydrate early and consistently",
     ];
     return {
-      mode: isEvening ? "Tonight is still a stabilization time." : "Today is a stabilization day.",
+      mode: isEvening ? "Tonight counts as part of recovery." : "Today is a stabilization day.",
       actions,
-      pacing: isEvening ? "Don't push — tonight is for recovery." : "Stop early — don't wait for symptoms to build.",
+      pacing: isEvening ? "Rest is the work tonight." : "Stop early — don't wait for symptoms to build.",
       permission: "Doing less today is the right move.",
     };
   }
@@ -49,22 +49,22 @@ function getDailyPlan(
       "Pause before walking after standing",
     ];
     return {
-      mode: isEvening ? "You've made it through — close today out gently." : "Today has usable capacity — handle it deliberately.",
+      mode: isEvening ? "You managed today well — let it close quietly." : "Today has usable capacity — handle it deliberately.",
       actions,
-      pacing: "Pause before symptoms build.",
+      pacing: isEvening ? "This is the time to stop, not push." : "Pause before symptoms build.",
       permission: "Leave some capacity unused.",
     };
   }
 
   const actions = [
-    isEvening ? "Wind down — no need to push more today" : "Do your main tasks earlier in the day",
+    isEvening ? "Shift to lighter tasks or just rest" : "Do your main tasks earlier in the day",
     "Keep movement steady, not intense",
-    isEvening ? "Focus on recovery and rest tonight" : "Take breaks to stay steady through the day",
+    isEvening ? "Start winding down earlier than feels necessary" : "Take breaks to stay steady through the day",
   ];
   return {
     mode: isEvening ? "You've held up well today." : "You have solid capacity today.",
     actions,
-    pacing: "Keep momentum, but don't push to exhaustion.",
+    pacing: isEvening ? "Keep the rest of tonight low-pressure." : "Keep momentum, but don't push to exhaustion.",
     permission: "Move steadily, and keep some reserve.",
   };
 }
