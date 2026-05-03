@@ -5,14 +5,15 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  build:
-    name: Build preview APK
+  build-android:
+    name: Build preview APK (Android)
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
     defaults:
       run:
         working-directory: artifacts/pots-companion
+    outputs:
+      buildDetailsPageUrl: ${{ steps.build.outputs.buildDetailsPageUrl }}
+      artifactUrl: ${{ steps.build.outputs.artifactUrl }}
 
     steps:
       - name: Checkout repository
@@ -41,17 +42,86 @@ jobs:
           platform: android
           working-directory: artifacts/pots-companion
 
-      - name: Comment APK link on PR
+  build-ios:
+    name: Build preview (iOS)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: artifacts/pots-companion
+    outputs:
+      buildDetailsPageUrl: ${{ steps.build.outputs.buildDetailsPageUrl }}
+      artifactUrl: ${{ steps.build.outputs.artifactUrl }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Set up Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build preview (iOS)
+        id: build
+        uses: expo/eas-build-action@v0
+        with:
+          type: build
+          profile: preview
+          platform: ios
+          working-directory: artifacts/pots-companion
+
+  comment:
+    name: Post PR comment
+    runs-on: ubuntu-latest
+    needs: [build-android, build-ios]
+    if: always() && needs.build-android.result != 'skipped' && needs.build-ios.result != 'skipped'
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Comment build links on PR
         uses: actions/github-script@v7
         with:
           script: |
-            const buildUrl = '${{ steps.build.outputs.buildDetailsPageUrl }}';
-            const artifactUrl = '${{ steps.build.outputs.artifactUrl }}';
+            const androidBuildUrl = '${{ needs.build-android.outputs.buildDetailsPageUrl }}';
+            const androidArtifactUrl = '${{ needs.build-android.outputs.artifactUrl }}';
+            const iosBuildUrl = '${{ needs.build-ios.outputs.buildDetailsPageUrl }}';
+            const iosArtifactUrl = '${{ needs.build-ios.outputs.artifactUrl }}';
+
+            const androidStatus = '${{ needs.build-android.result }}';
+            const iosStatus = '${{ needs.build-ios.result }}';
+
+            const androidSection = androidStatus === 'success'
+              ? [
+                  '### Android',
+                  `**Build details:** ${androidBuildUrl}`,
+                  androidArtifactUrl ? `**Download APK:** ${androidArtifactUrl}` : '_APK link will appear in the build details page once the build finishes._',
+                ].join('\n')
+              : '### Android\n_Build failed. Check the [Actions tab](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details._';
+
+            const iosSection = iosStatus === 'success'
+              ? [
+                  '### iOS',
+                  `**Build details:** ${iosBuildUrl}`,
+                  iosArtifactUrl ? `**Download build:** ${iosArtifactUrl}` : '_iOS build link will appear in the build details page once the build finishes._',
+                ].join('\n')
+              : '### iOS\n_Build failed. Check the [Actions tab](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details._';
+
             const body = [
-              '## Preview Build Ready',
+              '## Preview Builds Ready',
               '',
-              `**Build details:** ${buildUrl}`,
-              artifactUrl ? `**Download APK:** ${artifactUrl}` : '_APK link will appear in the build details page once the build finishes._',
+              androidSection,
+              '',
+              iosSection,
               '',
               '_Built with EAS on commit ${{ github.sha }}_',
             ].join('\n');
