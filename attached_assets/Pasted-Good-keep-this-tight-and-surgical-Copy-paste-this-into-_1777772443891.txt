@@ -1,0 +1,121 @@
+Good — keep this tight and surgical. Copy-paste this into Replit:
+
+⸻
+
+🔧 PROMPT FOR REPLIT
+
+Role: Senior React Native + Expo engineer.
+Goal: Add lightweight time-aware copy (day vs evening) without changing existing logic or structure.
+
+Constraints:
+
+* Do NOT modify state logic (steady / mindful / take-it-easy stays unchanged)
+* Do NOT redesign UI
+* Only adjust text output based on time of day
+* Keep changes minimal and safe
+
+⸻
+
+1. Add time detection
+
+At the top of the screen file where the daily plan is generated:
+
+const hour = new Date().getHours();
+const isEvening = hour >= 18;
+
+⸻
+
+2. Update intro text
+
+Replace:
+
+"Today's check-in"
+
+With:
+
+"Quick check-in"
+
+⸻
+
+3. Add context line under Today State (optional but recommended)
+
+Right under the state title:
+
+<Text>
+  {isEvening ? "Use this to close your day" : "Use this to guide your day"}
+</Text>
+
+⸻
+
+4. Modify DAILY PLAN COPY ONLY (no logic changes)
+
+Where you generate plan text, wrap strings like this:
+
+Example transformation:
+
+Replace:
+
+"Do your main tasks earlier in the day"
+
+With:
+
+isEvening
+  ? "Wind down — no need to push more today"
+  : "Do your main tasks earlier in the day"
+
+⸻
+
+Replace:
+
+"Keep movement steady, not intense"
+
+With:
+
+isEvening
+  ? "Keep movement gentle if needed"
+  : "Keep movement steady, not intense"
+
+⸻
+
+Replace:
+
+"Take breaks to stay steady through the day"
+
+With:
+
+isEvening
+  ? "Focus on recovery and rest tonight"
+  : "Take breaks to stay steady through the day"
+
+⸻
+
+5. Global rule
+
+* ANY phrase referencing “day”, “earlier”, or “tasks” → must have an evening alternative
+* Evening tone = closing, recovery, no pressure
+
+⸻
+
+6. Do NOT:
+
+* Add new inputs
+* Add toggles
+* Add UI complexity
+* Change scoring or logic
+
+⸻
+
+✅ Expected outcome
+
+* Same logic
+* Same UI
+* Feels context-aware at night
+* No “this is dumb” moments at 9 PM
+
+⸻
+
+Once done → rebuild once → send to beta.
+
+⸻
+
+If you want next: I’ll tighten the copy per state (steady / mindful / take-it-easy) so it feels even more intelligent without adding complexity.

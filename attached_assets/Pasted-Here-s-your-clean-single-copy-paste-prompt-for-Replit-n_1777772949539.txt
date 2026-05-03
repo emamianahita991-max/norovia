@@ -1,0 +1,158 @@
+Here’s your clean, single copy-paste prompt for Replit — no thinking required:
+
+⸻
+
+🔧 REPLIT PROMPT — TASK #59 (Time-Aware Copy)
+
+Role: Senior React Native + Expo engineer
+
+Goal: Add lightweight time-aware copy (day vs evening) to the Today screen using a simple isEvening flag — without changing any logic, scoring, layout, or structure
+
+⸻
+
+🔒 Scope (STRICT)
+
+* ONLY modify:
+    artifacts/pots-companion/app/(tabs)/index.tsx
+* Do NOT touch any other files
+* Do NOT change state logic (steady / mindful / take-it-easy)
+* Do NOT add components, inputs, or UI changes
+* ONLY adjust text and pass one boolean (isEvening)
+
+⸻
+
+1. Add time detection inside HomeScreen
+
+At the top of the component:
+
+const hour = new Date().getHours();
+const isEvening = hour >= 18;
+
+⸻
+
+2. Update check-in text
+
+Replace ANY instance of:
+
+* “Today’s check-in”
+* “Complete today’s check-in”
+* “Today’s check-in complete”
+
+With:
+
+"Quick check-in"
+
+⸻
+
+3. Add context line under Today State
+
+Directly under the state label, add:
+
+<Text>
+  {isEvening ? "Use this to close your day" : "Use this to guide your day"}
+</Text>
+
+Do NOT change layout — just insert this line.
+
+⸻
+
+4. Pass isEvening into getDailyPlan
+
+Update the function call:
+
+getDailyPlan(state, sleepHours, avgSymptom, maxSymptom, isEvening)
+
+⸻
+
+5. Update getDailyPlan signature
+
+function getDailyPlan(state, sleepHours, avgSymptom, maxSymptom, isEvening)
+
+⸻
+
+6. COPY-ONLY updates inside getDailyPlan
+
+✅ steady state
+
+mode:
+isEvening
+  ? "You've held up well today."
+  : "You have solid capacity today."
+actions[0]:
+isEvening
+  ? "Wind down — no need to push more today"
+  : "Do your main tasks earlier in the day"
+actions[1]:
+"Keep movement steady, not intense" // unchanged
+actions[2]:
+isEvening
+  ? "Focus on recovery and rest tonight"
+  : "Take breaks to stay steady through the day"
+
+⸻
+
+✅ mindful state
+
+mode:
+isEvening
+  ? "You've made it through — close today out gently."
+  : "Today has usable capacity — handle it deliberately."
+// actions unchanged
+
+⸻
+
+✅ take-it-easy state
+
+mode:
+isEvening
+  ? "Tonight is for stabilization."
+  : "Today is a stabilization day."
+actions[2]:
+isEvening
+  ? "Keep hydrating through the evening"
+  : "Hydrate early and consistently"
+pacing:
+isEvening
+  ? "Don't push — tonight is for recovery."
+  : "Stop early — don't wait for symptoms to build."
+
+⸻
+
+7. Global rules
+
+* ONLY modify strings
+* Do NOT change logic or conditions
+* Do NOT refactor or reorganize code
+* Do NOT add new features
+
+⸻
+
+8. After implementation
+
+Return:
+
+1. Full diff of index.tsx
+2. Confirmation that no other files were changed
+
+⸻
+
+✅ Expected result
+
+* Same logic
+* Same UI
+* Feels context-aware at night
+* No “this doesn’t make sense” moments in evening
+
+⸻
+
+🚀 After this (outside Replit)
+
+* Build once
+* Send new link
+* Ask users:
+
+“Does this feel more accurate when you use it at night?”
+
+⸻
+
+This is exactly the kind of small fix that makes the app feel 10x smarter without adding complexity.
