@@ -35,7 +35,7 @@ function getDailyPlan(
       isEvening ? "Keep hydrating through the evening" : "Hydrate early and consistently",
     ];
     return {
-      mode: isEvening ? "Tonight is for stabilization." : "Today is a stabilization day.",
+      mode: isEvening ? "Tonight is still a stabilization time." : "Today is a stabilization day.",
       actions,
       pacing: isEvening ? "Don't push — tonight is for recovery." : "Stop early — don't wait for symptoms to build.",
       permission: "Doing less today is the right move.",
@@ -99,6 +99,9 @@ export default function HomeScreen() {
   const dizziness: number = latestEntry?.dizziness ?? 0;
   const palpitations: number = latestEntry?.palpitations ?? 0;
 
+  const hour = new Date().getHours();
+  const isEvening = hour >= 18;
+
   const dailyPlan: DailyPlan | null =
     !isFlareActive && checkInCompletedToday && lockedTodayState !== null
       ? getDailyPlan(lockedTodayState, fatigue, dizziness, palpitations, isEvening)
@@ -122,9 +125,6 @@ export default function HomeScreen() {
     !isFlareActive &&
     lockedTodayState === "steady" &&
     sleepAwakenings !== null;
-
-  const hour = new Date().getHours();
-  const isEvening = hour >= 18;
 
   const [showAboutModal, setShowAboutModal] = useState(false);
 
