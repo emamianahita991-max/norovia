@@ -24,8 +24,9 @@
         "buildType": "apk"
       },
       "env": {
+        "NODE_VERSION": "20",
         "NPM_CONFIG_LEGACY_PEER_DEPS": "true",
-        "NODE_VERSION": "20"
+        "JAVA_VERSION": "17"
       }
     },
     "production": {
