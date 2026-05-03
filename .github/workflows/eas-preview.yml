@@ -34,32 +34,12 @@ jobs:
 
       - name: Build preview (Android APK)
         id: build
-        run: |
-          BUILD_JSON=$(eas build --profile preview --platform android --non-interactive --json 2>/dev/null)
-          BUILD_URL=$(echo "$BUILD_JSON" | node -e "
-            let d='';
-            process.stdin.on('data',c=>d+=c);
-            process.stdin.on('end',()=>{
-              try {
-                const b=JSON.parse(d);
-                const item=Array.isArray(b)?b[0]:b;
-                console.log(item.buildDetailsPageUrl||'');
-              } catch(e){ console.log(''); }
-            });
-          ")
-          ARTIFACT_URL=$(echo "$BUILD_JSON" | node -e "
-            let d='';
-            process.stdin.on('data',c=>d+=c);
-            process.stdin.on('end',()=>{
-              try {
-                const b=JSON.parse(d);
-                const item=Array.isArray(b)?b[0]:b;
-                console.log(item.artifacts?.buildUrl||'');
-              } catch(e){ console.log(''); }
-            });
-          ")
-          echo "buildDetailsPageUrl=$BUILD_URL" >> $GITHUB_OUTPUT
-          echo "artifactUrl=$ARTIFACT_URL" >> $GITHUB_OUTPUT
+        uses: expo/eas-build-action@v0
+        with:
+          type: build
+          profile: preview
+          platform: android
+          working-directory: artifacts/pots-companion
 
       - name: Comment APK link on PR
         uses: actions/github-script@v7
@@ -70,7 +50,7 @@ jobs:
             const body = [
               '## Preview Build Ready',
               '',
-              `**Build details:** ${buildUrl || '_(see Expo dashboard)_'}`,
+              `**Build details:** ${buildUrl}`,
               artifactUrl ? `**Download APK:** ${artifactUrl}` : '_APK link will appear in the build details page once the build finishes._',
               '',
               '_Built with EAS on commit ${{ github.sha }}_',
