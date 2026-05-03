@@ -34,24 +34,24 @@ jobs:
 
       - name: Build preview (Android APK)
         id: build
-        uses: expo/eas-build-action@v0
-        with:
-          type: build
-          profile: preview
-          platform: android
-          working-directory: artifacts/pots-companion
+        run: |
+          BUILD_OUTPUT=$(eas build --profile preview --platform android --non-interactive --json 2>/dev/null || eas build --profile preview --platform android --non-interactive)
+          echo "build_output<<EOF" >> $GITHUB_OUTPUT
+          echo "$BUILD_OUTPUT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          BUILD_URL=$(echo "$BUILD_OUTPUT" | grep -o 'https://expo.dev/accounts/[^"]*' | head -1 || true)
+          echo "build_url=$BUILD_URL" >> $GITHUB_OUTPUT
 
-      - name: Comment APK link on PR
+      - name: Comment build link on PR
         uses: actions/github-script@v7
         with:
           script: |
-            const buildUrl = '${{ steps.build.outputs.buildDetailsPageUrl }}';
-            const artifactUrl = '${{ steps.build.outputs.artifactUrl }}';
+            const buildOutput = `${{ steps.build.outputs.build_output }}`;
+            const buildUrl = `${{ steps.build.outputs.build_url }}`;
             const body = [
-              '## Preview Build Ready',
+              '## Preview Build Started',
               '',
-              `**Build details:** ${buildUrl}`,
-              artifactUrl ? `**Download APK:** ${artifactUrl}` : '_APK link will appear in the build details page once the build finishes._',
+              buildUrl ? `**Build details:** ${buildUrl}` : '_Build submitted to EAS. Check your Expo dashboard for the build link._',
               '',
               '_Built with EAS on commit ${{ github.sha }}_',
             ].join('\n');
