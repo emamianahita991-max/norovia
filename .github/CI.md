@@ -10,7 +10,11 @@ Triggers on every pull request (opened, synchronized, or reopened) and builds an
 |-------------|----------------------------------------------------------------------|----------------------------------|
 | `EXPO_TOKEN` | expo.dev → Account Settings → Access Tokens → Create Token          | `expo/expo-github-action@v8` step |
 
-The `EXPO_TOKEN` secret has been configured in this repository's GitHub Actions secrets (Settings → Secrets and variables → Actions).
+To add this secret to the repository:
+1. Go to the repository on GitHub
+2. Navigate to **Settings → Secrets and variables → Actions**
+3. Click **New repository secret**
+4. Name: `EXPO_TOKEN`, Value: your Expo access token
 
 ### EAS build profile
 
