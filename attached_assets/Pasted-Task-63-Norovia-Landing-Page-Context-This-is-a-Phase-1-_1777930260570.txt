@@ -1,0 +1,98 @@
+Task #63 — Norovia Landing Page
+Context: This is a Phase 1 beta capture page. The Android app is live. The EOS (Expo Orbit / EAS) build is pending. The landing page is a standalone web artifact only — it is not part of the Expo/React Native app and will not be built or deployed through EAS. It just needs to live cleanly in this Replit workspace as a separate artifact so it can be previewed and shared independently.
+Before you begin, please check:
+
+Read artifact.toml to confirm the correct slug format and how other artifacts are registered.
+Read artifacts/mockup-sandbox/vite.config.ts, artifacts/mockup-sandbox/package.json, and artifacts/mockup-sandbox/src/index.css to mirror the exact same setup pattern (PORT env var, BASE_PATH env var, Tailwind CSS v4, Vite, pnpm workspace).
+Read artifacts/pots-companion/constants/colors.ts to align token naming style.
+
+What to build:
+Create a new artifact at slug landing, preview path /landing. This is a standalone React + Vite web page — completely separate from the mobile app, the API server, and the mockup-sandbox. Do not touch any existing files outside the new artifacts/landing/ folder and artifact.toml.
+File structure to create:
+artifacts/landing/
+  package.json          ← pnpm workspace entry, mirrors mockup-sandbox
+  vite.config.ts        ← supports PORT and BASE_PATH env vars, same as mockup-sandbox
+  index.html
+  src/
+    main.tsx
+    App.tsx             ← single-page layout with 6 section components
+    copy.ts             ← ALL copy lives here, single export object
+    index.css           ← CSS custom properties for design tokens
+Register the new artifact in artifact.toml.
+src/copy.ts — export one object with this exact copy:
+tsexport const copy = {
+  hero: {
+    headline: "Understand your body state before the day runs you.",
+    subheadline: "Norovia turns a quick daily check-in into a simple Today State, so you can pace, plan, and respond with more clarity.",
+    cta: "Join the beta waitlist",
+    supporting: "Built for people navigating fluctuating energy, dizziness, palpitations, brain fog, and low reserve days.",
+  },
+  problem: {
+    title: "When your symptoms fluctuate, planning your day gets harder.",
+    body: "Some days your energy looks fine, but your body says otherwise. Norovia helps you notice the pattern earlier and adjust before you overextend.",
+  },
+  features: [
+    { title: "Daily check-in", body: "Log energy, symptoms, sleep, hydration, and optional vitals in under a minute." },
+    { title: "Today State", body: "See whether today is steady, mindful, take-it-easy, or flare-mode based on your inputs." },
+    { title: "Gentle daily plan", body: "Get simple pacing suggestions for how to move through the day without pushing blindly." },
+  ],
+  flareMode: {
+    title: "For the days that are different.",
+    body: "When symptoms are higher, Flare Mode makes the priority clear: stabilize first, reduce demands, and know when to seek urgent help.",
+    safety: "If symptoms feel severe, unusual, or concerning, seek medical care or call emergency services.",
+  },
+  waitlist: {
+    title: "Help shape Norovia.",
+    body: "We're inviting early users to test the first version and share what feels useful, unclear, or missing.",
+    placeholder: "Email address",
+    button: "Request beta access",
+    smallText: "No spam. Just beta updates and early access.",
+    confirmation: "Thank you — you're on the list",
+  },
+  footer: {
+    disclaimer: "Norovia is not medical care and does not diagnose, treat, or replace professional medical advice. If you are experiencing severe or concerning symptoms, contact a clinician or emergency services.",
+  },
+};
+src/index.css — CSS custom properties:
+css:root {
+  --color-bg: #FAFAF8;
+  --color-surface: #FFFFFF;
+  --color-text-primary: #1a1a1a;
+  --color-text-muted: #6b7280;
+  --color-accent: #4a7c7e;         /* sage/slate, same hue as pots-companion ACCENT */
+  --color-accent-light: #eef4f4;
+  --color-flare-bg: #fdf6ee;       /* warm muted, not bright red */
+  --color-flare-border: #e8d8c4;
+}
+src/App.tsx — six section components, in this order:
+
+Hero — headline, subheadline, supporting text, CTA button that smooth-scrolls to #waitlist
+Problem — title + body paragraph
+Features — 3 cards: single column on mobile (grid-cols-1), 3-column on md+ (md:grid-cols-3)
+FlareMode — uses --color-flare-bg / --color-flare-border, includes the safety line in a clearly visible but calm style
+Waitlist — id="waitlist", controlled email input, client-side validation only, on submit replace form with confirmation string from copy.ts, no network call
+Footer — disclaimer text only
+
+Design rules (no exceptions):
+
+Background: #FAFAF8
+No dark mode, no stock photos, no complex animations, no App Store links, no backend calls
+Mobile-first, max reading width ~680px centered on desktop
+Clean sans-serif (system font stack is fine)
+Rounded cards with soft shadow
+CTA buttons use --color-accent with white text
+
+Email form rules:
+
+Controlled input (React useState)
+On submit: if email is invalid show a short calm error ("Please enter a valid email"), if valid replace the whole form with the confirmation message from copy.ts
+No fetch, no axios, no external service
+
+After building, confirm:
+
+All files created and their paths
+New artifact route registered in artifact.toml
+All copy sourced exclusively from src/copy.ts
+Email form is 100% client-side — no network call
+No mobile app files, API server files, or existing artifact files were changed
+Preview path /landing works in the Replit webview

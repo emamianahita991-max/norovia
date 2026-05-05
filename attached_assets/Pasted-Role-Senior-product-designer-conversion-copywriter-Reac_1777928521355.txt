@@ -1,0 +1,108 @@
+Role: Senior product designer + conversion copywriter + React/Expo/Replit engineer.
+
+Context:
+We are building the first landing page for Norovia, a calm daily support app for people who experience POTS-like symptoms, chronic fatigue, dizziness, palpitations, brain fog, or fluctuating energy.
+
+Norovia is not medical care. It does not diagnose, treat, or replace a clinician. It helps users understand their daily body state and respond with pacing, hydration, rest, and planning guidance.
+
+Positioning line:
+“Most tools track your body. Norovia helps you understand what your body is telling you — and how to respond.”
+
+Goal:
+Create a clean, mobile-first landing page to validate interest and collect beta/waitlist signups.
+
+Tone:
+Calm, validating, modern, minimal, not cheesy, not overly clinical, not wellness-guru.
+Avoid words like “cure,” “treat,” “fix,” “diagnose,” “optimize.”
+Do not overpromise.
+
+Page structure:
+
+1. Hero section
+Headline:
+“Understand your body state before the day runs you.”
+
+Subheadline:
+“Norovia turns a quick daily check-in into a simple Today State, so you can pace, plan, and respond with more clarity.”
+
+Primary CTA:
+“Join the beta waitlist”
+
+Secondary text:
+“Built for people navigating fluctuating energy, dizziness, palpitations, brain fog, and low reserve days.”
+
+2. Problem section
+Title:
+“When your symptoms fluctuate, planning your day gets harder.”
+
+Body:
+“Some days your energy looks fine, but your body says otherwise. Norovia helps you notice the pattern earlier and adjust before you overextend.”
+
+3. Three feature cards
+Card 1:
+Title: “Daily check-in”
+Text: “Log energy, symptoms, sleep, hydration, and optional vitals in under a minute.”
+
+Card 2:
+Title: “Today State”
+Text: “See whether today is steady, mindful, take-it-easy, or flare-mode based on your inputs.”
+
+Card 3:
+Title: “Gentle daily plan”
+Text: “Get simple pacing suggestions for how to move through the day without pushing blindly.”
+
+4. Flare mode section
+Title:
+“For the days that are different.”
+
+Text:
+“When symptoms are higher, Flare Mode makes the priority clear: stabilize first, reduce demands, and know when to seek urgent help.”
+
+Include safety line:
+“If symptoms feel severe, unusual, or concerning, seek medical care or call emergency services.”
+
+5. Beta/waitlist section
+Title:
+“Help shape Norovia.”
+
+Text:
+“We’re inviting early users to test the first version and share what feels useful, unclear, or missing.”
+
+Input:
+Email address field
+
+Button:
+“Request beta access”
+
+Small text:
+“No spam. Just beta updates and early access.”
+
+6. Footer disclaimer
+“Norovia is not medical care and does not diagnose, treat, or replace professional medical advice. If you are experiencing severe or concerning symptoms, contact a clinician or emergency services.”
+
+Design requirements:
+- Mobile-first responsive layout
+- Calm ivory/off-white background
+- Soft cards with rounded corners
+- Muted accent color, not bright red except subtle flare section
+- Clean spacing
+- Modern typography
+- CTA visible near top and near bottom
+- Looks premium but simple
+- No stock photos for now
+- No complex animations
+- Keep code clean and easy to edit
+
+Engineering requirements:
+- Implement as a simple landing page in the existing Replit project
+- Do not break existing app routing
+- If this is a React web project, create/update the landing page component only
+- If email capture backend is not set up, make the form visually functional and show a simple “Thank you — you’re on the list” message on submit
+- Do not add external dependencies unless absolutely necessary
+- Keep all copy easy to edit in one place if possible
+
+Deliverable:
+Build the landing page and then show me:
+1. What file(s) you changed
+2. A short summary of what you implemented
+3. Any placeholder logic used for the email form

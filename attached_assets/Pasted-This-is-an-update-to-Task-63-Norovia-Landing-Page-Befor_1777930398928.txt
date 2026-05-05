@@ -1,0 +1,73 @@
+This is an update to Task #63 — Norovia Landing Page.
+Before writing or finalising any copy, apply these tone rules. They are non-negotiable and override the copy in the original brief where there is a conflict.
+Tone rules (from Voice & Brand Reference Card V3):
+Internal test — if it sounds like Instagram wellness, reject it. If it sounds like a system, keep it.
+Approved words to use: steady, reserve, capacity, adjust, respond, pace, signal, pattern, state, understand.
+Banned words — never use: optimize, hustle, fix, heal, unlock, push through, take control of your life, productivity. Note: "control" as positioning is fine. The phrase "take control of your life" is what is banned.
+Landing page voice rule: Sell control, not relief. Speak to capable people whose bodies are inconsistent. No transformation language. No hype. Calm, direct.
+Sentence rules — always:
+
+Short to medium length only
+No exclamation marks anywhere in the UI
+No emojis in copy
+No dramatic pauses or poetic abstraction
+Never imply treatment, fixing, or certainty
+Use probabilistic language where outcome is uncertain — use: may, might, suggest, can
+Target feeling: "This gets it."
+
+
+Replace the entire src/copy.ts with this exact content:
+tsexport const copy = {
+  hero: {
+    headline: "Understand your body state before the day runs ahead of you.",
+    subheadline: "Norovia turns a quick daily check-in into a simple Today State, so you can pace, plan, and respond with more clarity.",
+    cta: "Join the beta waitlist",
+    supporting: "For people navigating fluctuating energy, dizziness, palpitations, brain fog, and low-reserve days.",
+  },
+  problem: {
+    title: "When your capacity changes day to day, planning gets harder.",
+    body: "Some days your energy looks fine on paper, but your body signals otherwise. Norovia helps you notice the pattern earlier and adjust before you overcommit.",
+  },
+  features: [
+    {
+      title: "Daily check-in",
+      body: "Log energy, symptoms, sleep, hydration, and optional vitals. Takes under a minute.",
+    },
+    {
+      title: "Today State",
+      body: "See whether today is steady, mindful, take-it-easy, or flare-mode based on your inputs.",
+    },
+    {
+      title: "Daily plan",
+      body: "Get simple pacing suggestions for moving through the day based on your current state.",
+    },
+  ],
+  flareMode: {
+    title: "Some days need a different approach.",
+    body: "When inputs suggest higher strain, Flare Mode surfaces one priority: stabilize first, reduce demands, and understand when to seek urgent support.",
+    safety: "If symptoms feel severe, unusual, or concerning, seek medical care or call emergency services.",
+  },
+  waitlist: {
+    title: "Help shape Norovia.",
+    body: "We're inviting early users to test the first version and share what feels useful, unclear, or missing.",
+    placeholder: "Email address",
+    button: "Request beta access",
+    smallText: "No spam. Beta updates and early access only.",
+    confirmation: "Thank you — you're on the list.",
+  },
+  footer: {
+    disclaimer: "Norovia is not medical care and does not diagnose, treat, or replace professional medical advice. If you are experiencing severe or concerning symptoms, contact a clinician or emergency services.",
+  },
+};
+What changed and why:
+
+Hero supporting text: removed "Built for people" (transformation framing) → replaced with neutral "For people navigating…"
+Problem title: replaced "symptoms fluctuate" with "capacity changes day to day" — uses approved word "capacity"
+Problem body: replaced "overextend" with "overcommit" — less dramatic, same meaning
+Features card 3: removed "without pushing blindly" — that is Instagram wellness language; replaced with "based on your current state" — system language
+Flare Mode title: removed "For the days that are different." — poetic abstraction — replaced with "Some days need a different approach." — direct, system tone
+Flare Mode body: added "inputs suggest" for probabilistic framing; "understand when to seek" rather than "know when to seek" — more measured
+Waitlist small text: removed the word "Just" which softens in a wellness-y way; kept it clean and direct
+Confirmation: added period — matches short-sentence rule
+
+Everything else in the implementation from the original Task #63 prompt stays the same. Only src/copy.ts content changes.
