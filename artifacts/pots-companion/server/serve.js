@@ -135,8 +135,21 @@ const server = http.createServer((req, res) => {
   const url = new URL(req.url || "/", `http://${req.headers.host}`);
   let pathname = url.pathname;
 
+  const host = req.headers["host"] || "";
+  if (host === "www.norovia.ca") {
+    res.writeHead(302, { location: "https://norovia.ca" + req.url });
+    res.end();
+    return;
+  }
+
   if (basePath && pathname.startsWith(basePath)) {
     pathname = pathname.slice(basePath.length) || "/";
+  }
+
+  if (pathname === "/") {
+    res.writeHead(302, { location: "/landing" });
+    res.end();
+    return;
   }
 
   if (pathname === "/landing" || pathname.startsWith("/landing/")) {
