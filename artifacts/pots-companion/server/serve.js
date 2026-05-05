@@ -3,8 +3,9 @@
  *
  * Serves the output of build.js (static-build/) with two special routes:
  * - GET / or /manifest with expo-platform header → platform manifest JSON
- * - GET / without expo-platform → landing page HTML
- * - GET /landing or /landing/* → proxied to the landing artifact (LANDING_PORT)
+ * - GET /landing or /landing/* → served from landing artifact's built static files
+ * - GET / (no expo-platform) → redirect to /landing
+ * - www.norovia.ca → redirect to https://norovia.ca
  * Everything else falls through to static file serving from ./static-build/.
  *
  * Zero external dependencies — uses only Node.js built-ins (http, fs, path).
@@ -15,9 +16,18 @@ const fs = require("fs");
 const path = require("path");
 
 const STATIC_ROOT = path.resolve(__dirname, "..", "static-build");
+const LANDING_STATIC_ROOT = path.resolve(
+  __dirname,
+  "..",
+  "..",
+  "..",
+  "artifacts",
+  "landing",
+  "dist",
+  "public",
+);
 const TEMPLATE_PATH = path.resolve(__dirname, "templates", "landing-page.html");
 const basePath = (process.env.BASE_PATH || "/").replace(/\/+$/, "");
-const LANDING_PORT = parseInt(process.env.LANDING_PORT || "3001", 10);
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -83,26 +93,37 @@ function serveLandingPage(req, res, landingPageTemplate, appName) {
   res.end(html);
 }
 
-function proxyToLanding(req, res, fullPath) {
-  const options = {
-    hostname: "localhost",
-    port: LANDING_PORT,
-    path: fullPath,
-    method: req.method,
-    headers: req.headers,
-  };
+function serveLandingStatic(pathname, res) {
+  let filePath = pathname.slice("/landing".length) || "/";
+  if (filePath === "" || filePath === "/") filePath = "/index.html";
 
-  const proxyReq = http.request(options, (proxyRes) => {
-    res.writeHead(proxyRes.statusCode, proxyRes.headers);
-    proxyRes.pipe(res, { end: true });
-  });
+  const safePath = path.normalize(filePath).replace(/^(\.\.(\/|\\|$))+/, "");
+  const fullPath = path.join(LANDING_STATIC_ROOT, safePath);
 
-  proxyReq.on("error", () => {
-    res.writeHead(502, { "content-type": "text/plain" });
-    res.end("Landing service unavailable");
-  });
+  if (!fullPath.startsWith(LANDING_STATIC_ROOT)) {
+    res.writeHead(403);
+    res.end("Forbidden");
+    return;
+  }
 
-  req.pipe(proxyReq, { end: true });
+  if (!fs.existsSync(fullPath) || fs.statSync(fullPath).isDirectory()) {
+    const indexPath = path.join(LANDING_STATIC_ROOT, "index.html");
+    if (fs.existsSync(indexPath)) {
+      const content = fs.readFileSync(indexPath);
+      res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+      res.end(content);
+    } else {
+      res.writeHead(404, { "content-type": "text/plain" });
+      res.end("Landing not found");
+    }
+    return;
+  }
+
+  const ext = path.extname(fullPath).toLowerCase();
+  const contentType = MIME_TYPES[ext] || "application/octet-stream";
+  const content = fs.readFileSync(fullPath);
+  res.writeHead(200, { "content-type": contentType });
+  res.end(content);
 }
 
 function serveStaticFile(urlPath, res) {
@@ -153,18 +174,13 @@ const server = http.createServer((req, res) => {
   }
 
   if (pathname === "/landing" || pathname.startsWith("/landing/")) {
-    const fullPath = url.pathname + url.search;
-    return proxyToLanding(req, res, fullPath);
+    return serveLandingStatic(pathname, res);
   }
 
-  if (pathname === "/" || pathname === "/manifest") {
+  if (pathname === "/manifest") {
     const platform = req.headers["expo-platform"];
     if (platform === "ios" || platform === "android") {
       return serveManifest(platform, res);
-    }
-
-    if (pathname === "/") {
-      return serveLandingPage(req, res, landingPageTemplate, appName);
     }
   }
 
