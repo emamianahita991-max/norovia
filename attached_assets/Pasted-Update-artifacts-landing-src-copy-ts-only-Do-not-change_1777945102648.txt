@@ -1,0 +1,72 @@
+Update artifacts/landing/src/copy.ts only. Do not change any other file.
+Here are the issues found by reading the actual app code, and the corrected copy to replace the entire file with.
+Issues found:
+
+Features card 1 says "optional vitals" — there are no vitals in the app. track.tsx logs energy, dizziness, palpitations, salt, compression, movement, and water only. Remove "vitals."
+Flare Mode body still sounds medically directive. "stabilize, reduce demands, and know when to seek urgent support" frames the app as a clinical triage tool. Rewrite to describe the feature's purpose from the user's perspective — what they chose to do, not what the app tells them to do medically.
+The safety line in Flare Mode is acceptable as-is legally, but should use softer framing consistent with the tone card (probabilistic, not prescriptive).
+
+Legal review of current copy:
+These phrases pass: the footer disclaimer is solid and clear. "Norovia is not medical care and does not diagnose, treat, or replace professional medical advice" — keep exactly as-is.
+These phrases have risk and must be removed or reframed:
+
+"know when to seek urgent support" — implies the app can tell you when. It cannot. Remove.
+Any future addition of specific symptoms (chest pain, shortness of breath, etc.) to the landing page would cross into clinical language. Do not add symptom lists to the landing page.
+
+Replace the full content of artifacts/landing/src/copy.ts with this:
+tsexport const copy = {
+  hero: {
+    headline: "Understand your body state before the day runs ahead of you.",
+    subheadline:
+      "Norovia turns a quick daily check-in into a simple Today State, so you can pace, plan, and respond with more clarity.",
+    cta: "Join the beta waitlist",
+    supporting:
+      "For people navigating fluctuating energy, dizziness, palpitations, brain fog, and low-reserve days.",
+  },
+  problem: {
+    title: "When your capacity changes day to day, planning gets harder.",
+    body: "Some days your energy looks fine on paper, but your body signals otherwise. Norovia helps you notice the pattern earlier and adjust before you overcommit.",
+  },
+  features: [
+    {
+      title: "Daily check-in",
+      body: "Log energy, symptoms, sleep, hydration, and daily habits in under a minute.",
+    },
+    {
+      title: "Today State",
+      body: "See whether today is steady, mindful, or take-it-easy based on your inputs.",
+    },
+    {
+      title: "Daily plan",
+      body: "Get simple pacing suggestions based on your current state.",
+    },
+  ],
+  flareMode: {
+    title: "Some days call for a different mode.",
+    body: "Flare Mode is something you activate. When you do, the app clears the noise and focuses on one thing: steadying the day. You decide when you need it.",
+    safety:
+      "Norovia is not a medical tool. If something feels urgent or serious, contact a clinician or call emergency services.",
+  },
+  waitlist: {
+    title: "Help shape Norovia.",
+    body: "We're inviting early users to test the first version and share what feels useful, unclear, or missing.",
+    placeholder: "Email address",
+    button: "Request beta access",
+    smallText: "No spam. Beta updates and early access only.",
+    confirmation: "Thank you — you're on the list.",
+    validationError: "Please enter a valid email address.",
+  },
+  footer: {
+    disclaimer:
+      "Norovia is not medical care and does not diagnose, treat, or replace professional medical advice. If you are experiencing severe or concerning symptoms, contact a clinician or emergency services.",
+  },
+};
+What changed and why:
+
+Features card 1: "optional vitals" → "daily habits" — matches what the app actually tracks (salt, compression, movement)
+Flare Mode title: "Some days need a different approach" → "Some days call for a different mode" — removes the implicit medical framing, uses "mode" which is the product's own language
+Flare Mode body: completely rewritten — removes "stabilize, reduce demands, and know when to seek urgent support" (all three imply clinical guidance); replaces with what the feature actually does from the user's perspective: they activate it, it clears noise, it steadies the day
+Flare Mode safety line: rewritten to open with "Norovia is not a medical tool" — this front-loads the legal position instead of burying it; "If something feels urgent or serious" replaces the old version's more clinical phrasing; removes pressure language
+Footer: unchanged — it is already legally sound
+
+No layout, component, or structural changes needed. Only copy.ts changes.
