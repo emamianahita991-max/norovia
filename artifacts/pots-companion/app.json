@@ -1,11 +1,11 @@
 {
   "expo": {
     "name": "Norovia",
-    "slug": "pots-companion",
+    "slug": "norovia",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "pots-companion",
+    "scheme": "norovia",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
