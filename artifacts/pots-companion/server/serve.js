@@ -4,6 +4,7 @@
  * Serves the output of build.js (static-build/) with two special routes:
  * - GET / or /manifest with expo-platform header → platform manifest JSON
  * - GET / without expo-platform → landing page HTML
+ * - GET /landing or /landing/* → proxied to the landing artifact (LANDING_PORT)
  * Everything else falls through to static file serving from ./static-build/.
  *
  * Zero external dependencies — uses only Node.js built-ins (http, fs, path).
@@ -16,6 +17,7 @@ const path = require("path");
 const STATIC_ROOT = path.resolve(__dirname, "..", "static-build");
 const TEMPLATE_PATH = path.resolve(__dirname, "templates", "landing-page.html");
 const basePath = (process.env.BASE_PATH || "/").replace(/\/+$/, "");
+const LANDING_PORT = parseInt(process.env.LANDING_PORT || "3001", 10);
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -81,6 +83,28 @@ function serveLandingPage(req, res, landingPageTemplate, appName) {
   res.end(html);
 }
 
+function proxyToLanding(req, res, fullPath) {
+  const options = {
+    hostname: "localhost",
+    port: LANDING_PORT,
+    path: fullPath,
+    method: req.method,
+    headers: req.headers,
+  };
+
+  const proxyReq = http.request(options, (proxyRes) => {
+    res.writeHead(proxyRes.statusCode, proxyRes.headers);
+    proxyRes.pipe(res, { end: true });
+  });
+
+  proxyReq.on("error", () => {
+    res.writeHead(502, { "content-type": "text/plain" });
+    res.end("Landing service unavailable");
+  });
+
+  req.pipe(proxyReq, { end: true });
+}
+
 function serveStaticFile(urlPath, res) {
   const safePath = path.normalize(urlPath).replace(/^(\.\.(\/|\\|$))+/, "");
   const filePath = path.join(STATIC_ROOT, safePath);
@@ -113,6 +137,11 @@ const server = http.createServer((req, res) => {
 
   if (basePath && pathname.startsWith(basePath)) {
     pathname = pathname.slice(basePath.length) || "/";
+  }
+
+  if (pathname === "/landing" || pathname.startsWith("/landing/")) {
+    const fullPath = url.pathname + url.search;
+    return proxyToLanding(req, res, fullPath);
   }
 
   if (pathname === "/" || pathname === "/manifest") {
