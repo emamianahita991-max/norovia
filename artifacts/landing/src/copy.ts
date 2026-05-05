@@ -1,9 +1,11 @@
 export const copy = {
   hero: {
     headline: "Understand your body state before the day runs ahead of you.",
-    subheadline: "Norovia turns a quick daily check-in into a simple Today State, so you can pace, plan, and respond with more clarity.",
+    subheadline:
+      "Norovia turns a quick daily check-in into a simple Today State, so you can pace, plan, and respond with more clarity.",
     cta: "Join the beta waitlist",
-    supporting: "For people navigating fluctuating energy, dizziness, palpitations, brain fog, and low-reserve days.",
+    supporting:
+      "For people navigating fluctuating energy, dizziness, palpitations, brain fog, and low-reserve days.",
   },
   problem: {
     title: "When your capacity changes day to day, planning gets harder.",
@@ -12,7 +14,7 @@ export const copy = {
   features: [
     {
       title: "Daily check-in",
-      body: "Log energy, symptoms, sleep, hydration, and optional vitals. Takes under a minute.",
+      body: "Log energy, symptoms, sleep, hydration, and daily habits in under a minute.",
     },
     {
       title: "Today State",
@@ -24,9 +26,10 @@ export const copy = {
     },
   ],
   flareMode: {
-    title: "Some days need a different approach.",
-    body: "When you activate Flare Mode, the app shifts focus to one clear priority: stabilize, reduce demands, and know when to seek urgent support. You decide when that day is.",
-    safety: "If symptoms feel severe, unusual, or concerning, seek medical care or call emergency services.",
+    title: "Some days call for a different mode.",
+    body: "Flare Mode is something you activate. When you do, the app clears the noise and focuses on one thing: steadying the day. You decide when you need it.",
+    safety:
+      "Norovia is not a medical tool. If something feels urgent or serious, contact a clinician or call emergency services.",
   },
   waitlist: {
     title: "Help shape Norovia.",
@@ -38,6 +41,7 @@ export const copy = {
     validationError: "Please enter a valid email address.",
   },
   footer: {
-    disclaimer: "Norovia is not medical care and does not diagnose, treat, or replace professional medical advice. If you are experiencing severe or concerning symptoms, contact a clinician or emergency services.",
+    disclaimer:
+      "Norovia is not medical care and does not diagnose, treat, or replace professional medical advice. If you are experiencing severe or concerning symptoms, contact a clinician or emergency services.",
   },
 };
