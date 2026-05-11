@@ -1,5 +1,4 @@
 import {
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -42,7 +41,7 @@ export default function FlareScreen() {
         styles.container,
         {
           paddingBottom: insets.bottom + 24,
-          paddingTop: Platform.OS === "web" ? 67 : 16,
+          paddingTop: 16,
         },
       ]}
     >

@@ -15,10 +15,31 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.norovia.app"
+      "bundleIdentifier": "com.norovia.app",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Norovia may access your photo library to let you attach images to your health logs.",
+        "NSCameraUsageDescription": "Norovia may access your camera to let you capture images for your health logs."
+      },
+      "privacyManifests": {
+        "NSPrivacyAccessedAPITypes": [
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+            "NSPrivacyAccessedAPITypeReasons": ["CA92.1"]
+          }
+        ]
+      }
     },
     "android": {
-      "package": "com.norovia.app"
+      "package": "com.norovia.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_IMAGES"
+      ]
     },
     "web": {
       "favicon": "./assets/images/icon.png"

@@ -1,7 +1,6 @@
 import Slider from "@react-native-community/slider";
 import { useState, useCallback } from "react";
 import {
-  Platform,
   ScrollView,
   StyleSheet,
   Switch,
@@ -11,8 +10,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { useFocusEffect } from "@react-navigation/native";
+import { useRouter, useFocusEffect } from "expo-router";
 import { useDaily } from "@/context/DailyContext";
 import { computeTodayState } from "@/utils/computeTodayState";
 
@@ -187,7 +185,7 @@ export default function TrackScreen() {
         styles.container,
         {
           paddingBottom: insets.bottom + 24,
-          paddingTop: Platform.OS === "web" ? 67 : 16,
+          paddingTop: 16,
         },
       ]}
     >

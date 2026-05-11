@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import {
   AccessibilityInfo,
-  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -40,8 +39,8 @@ export default function OnboardingScreen() {
       style={[
         styles.container,
         {
-          paddingTop: Platform.OS === "web" ? 80 : insets.top + 32,
-          paddingBottom: Platform.OS === "web" ? 48 : insets.bottom + 32,
+          paddingTop: insets.top + 32,
+          paddingBottom: insets.bottom + 32,
         },
       ]}
     >

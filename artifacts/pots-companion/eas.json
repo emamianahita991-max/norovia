@@ -34,7 +34,8 @@
       "autoIncrement": true,
       "env": {
         "NODE_VERSION": "20",
-        "NPM_CONFIG_LEGACY_PEER_DEPS": "true"
+        "NPM_CONFIG_LEGACY_PEER_DEPS": "true",
+        "JAVA_VERSION": "17"
       }
     }
   },

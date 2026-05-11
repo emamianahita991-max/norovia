@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import {
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -42,9 +41,7 @@ function sleepScore(hours: number, awakenings: number): number {
   else if (hours < 7) score -= 15;
 
   if (awakenings === 0) score += 5;
-  else if (awakenings <= 2) {
-    // 1–2 awakenings: no score adjustment
-  } else if (awakenings === 3) {
+  else if (awakenings === 3) {
     score -= 5;
   } else if (awakenings >= 4) {
     score -= 10;
@@ -213,7 +210,7 @@ export default function SleepScreen() {
         styles.container,
         {
           paddingBottom: insets.bottom + 24,
-          paddingTop: Platform.OS === "web" ? 67 : 16,
+          paddingTop: 16,
         },
       ]}
     >

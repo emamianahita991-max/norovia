@@ -4,7 +4,6 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
-  Platform,
   Modal,
   Pressable,
 } from "react-native";
@@ -171,7 +170,7 @@ export default function HomeScreen() {
       style={styles.scroll}
       contentContainerStyle={[
         styles.container,
-        { paddingBottom: insets.bottom + 24, paddingTop: Platform.OS === "web" ? 67 : 16 },
+        { paddingBottom: insets.bottom + 24, paddingTop: 16 },
       ]}
       keyboardShouldPersistTaps="handled"
     >

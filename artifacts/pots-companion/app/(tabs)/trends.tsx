@@ -1,5 +1,4 @@
 import {
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -100,9 +99,9 @@ function analyze(entries: Entry[]): Analysis | null {
   }
 
   return {
-    helps: helps.slice(0, 1),
-    worsens: worsens.slice(0, 1),
-    tryNext: tryNext.slice(0, 1),
+    helps,
+    worsens,
+    tryNext,
   };
 }
 
@@ -282,7 +281,7 @@ export default function TrendsScreen() {
         styles.container,
         {
           paddingBottom: insets.bottom + 24,
-          paddingTop: Platform.OS === "web" ? 67 : 16,
+          paddingTop: 16,
         },
       ]}
     >
