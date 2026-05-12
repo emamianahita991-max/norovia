@@ -1,0 +1,20 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "Tl9VH4Q1d8luGfNuQWnYE"
+uri = "file://artifacts/pots-companion/assets/images/icon.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "X9_sZwF8mcRCj9ETQ8HhI"
+uri = "file://artifacts/pots-companion/assets/images/splash.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "UxoO3zh3mlEHbw_fFf3mx"
+uri = "file://artifacts/pots-companion/assets/images/adaptive-icon.png"
+type = "image"
+title = "generated_image"

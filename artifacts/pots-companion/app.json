@@ -9,13 +9,13 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/icon.png",
+      "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff",
+      "backgroundColor": "#0F1F3D",
       "dark": {
-        "image": "./assets/images/icon.png",
+        "image": "./assets/images/splash.png",
         "resizeMode": "contain",
-        "backgroundColor": "#0a0a0a"
+        "backgroundColor": "#0F1F3D"
       }
     },
     "ios": {
@@ -37,8 +37,8 @@
     "android": {
       "package": "com.norovia.app",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#0F1F3D"
       },
       "permissions": [
         "android.permission.CAMERA",
