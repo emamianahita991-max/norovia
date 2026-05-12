@@ -19,7 +19,7 @@ run = "pnpm --filter @workspace/landing run dev"
 
 [services.production]
 serve = "static"
-publicDir = "dist/public"
+publicDir = "artifacts/landing/dist/public"
 
 [services.production.build]
 args = [ "pnpm", "--filter", "@workspace/landing", "run", "build" ]
@@ -27,6 +27,9 @@ args = [ "pnpm", "--filter", "@workspace/landing", "run", "build" ]
 [services.production.build.env]
 BASE_PATH = "/landing/"
 PORT = "18150"
+
+[services.production.health.startup]
+path = "/landing/"
 
 [services.env]
 PORT = "18150"
