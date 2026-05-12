@@ -1,23 +1,43 @@
 import { useState } from "react";
 import { copy } from "./copy";
+import { PrivacyPage } from "./Privacy";
 
-function LandingPage() {
+function LandingPage({ onPrivacyClick }: { onPrivacyClick: () => void }) {
   const scrollToWaitlist = () => {
     document.getElementById("waitlist")?.scrollIntoView({ behavior: "smooth" });
   };
 
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleWaitlistSubmit = (e: React.FormEvent) => {
+  const handleWaitlistSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
       setError(copy.waitlist.validationError);
       return;
     }
     setError("");
-    setSubmitted(true);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setSubmitted(true);
+        setEmail("");
+      } else {
+        setError(data.error ?? "Something went wrong. Please try again.");
+      }
+    } catch {
+      setError("Unable to connect. Please check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -122,20 +142,30 @@ function LandingPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={copy.waitlist.placeholder}
-                  className="flex-1 px-6 py-4 rounded-full bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-base"
+                  disabled={loading}
+                  className="flex-1 px-6 py-4 rounded-full bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-base disabled:opacity-60"
                 />
                 <button
                   type="submit"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-full text-base font-medium transition-all shadow-sm active:scale-[0.98]"
+                  disabled={loading}
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-full text-base font-medium transition-all shadow-sm active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {copy.waitlist.button}
+                  {loading ? "Submitting…" : copy.waitlist.button}
                 </button>
               </div>
               {error && (
                 <p className="text-sm text-destructive text-left px-2">{error}</p>
               )}
               <p className="text-xs text-muted-foreground mt-2 text-center">
-                {copy.waitlist.smallText}
+                {copy.waitlist.smallText}{" "}
+                <button
+                  type="button"
+                  onClick={onPrivacyClick}
+                  className="underline underline-offset-2 hover:text-foreground transition-colors"
+                >
+                  Privacy Policy
+                </button>
+                .
               </p>
             </form>
           )}
@@ -144,10 +174,17 @@ function LandingPage() {
 
       {/* 6. Footer disclaimer */}
       <footer className="px-6 py-16 md:py-20 border-t border-border/40">
-        <div className="max-w-2xl mx-auto text-center">
-          <p className="text-sm text-muted-foreground/60 leading-relaxed">
+        <div className="max-w-2xl mx-auto text-center space-y-4">
+          <p className="text-sm text-muted-foreground leading-relaxed">
             {copy.footer.disclaimer}
           </p>
+          <button
+            type="button"
+            onClick={onPrivacyClick}
+            className="text-xs text-muted-foreground/70 underline underline-offset-2 hover:text-muted-foreground transition-colors"
+          >
+            Privacy Policy
+          </button>
         </div>
       </footer>
 
@@ -156,5 +193,11 @@ function LandingPage() {
 }
 
 export default function App() {
-  return <LandingPage />;
+  const [view, setView] = useState<"landing" | "privacy">("landing");
+
+  if (view === "privacy") {
+    return <PrivacyPage onBack={() => setView("landing")} />;
+  }
+
+  return <LandingPage onPrivacyClick={() => setView("privacy")} />;
 }

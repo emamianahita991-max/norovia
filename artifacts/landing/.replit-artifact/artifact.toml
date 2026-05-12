@@ -17,6 +17,10 @@ localPort = 18150
 [services.development]
 run = "pnpm --filter @workspace/landing run dev"
 
+[services.production]
+serve = "static"
+publicDir = "dist/public"
+
 [services.production.build]
 args = [ "pnpm", "--filter", "@workspace/landing", "run", "build" ]
 
