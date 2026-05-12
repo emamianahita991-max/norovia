@@ -18,10 +18,6 @@ localPort = 21605
 [services.development]
 run = "pnpm --filter @workspace/norovia-app run dev"
 
-[services.production]
-build = [ "pnpm", "--filter", "@workspace/norovia-app", "run", "build" ]
-run = [ "pnpm", "--filter", "@workspace/norovia-app", "run", "serve" ]
-
 [services.env]
 PORT = "21605"
 BASE_PATH = "/"
