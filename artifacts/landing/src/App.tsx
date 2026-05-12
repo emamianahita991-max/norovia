@@ -27,12 +27,15 @@ function LandingPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      const data = await res.json();
       if (res.ok) {
         setSubmitted(true);
         setEmail("");
       } else {
-        setError(data.error ?? "Something went wrong. Please try again.");
+        const contentType = res.headers.get("content-type") ?? "";
+        const message = contentType.includes("application/json")
+          ? ((await res.json()) as { error?: string }).error
+          : undefined;
+        setError(message ?? "Something went wrong. Please try again.");
       }
     } catch {
       setError("Unable to connect. Please check your connection and try again.");
@@ -158,14 +161,14 @@ function LandingPage() {
                 <p className="text-sm text-destructive text-left px-2">{error}</p>
               )}
               <p className="text-xs text-muted-foreground mt-2 text-center">
-                {copy.waitlist.smallText}{" "}
+                By joining, you agree to our{" "}
                 <Link
                   href="/privacy"
                   className="underline underline-offset-2 hover:text-foreground transition-colors"
                 >
                   Privacy Policy
                 </Link>
-                .
+                . {copy.waitlist.smallText}
               </p>
             </form>
           )}
