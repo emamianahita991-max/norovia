@@ -1,13 +1,15 @@
-export function PrivacyPage({ onBack }: { onBack: () => void }) {
+import { Link } from "wouter";
+
+export function PrivacyPage() {
   return (
     <div className="min-h-[100dvh] bg-background text-foreground font-sans">
       <div className="max-w-2xl mx-auto px-6 py-16 md:py-24">
-        <button
-          onClick={onBack}
+        <Link
+          href="/"
           className="text-sm text-muted-foreground hover:text-foreground transition-colors mb-12 flex items-center gap-2"
         >
           ← Back
-        </button>
+        </Link>
 
         <p className="text-xs font-semibold tracking-widest text-primary uppercase mb-6">
           Norovia

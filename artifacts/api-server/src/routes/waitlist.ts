@@ -23,8 +23,16 @@ router.post("/waitlist", async (req, res) => {
   try {
     await db.insert(waitlistEntries).values({ email: email.toLowerCase().trim() });
     res.status(200).json({ success: true });
-  } catch (err: any) {
-    if (err.code === "23505") {
+  } catch (err: unknown) {
+    const pgCode =
+      err !== null &&
+      typeof err === "object" &&
+      "code" in err &&
+      typeof (err as { code: unknown }).code === "string"
+        ? (err as { code: string }).code
+        : null;
+
+    if (pgCode === "23505") {
       res.status(409).json({ error: "You're already on the list." });
       return;
     }

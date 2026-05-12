@@ -1,8 +1,9 @@
 import { useState } from "react";
+import { Switch, Route, Link } from "wouter";
 import { copy } from "./copy";
 import { PrivacyPage } from "./Privacy";
 
-function LandingPage({ onPrivacyClick }: { onPrivacyClick: () => void }) {
+function LandingPage() {
   const scrollToWaitlist = () => {
     document.getElementById("waitlist")?.scrollIntoView({ behavior: "smooth" });
   };
@@ -158,13 +159,12 @@ function LandingPage({ onPrivacyClick }: { onPrivacyClick: () => void }) {
               )}
               <p className="text-xs text-muted-foreground mt-2 text-center">
                 {copy.waitlist.smallText}{" "}
-                <button
-                  type="button"
-                  onClick={onPrivacyClick}
+                <Link
+                  href="/privacy"
                   className="underline underline-offset-2 hover:text-foreground transition-colors"
                 >
                   Privacy Policy
-                </button>
+                </Link>
                 .
               </p>
             </form>
@@ -178,13 +178,12 @@ function LandingPage({ onPrivacyClick }: { onPrivacyClick: () => void }) {
           <p className="text-sm text-muted-foreground leading-relaxed">
             {copy.footer.disclaimer}
           </p>
-          <button
-            type="button"
-            onClick={onPrivacyClick}
+          <Link
+            href="/privacy"
             className="text-xs text-muted-foreground/70 underline underline-offset-2 hover:text-muted-foreground transition-colors"
           >
             Privacy Policy
-          </button>
+          </Link>
         </div>
       </footer>
 
@@ -193,11 +192,10 @@ function LandingPage({ onPrivacyClick }: { onPrivacyClick: () => void }) {
 }
 
 export default function App() {
-  const [view, setView] = useState<"landing" | "privacy">("landing");
-
-  if (view === "privacy") {
-    return <PrivacyPage onBack={() => setView("landing")} />;
-  }
-
-  return <LandingPage onPrivacyClick={() => setView("privacy")} />;
+  return (
+    <Switch>
+      <Route path="/privacy" component={PrivacyPage} />
+      <Route component={LandingPage} />
+    </Switch>
+  );
 }
