@@ -12,6 +12,33 @@ function isValidEmail(email: unknown): email is string {
   );
 }
 
+async function addToLoops(email: string): Promise<void> {
+  const apiKey = process.env.LOOPS_API_KEY;
+  if (!apiKey) {
+    console.warn("LOOPS_API_KEY not set — skipping Loops sync");
+    return;
+  }
+
+  const res = await fetch("https://app.loops.so/api/v1/contacts/create", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email,
+      source: "waitlist",
+      subscribed: true,
+      userGroup: "Waitlist",
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    console.error(`Loops API error ${res.status}: ${body}`);
+  }
+}
+
 router.post("/waitlist", async (req, res) => {
   const { email } = req.body ?? {};
 
@@ -20,9 +47,10 @@ router.post("/waitlist", async (req, res) => {
     return;
   }
 
+  const normalised = email.toLowerCase().trim();
+
   try {
-    await db.insert(waitlistEntries).values({ email: email.toLowerCase().trim() });
-    res.status(200).json({ success: true });
+    await db.insert(waitlistEntries).values({ email: normalised });
   } catch (err: unknown) {
     const pgCode =
       err !== null &&
@@ -38,6 +66,12 @@ router.post("/waitlist", async (req, res) => {
     }
     throw err;
   }
+
+  addToLoops(normalised).catch((err) =>
+    console.error("Loops sync failed:", err)
+  );
+
+  res.status(200).json({ success: true });
 });
 
 export default router;
