@@ -28,6 +28,7 @@ const LANDING_STATIC_ROOT = path.resolve(
 );
 const TEMPLATE_PATH = path.resolve(__dirname, "templates", "landing-page.html");
 const basePath = (process.env.BASE_PATH || "/").replace(/\/+$/, "");
+const LANDING_PORT = parseInt(process.env.LANDING_PORT || "3001", 10);
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
