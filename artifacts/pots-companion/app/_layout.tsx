@@ -16,6 +16,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { DailyProvider, useDaily } from "@/context/DailyContext";
+import { useNotifications } from "@/hooks/useNotifications";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -26,6 +27,8 @@ function RootLayoutNav() {
   const { onboardingComplete, isReady } = useDaily();
   const segments = useSegments();
   const router = useRouter();
+
+  useNotifications(isReady && onboardingComplete);
 
   useEffect(() => {
     if (!isReady) return;
