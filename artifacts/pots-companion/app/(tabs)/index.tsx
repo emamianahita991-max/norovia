@@ -189,7 +189,7 @@ export default function HomeScreen() {
             lockedTodayState === "take-it-easy"
               ? "Take It Easy"
               : lockedTodayState === "mindful"
-              ? "Mindful (Low Reserve)"
+              ? "Mindful"
               : "Steady";
 
           if (isSevereLowReserve) {

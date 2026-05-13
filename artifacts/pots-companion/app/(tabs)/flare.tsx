@@ -8,10 +8,16 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDaily } from "@/context/DailyContext";
 
-const BULLETS = [
+const ACTIVE_BULLETS = [
   "Sit or lie down whenever you can",
   "Start fluids and salt early in the day",
   "Avoid prolonged standing",
+];
+
+const WHAT_IS_BULLETS = [
+  "Changes your daily plan to a full rest and stabilization focus",
+  "Replaces your regular check-in with simpler guidance",
+  "Reminds you to slow down before symptoms build further",
 ];
 
 export default function FlareScreen() {
@@ -47,9 +53,14 @@ export default function FlareScreen() {
     >
       <View style={styles.pageHeader}>
         <Text style={styles.appName}>Norovia</Text>
+        <Text style={styles.companion}>
+          {isFlareActive
+            ? "Your priority right now is staying stable."
+            : "For days when your symptoms are harder than usual."}
+        </Text>
         <Text style={styles.heading}>Flare Mode</Text>
         <Text style={styles.subheading}>
-          {isFlareActive ? "Active" : "Inactive"}
+          {isFlareActive ? "Active" : "Off"}
         </Text>
       </View>
 
@@ -67,7 +78,7 @@ export default function FlareScreen() {
 
           <View style={styles.card}>
             <Text style={styles.sectionTitle}>Focus today</Text>
-            {BULLETS.map((b, i) => (
+            {ACTIVE_BULLETS.map((b, i) => (
               <View key={i} style={styles.bullet}>
                 <Text style={styles.bulletDot}>·</Text>
                 <Text style={styles.bulletText}>{b}</Text>
@@ -91,6 +102,24 @@ export default function FlareScreen() {
         </>
       ) : (
         <>
+          <View style={styles.card}>
+            <Text style={styles.sectionTitle}>What is Flare Mode?</Text>
+            <Text style={styles.whatIsBody}>
+              Use it on days when your symptoms are significantly worse than
+              usual — when you need to slow down and stabilize rather than push
+              through.
+            </Text>
+            {WHAT_IS_BULLETS.map((b, i) => (
+              <View key={i} style={styles.bullet}>
+                <Text style={styles.bulletDot}>·</Text>
+                <Text style={styles.bulletText}>{b}</Text>
+              </View>
+            ))}
+            <Text style={styles.whatIsNote}>
+              You can turn it off at any time when you're feeling steadier.
+            </Text>
+          </View>
+
           <TouchableOpacity
             style={styles.toggleBtnOff}
             onPress={() => setFlareActive(true)}
@@ -117,6 +146,12 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
     textTransform: "uppercase",
     marginBottom: 4,
+  },
+  companion: {
+    fontSize: 13,
+    color: "#9AA6A2",
+    lineHeight: 20,
+    marginBottom: 10,
   },
   heading: { fontSize: 28, fontWeight: "700", color: "#111", marginBottom: 0 },
   subheading: { fontSize: 14, color: "#9AA6A2", marginTop: 4 },
@@ -149,9 +184,20 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   sectionTitle: { fontSize: 15, fontWeight: "600", color: "#111" },
+  whatIsBody: {
+    fontSize: 14,
+    color: "#444",
+    lineHeight: 22,
+  },
+  whatIsNote: {
+    fontSize: 13,
+    color: "#9AA6A2",
+    lineHeight: 20,
+    marginTop: 4,
+  },
   bullet: { flexDirection: "row", alignItems: "flex-start", gap: 10 },
   bulletDot: { fontSize: 18, color: "#4a7c7e", lineHeight: 24 },
-  bulletText: { fontSize: 15, color: "#333", lineHeight: 24, flex: 1 },
+  bulletText: { fontSize: 14, color: "#444", lineHeight: 24, flex: 1 },
 
   pacing: {
     fontSize: 13,
