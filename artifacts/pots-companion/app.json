@@ -11,20 +11,16 @@
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0F1F3D",
+      "backgroundColor": "#f7f6f3",
       "dark": {
         "image": "./assets/images/splash.png",
         "resizeMode": "contain",
-        "backgroundColor": "#0F1F3D"
+        "backgroundColor": "#f7f6f3"
       }
     },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.norovia.app",
-      "infoPlist": {
-        "NSPhotoLibraryUsageDescription": "Norovia may access your photo library to let you attach images to your health logs.",
-        "NSCameraUsageDescription": "Norovia may access your camera to let you capture images for your health logs."
-      },
       "privacyManifests": {
         "NSPrivacyAccessedAPITypes": [
           {
@@ -38,14 +34,8 @@
       "package": "com.norovia.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#0F1F3D"
-      },
-      "permissions": [
-        "android.permission.CAMERA",
-        "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.READ_MEDIA_IMAGES"
-      ]
+        "backgroundColor": "#f7f6f3"
+      }
     },
     "web": {
       "favicon": "./assets/images/icon.png"

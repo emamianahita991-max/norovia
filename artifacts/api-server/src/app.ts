@@ -31,4 +31,23 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
 
+app.use(
+  (
+    err: unknown,
+    _req: express.Request,
+    res: express.Response,
+    _next: express.NextFunction,
+  ) => {
+    logger.error(err);
+    const status =
+      err !== null &&
+      typeof err === "object" &&
+      "status" in err &&
+      typeof (err as { status: unknown }).status === "number"
+        ? (err as { status: number }).status
+        : 500;
+    res.status(status).json({ error: "Internal server error" });
+  },
+);
+
 export default app;

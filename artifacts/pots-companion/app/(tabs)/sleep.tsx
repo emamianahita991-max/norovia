@@ -215,6 +215,8 @@ export default function SleepScreen() {
       ]}
     >
       <View style={styles.pageHeader}>
+        <Text style={styles.appName}>Norovia</Text>
+        <Text style={styles.companion}>Rest is part of how you manage this.</Text>
         <Text style={styles.heading}>Sleep</Text>
       </View>
 
@@ -312,7 +314,9 @@ const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: "#f7f6f3" },
   container: { paddingHorizontal: 20, gap: 16 },
   pageHeader: { marginBottom: 0 },
-  heading: { fontSize: 28, fontWeight: "700" },
+  appName: { fontSize: 12, fontWeight: "600", color: "#4a7c7e", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 4 },
+  companion: { fontSize: 13, color: "#9AA6A2", lineHeight: 20, marginBottom: 10 },
+  heading: { fontSize: 28, fontWeight: "700", color: "#111", marginBottom: 0 },
   promptBanner: { backgroundColor: "#f0f3f5", padding: 14, borderRadius: 12 },
   promptText: { fontSize: 14, color: "#4a5560" },
   card: { backgroundColor: "#fff", padding: 20, borderRadius: 14, gap: 16 },

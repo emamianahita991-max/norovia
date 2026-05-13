@@ -1,4 +1,5 @@
 import {
+  Alert,
   StyleSheet,
   Text,
   View,
@@ -206,9 +207,6 @@ export default function HomeScreen() {
           return (
             <View>
               <Text style={styles.todayStateLabel}>{stateLabel}</Text>
-              {lockedTodayState === "take-it-easy" && (
-                <Text style={styles.todayStateQualifier}>(very low reserve)</Text>
-              )}
               <Text style={styles.todayStateContext}>
                 {isEvening ? "Use this to close your day" : "Use this to guide your day"}
               </Text>
@@ -337,7 +335,20 @@ export default function HomeScreen() {
               <Text style={styles.modalCloseText}>Done</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => { setShowAboutModal(false); resetAll(); }}
+              onPress={() => {
+                Alert.alert(
+                  "Reset all data?",
+                  "This will permanently delete all your check-ins, sleep logs, and settings. This cannot be undone.",
+                  [
+                    { text: "Cancel", style: "cancel" },
+                    {
+                      text: "Reset",
+                      style: "destructive",
+                      onPress: () => { setShowAboutModal(false); resetAll(); },
+                    },
+                  ],
+                );
+              }}
               activeOpacity={0.6}
               style={styles.resetLink}
             >
