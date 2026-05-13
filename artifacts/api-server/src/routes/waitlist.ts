@@ -52,15 +52,15 @@ router.post("/waitlist", async (req, res) => {
   try {
     await db.insert(waitlistEntries).values({ email: normalised });
   } catch (err: unknown) {
-    const pgCode =
-      err !== null &&
-      typeof err === "object" &&
-      "code" in err &&
-      typeof (err as { code: unknown }).code === "string"
-        ? (err as { code: string }).code
-        : null;
+    const getPgCode = (e: unknown): string | null => {
+      if (e === null || typeof e !== "object") return null;
+      const obj = e as Record<string, unknown>;
+      if (typeof obj.code === "string") return obj.code;
+      if ("cause" in obj) return getPgCode(obj.cause);
+      return null;
+    };
 
-    if (pgCode === "23505") {
+    if (getPgCode(err) === "23505") {
       res.status(409).json({ error: "You're already on the list." });
       return;
     }
