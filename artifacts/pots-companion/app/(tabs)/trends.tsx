@@ -22,7 +22,8 @@ function pct(days: Entry[], pred: (e: Entry) => boolean): number {
 }
 
 function analyze(entries: Entry[]): Analysis | null {
-  if (entries.length < 7) return null;
+  const withSleep = entries.filter((e) => e.sleepHours !== null);
+  if (entries.length < 3 || withSleep.length < 3) return null;
 
   const goodDays = entries.filter((e) => e.energy >= 6 && e.avgSymptom <= 4);
   const badDays = entries.filter((e) => e.energy <= 4 || e.avgSymptom >= 6);
