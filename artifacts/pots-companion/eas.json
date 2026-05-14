@@ -35,7 +35,8 @@
       "distribution": "store",
       "autoIncrement": true,
       "ios": {
-        "buildConfiguration": "Release"
+        "buildConfiguration": "Release",
+        "credentialsSource": "remote"
       },
       "android": {
         "image": "ubuntu-22.04-jdk-17-ndk-r26b"
@@ -48,6 +49,15 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "$APPLE_ID",
+        "ascAppId": "$ASC_APP_ID",
+        "appleTeamId": "$APPLE_TEAM_ID",
+        "ascApiKeyId": "$ASC_API_KEY_ID",
+        "ascApiKeyIssuerId": "$ASC_API_ISSUER_ID",
+        "ascApiKeyPath": "$ASC_API_KEY_PATH"
+      }
+    }
   }
 }
