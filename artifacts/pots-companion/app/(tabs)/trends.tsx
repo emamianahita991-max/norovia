@@ -22,7 +22,7 @@ function pct(days: Entry[], pred: (e: Entry) => boolean): number {
 }
 
 function analyze(entries: Entry[]): Analysis | null {
-  if (entries.length < 3) return null;
+  if (entries.length < 7) return null;
 
   const goodDays = entries.filter((e) => e.energy >= 6 && e.avgSymptom <= 4);
   const badDays = entries.filter((e) => e.energy <= 4 || e.avgSymptom >= 6);
@@ -70,14 +70,14 @@ function analyze(entries: Entry[]): Analysis | null {
   }
 
   const recentWindow = entries.slice(-7);
-  const noComprHighDizz = recentWindow.some((e) => !e.compression && e.dizziness >= 6);
+  const noComprHighDizz = recentWindow.filter((e) => !e.compression && e.dizziness >= 6).length >= 2;
   if (noComprHighDizz) {
     worsens.push("Days without compression have coincided with higher dizziness.");
   }
 
-  const highFatigueLowSleep = recentWindow.some(
+  const highFatigueLowSleep = recentWindow.filter(
     (e) => e.fatigue >= 7 && e.sleepHours !== null && e.sleepHours < 6,
-  );
+  ).length >= 2;
   if (highFatigueLowSleep) {
     worsens.push("High fatigue days have coincided with poor sleep.");
   }
