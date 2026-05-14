@@ -85,6 +85,8 @@ export default function FlareScreen() {
             </Text>
           </View>
 
+          {emergencyBlock}
+
           <TouchableOpacity
             style={styles.toggleBtnOn}
             onPress={() => setFlareActive(false)}
@@ -92,8 +94,6 @@ export default function FlareScreen() {
           >
             <Text style={styles.toggleBtnText}>Turn off Flare Mode</Text>
           </TouchableOpacity>
-
-          {emergencyBlock}
         </>
       ) : (
         <>
@@ -104,6 +104,8 @@ export default function FlareScreen() {
             </Text>
           </View>
 
+          {emergencyBlock}
+
           <TouchableOpacity
             style={styles.toggleBtnOff}
             onPress={() => setFlareActive(true)}
@@ -111,8 +113,6 @@ export default function FlareScreen() {
           >
             <Text style={styles.toggleBtnText}>Turn on Flare Mode</Text>
           </TouchableOpacity>
-
-          {emergencyBlock}
         </>
       )}
     </ScrollView>
