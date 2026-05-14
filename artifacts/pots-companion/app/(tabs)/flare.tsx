@@ -14,11 +14,6 @@ const ACTIVE_BULLETS = [
   "Avoid prolonged standing",
 ];
 
-const WHAT_IS_BULLETS = [
-  "Changes your daily plan to a full rest and stabilization focus",
-  "Replaces your regular check-in with simpler guidance",
-  "Reminds you to slow down before symptoms build further",
-];
 
 export default function FlareScreen() {
   const insets = useSafeAreaInsets();
@@ -105,18 +100,7 @@ export default function FlareScreen() {
           <View style={styles.card}>
             <Text style={styles.sectionTitle}>What is Flare Mode?</Text>
             <Text style={styles.whatIsBody}>
-              Use it on days when your symptoms are significantly worse than
-              usual — when you need to slow down and stabilize rather than push
-              through.
-            </Text>
-            {WHAT_IS_BULLETS.map((b, i) => (
-              <View key={i} style={styles.bullet}>
-                <Text style={styles.bulletDot}>·</Text>
-                <Text style={styles.bulletText}>{b}</Text>
-              </View>
-            ))}
-            <Text style={styles.whatIsNote}>
-              You can turn it off at any time when you're feeling steadier.
+              For days when symptoms are significantly worse than usual. Shifts your focus to rest and stabilization — turn it off whenever you're feeling steadier.
             </Text>
           </View>
 
