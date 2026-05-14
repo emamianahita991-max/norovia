@@ -34,6 +34,9 @@
     "production": {
       "distribution": "store",
       "autoIncrement": true,
+      "ios": {
+        "buildConfiguration": "Release"
+      },
       "android": {
         "image": "ubuntu-22.04-jdk-17-ndk-r26b"
       },

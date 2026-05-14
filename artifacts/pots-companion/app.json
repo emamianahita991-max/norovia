@@ -19,8 +19,9 @@
       }
     },
     "ios": {
-      "supportsTablet": false,
+      "supportsTablet": true,
       "bundleIdentifier": "com.norovia.app",
+      "buildNumber": "1",
       "privacyManifests": {
         "NSPrivacyAccessedAPITypes": [
           {
