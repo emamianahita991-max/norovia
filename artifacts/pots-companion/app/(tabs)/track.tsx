@@ -10,9 +10,10 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRouter, useFocusEffect } from "expo-router";
+import { useFocusEffect } from "expo-router";
 import { useDaily } from "@/context/DailyContext";
 import { computeTodayState } from "@/utils/computeTodayState";
+import type { Entry } from "@/context/DailyContext";
 
 function isSameDay(a: Date, b: Date): boolean {
   return (
@@ -20,6 +21,24 @@ function isSameDay(a: Date, b: Date): boolean {
     a.getMonth() === b.getMonth() &&
     a.getDate() === b.getDate()
   );
+}
+
+function formatTime(ts: number): string {
+  const d = new Date(ts);
+  const h = d.getHours();
+  const m = d.getMinutes();
+  const period = h < 12 ? "AM" : "PM";
+  const displayH = h % 12 === 0 ? 12 : h % 12;
+  const displayM = m.toString().padStart(2, "0");
+  return `${displayH}:${displayM} ${period}`;
+}
+
+function getTimeLabel(ts: number): string {
+  const h = new Date(ts).getHours();
+  if (h >= 5 && h < 12) return "Morning";
+  if (h >= 12 && h < 17) return "Afternoon";
+  if (h >= 17 && h < 21) return "Evening";
+  return "Night";
 }
 
 type CheckIn = {
@@ -34,9 +53,11 @@ type Habits = {
   movement: boolean;
 };
 
+const DEFAULT_CHECKIN: CheckIn = { energy: 5, dizziness: 0, palpitations: 0 };
+const DEFAULT_HABITS: Habits = { salt: false, compression: false, movement: false };
+
 const WATER_GOAL = 3.0;
 const WATER_INCREMENTS = [0.25, 0.5, 1.0];
-
 const ACCENT = "#4a7c7e";
 
 function SliderRow({
@@ -94,48 +115,55 @@ function ToggleRow({
   );
 }
 
+function CheckInCard({ entry }: { entry: Entry }) {
+  return (
+    <View style={historyStyles.card}>
+      <View style={historyStyles.header}>
+        <Text style={historyStyles.timeLabel}>{getTimeLabel(entry.date)}</Text>
+        <Text style={historyStyles.time}>{formatTime(entry.date)}</Text>
+      </View>
+      <Text style={historyStyles.summary}>
+        Energy {entry.energy} · Dizziness {entry.dizziness} · Palpitations {entry.palpitations}
+      </Text>
+      {entry.observation ? (
+        <Text style={historyStyles.note}>{entry.observation}</Text>
+      ) : null}
+    </View>
+  );
+}
+
 export default function TrackScreen() {
   const insets = useSafeAreaInsets();
-  const router = useRouter();
-  const { sleepLoggedToday, checkInCompletedToday, setCheckInCompleted, pendingSleep, entries, addEntry, lockTodayState, waterHistory, waterLiters, addWater, undoWater } = useDaily();
+  const {
+    sleepLoggedToday,
+    checkInCompletedToday,
+    setCheckInCompleted,
+    pendingSleep,
+    entries,
+    addEntry,
+    lockTodayState,
+    waterHistory,
+    waterLiters,
+    addWater,
+    undoWater,
+  } = useDaily();
+
+  const todayEntries = entries.filter((e) =>
+    isSameDay(new Date(e.date), new Date())
+  );
+
+  const [checkIn, setCheckIn] = useState<CheckIn>(DEFAULT_CHECKIN);
+  const [habits, setHabits] = useState<Habits>(DEFAULT_HABITS);
+  const [observation, setObservation] = useState("");
+  const [savedAt, setSavedAt] = useState<number | null>(null);
 
   useFocusEffect(
     useCallback(() => {
-      const last = entries[entries.length - 1];
-
-      if (
-        checkInCompletedToday &&
-        last &&
-        isSameDay(new Date(last.date), new Date())
-      ) {
-        setCheckIn({
-          energy: last.energy,
-          dizziness: last.dizziness,
-          palpitations: last.palpitations ?? 0,
-        });
-      } else {
-        setCheckIn({
-          energy: 5,
-          dizziness: 0,
-          palpitations: 0,
-        });
-      }
-    }, [entries, checkInCompletedToday])
+      return () => {
+        setSavedAt(null);
+      };
+    }, [])
   );
-
-  const [checkIn, setCheckIn] = useState<CheckIn>({
-    energy: 5,
-    dizziness: 0,
-    palpitations: 0,
-  });
-
-  const [habits, setHabits] = useState<Habits>({
-    salt: false,
-    compression: false,
-    movement: false,
-  });
-
-  const [observation, setObservation] = useState("");
 
   function setField(key: keyof CheckIn) {
     return (v: number) => setCheckIn((prev) => ({ ...prev, [key]: v }));
@@ -145,16 +173,23 @@ export default function TrackScreen() {
     return (v: boolean) => setHabits((prev) => ({ ...prev, [key]: v }));
   }
 
-  function handleFinish() {
+  function handleSave() {
+    const isFirstCheckIn = todayEntries.length === 0;
+    const now = Date.now();
     const fatigue = 10 - checkIn.energy;
     const { dizziness, palpitations } = checkIn;
-    const avgSymptom = parseFloat(((fatigue + dizziness + palpitations) / 3).toFixed(1));
+    const avgSymptom = parseFloat(
+      ((fatigue + dizziness + palpitations) / 3).toFixed(1)
+    );
     const maxSymptom = Math.max(fatigue, dizziness, palpitations);
 
-    const sleepHours = pendingSleep?.hours ?? null;
+    const sleepHours = isFirstCheckIn ? (pendingSleep?.hours ?? null) : null;
+    const sleepAwakenings = isFirstCheckIn
+      ? (pendingSleep?.awakenings ?? null)
+      : null;
 
     addEntry({
-      date: Date.now(),
+      date: now,
       energy: checkIn.energy,
       dizziness,
       palpitations,
@@ -166,16 +201,24 @@ export default function TrackScreen() {
       compression: habits.compression,
       movement: habits.movement,
       sleepHours,
-      sleepAwakenings: pendingSleep?.awakenings ?? null,
+      sleepAwakenings,
       observation: observation.trim(),
     });
 
-    const sleepAwakenings = pendingSleep?.awakenings ?? null;
-    const computed = computeTodayState({ sleepHours, sleepAwakenings, maxSymptom, avgSymptom, energy: checkIn.energy });
-
+    const computed = computeTodayState({
+      sleepHours: pendingSleep?.hours ?? null,
+      sleepAwakenings: pendingSleep?.awakenings ?? null,
+      maxSymptom,
+      avgSymptom,
+      energy: checkIn.energy,
+    });
     lockTodayState(computed);
     setCheckInCompleted(true);
-    router.navigate("/");
+
+    setCheckIn(DEFAULT_CHECKIN);
+    setHabits(DEFAULT_HABITS);
+    setObservation("");
+    setSavedAt(now);
   }
 
   return (
@@ -197,7 +240,9 @@ export default function TrackScreen() {
 
       {sleepLoggedToday && !checkInCompletedToday && (
         <View style={styles.promptBanner}>
-          <Text style={styles.promptText}>Even a rough day is worth logging. Takes 30 seconds.</Text>
+          <Text style={styles.promptText}>
+            Even a rough day is worth logging. Takes 30 seconds.
+          </Text>
         </View>
       )}
 
@@ -283,7 +328,7 @@ export default function TrackScreen() {
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.sectionLabel}>Anything you noticed today?</Text>
+        <Text style={styles.sectionLabel}>Anything you noticed?</Text>
         <TextInput
           style={obs.input}
           value={observation}
@@ -295,22 +340,35 @@ export default function TrackScreen() {
           placeholderTextColor="#bbb"
           placeholder="e.g. felt worse after lunch, headache at 3pm"
         />
-        <Text style={{ fontSize: 11, color: "#bbb", textAlign: "right" }}>{observation.length}/200</Text>
+        <Text style={{ fontSize: 11, color: "#bbb", textAlign: "right" }}>
+          {observation.length}/200
+        </Text>
       </View>
 
       <TouchableOpacity
         style={styles.saveBtn}
-        onPress={handleFinish}
+        onPress={handleSave}
         activeOpacity={0.8}
       >
         <Text style={styles.saveBtnText}>
-          {checkInCompletedToday ? "Update baseline" : "Set today's baseline"}
+          {todayEntries.length === 0 ? "Save check-in" : "Log again"}
         </Text>
       </TouchableOpacity>
 
-      {checkInCompletedToday && (
+      {savedAt !== null && (
         <View style={styles.savedMsg}>
-          <Text style={styles.savedMsgText}>Logged. Tracking on hard days takes real effort. It matters.</Text>
+          <Text style={styles.savedMsgText}>
+            Check-in saved at {formatTime(savedAt)}. Log again any time.
+          </Text>
+        </View>
+      )}
+
+      {todayEntries.length > 0 && (
+        <View style={styles.historySection}>
+          <Text style={styles.historyHeading}>Today's check-ins</Text>
+          {[...todayEntries].reverse().map((entry) => (
+            <CheckInCard key={entry.date} entry={entry} />
+          ))}
         </View>
       )}
     </ScrollView>
@@ -321,7 +379,14 @@ const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: "#f7f6f3" },
   container: { paddingHorizontal: 20, gap: 16 },
   pageHeader: { marginBottom: 0 },
-  appName: { fontSize: 12, fontWeight: "600", color: "#4a7c7e", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 4 },
+  appName: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#4a7c7e",
+    letterSpacing: 1.5,
+    textTransform: "uppercase",
+    marginBottom: 4,
+  },
   companion: { fontSize: 13, color: "#9AA6A2", lineHeight: 20, marginBottom: 10 },
   heading: { fontSize: 28, fontWeight: "700", color: "#111", marginBottom: 0 },
   promptBanner: {
@@ -369,15 +434,35 @@ const styles = StyleSheet.create({
   savedMsgText: {
     fontSize: 14,
     color: "#3a6a6b",
-    fontStyle: "italic",
+  },
+  historySection: {
+    gap: 10,
+  },
+  historyHeading: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#9AA6A2",
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
+    marginBottom: 2,
   },
 });
 
 const row = StyleSheet.create({
   wrap: { gap: 4 },
-  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   label: { fontSize: 14, color: "#444", flex: 1 },
-  value: { fontSize: 16, fontWeight: "600", color: "#111", minWidth: 24, textAlign: "right" },
+  value: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#111",
+    minWidth: 24,
+    textAlign: "right",
+  },
   slider: { width: "100%", height: 36 },
   hint: { fontSize: 11, color: "#bbb", marginTop: -2 },
 });
@@ -449,5 +534,43 @@ const waterStyles = StyleSheet.create({
     color: "#9AA6A2",
     textDecorationLine: "underline",
     textAlign: "right",
+  },
+});
+
+const historyStyles = StyleSheet.create({
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 16,
+    gap: 6,
+    shadowColor: "#000",
+    shadowOpacity: 0.03,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  timeLabel: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#4a7c7e",
+  },
+  time: {
+    fontSize: 13,
+    color: "#9AA6A2",
+  },
+  summary: {
+    fontSize: 14,
+    color: "#444",
+  },
+  note: {
+    fontSize: 13,
+    color: "#888",
+    fontStyle: "italic",
+    marginTop: 2,
   },
 });
