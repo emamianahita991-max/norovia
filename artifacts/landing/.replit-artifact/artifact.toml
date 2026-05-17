@@ -1,5 +1,5 @@
 kind = "web"
-previewPath = "/landing/"
+previewPath = "/"
 title = "Norovia Landing Page"
 version = "1.0.0"
 id = "artifacts/landing"
@@ -11,7 +11,7 @@ version = "1.0.0"
 
 [[services]]
 name = "web"
-paths = [ "/landing/" ]
+paths = [ "/" ]
 localPort = 18150
 
 [services.development]
@@ -25,12 +25,12 @@ publicDir = "artifacts/landing/dist/public"
 args = [ "pnpm", "--filter", "@workspace/landing", "run", "build" ]
 
 [services.production.build.env]
-BASE_PATH = "/landing/"
+BASE_PATH = "/"
 PORT = "18150"
 
 [services.production.health.startup]
-path = "/landing/"
+path = "/"
 
 [services.env]
 PORT = "18150"
-BASE_PATH = "/landing/"
+BASE_PATH = "/"

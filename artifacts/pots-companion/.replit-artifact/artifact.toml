@@ -1,5 +1,5 @@
 kind = "mobile"
-previewPath = "/"
+previewPath = "/mobile/"
 title = "Norovia"
 version = "1.0.0"
 id = "artifacts/pots-companion"
@@ -12,7 +12,7 @@ version = "1.0.0"
 [[services]]
 ensurePreviewReachable = "/status"
 name = "expo"
-paths = [ "/" ]
+paths = [ "/mobile/" ]
 localPort = 21605
 
 [services.development]
@@ -24,4 +24,4 @@ run = [ "pnpm", "--filter", "@workspace/norovia-app", "run", "serve" ]
 
 [services.env]
 PORT = "21605"
-BASE_PATH = "/"
+BASE_PATH = "/mobile/"
