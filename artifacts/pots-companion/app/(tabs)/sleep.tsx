@@ -210,7 +210,7 @@ export default function SleepScreen() {
         styles.container,
         {
           paddingBottom: insets.bottom + 24,
-          paddingTop: 16,
+          paddingTop: insets.top + 16,
         },
       ]}
     >

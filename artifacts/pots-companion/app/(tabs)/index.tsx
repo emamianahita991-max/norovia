@@ -171,7 +171,7 @@ export default function HomeScreen() {
       style={styles.scroll}
       contentContainerStyle={[
         styles.container,
-        { paddingBottom: insets.bottom + 24, paddingTop: 16 },
+        { paddingBottom: insets.bottom + 24, paddingTop: insets.top + 16 },
       ]}
       keyboardShouldPersistTaps="handled"
     >

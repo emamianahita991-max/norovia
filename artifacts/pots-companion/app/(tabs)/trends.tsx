@@ -120,7 +120,7 @@ export default function TrendsScreen() {
         styles.container,
         {
           paddingBottom: insets.bottom + 24,
-          paddingTop: 16,
+          paddingTop: insets.top + 16,
         },
       ]}
     >
