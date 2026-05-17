@@ -205,13 +205,9 @@ export default function TrackScreen() {
       observation: observation.trim(),
     });
 
-    const firstEntry = todayEntries[0];
-    const sleepHoursForState = sleepHours ?? firstEntry?.sleepHours ?? null;
-    const sleepAwakeningsForState = sleepAwakenings ?? firstEntry?.sleepAwakenings ?? null;
-
     const computed = computeTodayState({
-      sleepHours: sleepHoursForState,
-      sleepAwakenings: sleepAwakeningsForState,
+      sleepHours: pendingSleep?.hours ?? null,
+      sleepAwakenings: pendingSleep?.awakenings ?? null,
       maxSymptom,
       avgSymptom,
       energy: checkIn.energy,
