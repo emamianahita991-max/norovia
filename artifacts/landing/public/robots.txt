@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.norovia.ca/sitemap.xml
+Sitemap: https://norovia.ca/sitemap.xml
