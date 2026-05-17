@@ -168,6 +168,12 @@ const server = http.createServer((req, res) => {
     pathname = pathname.slice(basePath.length) || "/";
   }
 
+  if (pathname === "/status") {
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(JSON.stringify({ ok: true }));
+    return;
+  }
+
   if (pathname === "/") {
     res.writeHead(302, { location: "/landing" });
     res.end();
