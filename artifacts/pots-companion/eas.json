@@ -1,63 +1,65 @@
 {
-  "cli": {
-    "version": ">= 16.0.0",
-    "appVersionSource": "local"
-  },
-  "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "ios": {
-        "simulator": true
-      },
-      "env": {
-        "NODE_VERSION": "20",
-        "NPM_CONFIG_LEGACY_PEER_DEPS": "true",
-        "JAVA_VERSION": "17"
-      }
+    "cli": {
+        "version": ">= 16.0.0",
+        "appVersionSource": "local"
     },
-    "preview": {
-      "distribution": "internal",
-      "ios": {
-        "simulator": false
-      },
-      "android": {
-        "buildType": "apk",
-        "image": "ubuntu-22.04-jdk-17-ndk-r26b"
-      },
-      "env": {
-        "NODE_VERSION": "20",
-        "NPM_CONFIG_LEGACY_PEER_DEPS": "true",
-        "JAVA_VERSION": "17"
-      }
+    "build": {
+        "development": {
+            "developmentClient": true,
+            "distribution": "internal",
+            "ios": {
+                "simulator": true
+            },
+            "env": {
+                "NODE_VERSION": "20",
+                "NPM_CONFIG_LEGACY_PEER_DEPS": "true",
+                "JAVA_VERSION": "17"
+            }
+        },
+        "preview": {
+            "distribution": "store",
+            "ios": {
+                "buildConfiguration": "Release",
+                "credentialsSource": "remote"
+            },
+            "android": {
+                "buildType": "apk",
+                "image": "ubuntu-22.04-jdk-17-ndk-r26b"
+            },
+            "env": {
+                "NODE_VERSION": "20",
+                "NPM_CONFIG_LEGACY_PEER_DEPS": "true",
+                "JAVA_VERSION": "17"
+            },
+            "autoIncrement": true
+        },
+        "production": {
+            "distribution": "store",
+            "autoIncrement": true,
+            "ios": {
+                "buildConfiguration": "Release",
+                "credentialsSource": "remote"
+            },
+            "android": {
+                "image": "ubuntu-22.04-jdk-17-ndk-r26b"
+            },
+            "env": {
+                "NODE_VERSION": "20",
+                "NPM_CONFIG_LEGACY_PEER_DEPS": "true",
+                "JAVA_VERSION": "17"
+            }
+        }
     },
-    "production": {
-      "distribution": "store",
-      "autoIncrement": true,
-      "ios": {
-        "buildConfiguration": "Release",
-        "credentialsSource": "remote"
-      },
-      "android": {
-        "image": "ubuntu-22.04-jdk-17-ndk-r26b"
-      },
-      "env": {
-        "NODE_VERSION": "20",
-        "NPM_CONFIG_LEGACY_PEER_DEPS": "true",
-        "JAVA_VERSION": "17"
-      }
+    "submit": {
+        "production": {
+            "ios": {
+                "appleId": "$APPLE_ID",
+                "ascAppId": "$ASC_APP_ID",
+                "appleTeamId": "$APPLE_TEAM_ID",
+                "ascApiKeyId": "$ASC_API_KEY_ID",
+                "ascApiKeyIssuerId": "$ASC_API_ISSUER_ID",
+                "ascApiKeyPath": "$ASC_API_KEY_PATH"
+            }
+        }
     }
-  },
-  "submit": {
-    "production": {
-      "ios": {
-        "appleId": "$APPLE_ID",
-        "ascAppId": "$ASC_APP_ID",
-        "appleTeamId": "$APPLE_TEAM_ID",
-        "ascApiKeyId": "$ASC_API_KEY_ID",
-        "ascApiKeyIssuerId": "$ASC_API_ISSUER_ID",
-        "ascApiKeyPath": "$ASC_API_KEY_PATH"
-      }
-    }
-  }
 }
